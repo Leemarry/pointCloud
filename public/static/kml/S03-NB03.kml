@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+    <Document>
+        <name>S03-NB03</name>
+        <open>1</open>
+        <ExtendedData xmlns:mis="www.dji.com">
+            <mis:type>Waypoint</mis:type>
+        </ExtendedData>
+        <Folder>
+            <name>waypoints</name>
+            <description>Waypoints in the Mission</description>
+            <Placemark>
+                <name>Waypoint1</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>3</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.281127383927,37.539508150452384,210.2754749625115</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-69</mis:gimbalPitch>
+                    <mis:shootingPointName>1</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="1" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="1" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-69" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.28111993920902,37.53939551117602,243.10078988991359</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint2</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>9</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.28132406509343,37.53950548337399,207.86465859702216</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-70</mis:gimbalPitch>
+                    <mis:shootingPointName>2</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="7" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="7" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-70" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.28130282760912,37.5393991602075,240.90390032452896</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint3</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>10</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.28151541630218,37.53950505982864,203.5942681994499</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-65</mis:gimbalPitch>
+                    <mis:shootingPointName>3</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="8" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="8" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-65" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.2814862865165,37.53937406443842,235.46504074573267</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint4</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>11</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.28140479627282,37.5394026203006,208.17012840312583</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-63</mis:gimbalPitch>
+                    <mis:shootingPointName>4</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="10" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="10" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-63" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.28137041168998,37.53926235519614,239.50535674971871</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint5</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>3</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.28114318304756,37.539394940571135,213.63045662081632</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-65</mis:gimbalPitch>
+                    <mis:shootingPointName>5</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="3" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="3" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-65" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.28113440361255,37.539262106663244,245.50122916709907</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint6</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>1</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.28095840722084,37.539395592985876,214.01152782720243</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-66</mis:gimbalPitch>
+                    <mis:shootingPointName>6</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="1" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="1" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-66" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.28095558957239,37.539267594912545,246.13561884469345</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint7</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>8</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.28128878450111,37.53928057348085,213.53901704414716</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-65</mis:gimbalPitch>
+                    <mis:shootingPointName>7</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="8" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="8" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-65" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.28126543804035,37.53914885178144,245.4097895904299</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint8</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>8</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.281498049691,37.53927953722046,206.3688909268276</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-68</mis:gimbalPitch>
+                    <mis:shootingPointName>8</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="6" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="6" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-68" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.28147735550772,37.53916277980256,238.97032583666515</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint9</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>-2</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.28190012372066,37.53927832981028,207.58933443836543</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-66</mis:gimbalPitch>
+                    <mis:shootingPointName>9</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="-2" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="-2" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-66" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.28190575815029,37.53915039022399,239.71342545585645</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint10</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>4</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.28210342380473,37.539279075281264,208.59084342502973</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-69</mis:gimbalPitch>
+                    <mis:shootingPointName>10</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="3" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="3" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-69" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.2820935010725,37.539166556184824,241.4161583524318</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint11</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>4</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.28230625841393,37.539278315551904,207.42300306846494</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-71</mis:gimbalPitch>
+                    <mis:shootingPointName>11</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="3" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="3" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-71" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.28229724386324,37.539176094818714,240.66615321444104</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint12</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>2</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.28234605364945,37.53934615360479,206.77167391403918</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-68</mis:gimbalPitch>
+                    <mis:shootingPointName>12</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="1" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="1" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-68" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.28234086430462,37.53922832057106,239.37310882387675</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint13</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>3</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.28255091327367,37.53934485748626,206.31447828369</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-67</mis:gimbalPitch>
+                    <mis:shootingPointName>13</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="2" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="2" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-67" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.28254279626344,37.53922204608076,238.6821481545254</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint14</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>1</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.2817022653806,37.53918130970109,208.4118912265595</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-65</mis:gimbalPitch>
+                    <mis:shootingPointName>14</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="0" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="0" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-65" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.28169933772165,37.53904831375843,240.28266377284226</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint15</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>7</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.28149113323407,37.53918013549367,209.32534796792532</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-71</mis:gimbalPitch>
+                    <mis:shootingPointName>15</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="6" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="6" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-71" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.28147538421649,37.53907842894558,242.56849811390143</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint16</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>6</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.2812920555184,37.539181163545216,214.18654665768318</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-68</mis:gimbalPitch>
+                    <mis:shootingPointName>16</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="6" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="6" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-68" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.2812765128001,37.53906390458129,246.78798156752075</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Waypoint17</name>
+                <description>Waypoint</description>
+                <visibility>1</visibility>
+                <ExtendedData xmlns:mis="www.dji.com">
+                    <mis:heading>5</mis:heading>
+                    <mis:speed>4</mis:speed>
+                    <mis:shootingDistance>35</mis:shootingDistance>
+                    <mis:shootingPointCoordinates>
+                        114.28149396052734,37.5390942150172,212.77354966584062</mis:shootingPointCoordinates>
+                    <mis:useWaylineAltitude>false</mis:useWaylineAltitude>
+                    <mis:gimbalPitch>-66</mis:gimbalPitch>
+                    <mis:shootingPointName>17</mis:shootingPointName>
+                    <mis:turnMode>Auto</mis:turnMode>
+                    <mis:actions param="7209" label="变焦" accuracy="2">CameraZoom</mis:actions>
+                    <mis:actions param="4" label="飞行器偏航角">AircraftYaw</mis:actions>
+                    <mis:actions param="4" label="">GimbalYaw</mis:actions>
+                    <mis:actions param="-66" label="云台俯仰角度">GimbalPitch</mis:actions>
+                    <mis:actions label="拍照" targetMode="0">ShootPhoto</mis:actions>
+                </ExtendedData>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>114.2814798895023,37.538966684590875,244.89764068333164</coordinates>
+                </Point>
+            </Placemark>
+        </Folder>
+        <Placemark>
+            <name>Wayline</name>
+            <description>Wayline</description>
+            <visibility>1</visibility>
+            <ExtendedData xmlns:mis="www.dji.com">
+                <mis:autoFlightSpeed>4</mis:autoFlightSpeed>
+                <mis:actionOnFinish>GoHome</mis:actionOnFinish>
+                <mis:headingMode>UsePointSetting</mis:headingMode>
+                <mis:idleVel>13</mis:idleVel>
+                <mis:shootingDistance>35</mis:shootingDistance>
+                <mis:ratio>0</mis:ratio>
+                <mis:safeDistance>5</mis:safeDistance>
+                <mis:droneInfo>
+                    <mis:droneType>PM430</mis:droneType>
+                    <mis:advanceSettings>true</mis:advanceSettings>
+                    <mis:droneCameras>
+                        <mis:camera>
+                            <mis:cameraIndex>0</mis:cameraIndex>
+                            <mis:cameraName>Zenmuse H20</mis:cameraName>
+                            <mis:cameraType>42</mis:cameraType>
+                        </mis:camera>
+                    </mis:droneCameras>
+                    <mis:droneHeight>
+                        <mis:useAbsolute>true</mis:useAbsolute>
+                        <mis:hasTakeoffHeight>false</mis:hasTakeoffHeight>
+                        <mis:takeoffHeight>0.0</mis:takeoffHeight>
+                    </mis:droneHeight>
+                </mis:droneInfo>
+            </ExtendedData>
+            <LineString>
+                <tessellate>1</tessellate>
+                <altitudeMode>absolute</altitudeMode>
+                <coordinates>114.28111993920902,37.53939551117602,243.10078988991359
+                    114.28130282760912,37.5393991602075,240.90390032452896
+                    114.2814862865165,37.53937406443842,235.46504074573267
+                    114.28137041168998,37.53926235519614,239.50535674971871
+                    114.28113440361255,37.539262106663244,245.50122916709907
+                    114.28095558957239,37.539267594912545,246.13561884469345
+                    114.28126543804035,37.53914885178144,245.4097895904299
+                    114.28147735550772,37.53916277980256,238.97032583666515
+                    114.28190575815029,37.53915039022399,239.71342545585645
+                    114.2820935010725,37.539166556184824,241.4161583524318
+                    114.28229724386324,37.539176094818714,240.66615321444104
+                    114.28234086430462,37.53922832057106,239.37310882387675
+                    114.28254279626344,37.53922204608076,238.6821481545254
+                    114.28169933772165,37.53904831375843,240.28266377284226
+                    114.28147538421649,37.53907842894558,242.56849811390143
+                    114.2812765128001,37.53906390458129,246.78798156752075
+                    114.2814798895023,37.538966684590875,244.89764068333164</coordinates>
+            </LineString>
+        </Placemark>
+    </Document>
+</kml>

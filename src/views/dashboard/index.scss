@@ -1,0 +1,1000 @@
+.mainbody {
+    // position: absolute;
+    // padding: 0px;
+    width: 100%;
+    height: 100%;
+    display: flex; // 弹性布局
+    justify-content: center; // 内容水平居中
+}
+
+.main {
+    position: absolute;
+    padding: 0px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.middle {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    background-color: #dbdbdb;
+    text-align: center;
+    display: flex; // 弹性布局
+    justify-content: center; // 内容水平居中
+    align-items: center; // 内容垂直居中
+    position: relative;
+    // align-items: center; // 内容垂直居中
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+    padding: 0 2px 0 2px;
+    .leftHideButton {
+        cursor: pointer;
+        position: absolute;
+        left: 0;
+    }
+    .rightHideButton {
+        cursor: pointer;
+        position: absolute;
+        right: 0px;
+    }
+}
+
+.left,
+.right {
+    width: 300px;
+    background-color: #fafafa;
+    text-align: center;
+    .leftuav,
+    .righthive {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        .top {
+            // box-shadow: 0 2px 1px rgba(0, 0, 0, .12), 0 0 1px rgba(0, 0, 0, .04);
+            height: 50px;
+        }
+        .parmitem {
+            position: relative;
+            flex: 1;
+            padding: 0px 20px 5px 20px; // 上右下左
+            display: flex;
+            flex-direction: column;
+            .div {
+                padding: 10px 0px 10px 0px; // 上右下左
+                margin: -1px -20px -5px -20px;
+                color: #0095f8;
+                // border: solid;
+                // border-radius: 5px;
+                // border-color: rgb(235, 235, 235);
+            }
+            .el-row {
+                flex: 1;
+                box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+                border-radius: 25px;
+                // padding: 10px 0px 10px 5px; // 上右下左
+                display: flex;
+                align-items: center; //*垂直方向居中*
+                // justify-content: center; // 水平方向居中
+                margin: 5px 0px;
+                .el-col {
+                    font-size: 13px;
+                    color: #67c23a;
+                    font-style: bold;
+                }
+                .parmName {
+                    color: #000000;
+                }
+            }
+        }
+        .parmitem2 {
+            position: relative;
+            height: auto;
+            padding: 0px 10px 0px 10px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+            .el-row {
+                // box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+                padding: 5px;
+                .el-col {
+                    font-size: 10px;
+                    font-family: "13px Small,Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+                    color: #67c23a;
+                }
+                .parmName {
+                    color: #000000;
+                    text-align: left;
+                }
+            }
+        }
+        .button {
+            padding: 10px;
+            position: relative;
+            height: auto;
+            .el-row {
+                padding: 1px;
+            }
+        }
+        .bottom {
+            position: relative;
+            height: 200px;
+            .switchBtn1 {
+                position: absolute;
+                top: 2px;
+                right: 2px;
+                cursor: pointer;
+            }
+            .switchBtn2 {
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                cursor: pointer;
+            }
+        }
+    }
+    .leftwps {
+        height: 100%;
+        width: 100%;
+        .sideLeftWps {
+            flex: 1;
+            // overflow-y: auto;
+            border: 2px solid rgb(235, 232, 232);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            top: 0px;
+            left: 0px;
+            bottom: 0px;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(255, 255, 255);
+            // opacity: 0.9;
+            // border-radius: 15px; // 圆角
+            .el-scrollbar {
+                height: 100%;
+            }
+            .el-scrollbar__bar {
+                &.is-vertical {
+                    width: 100px; //滚动条宽度
+                }
+            }
+            .el-scrollbar__wrap {
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+            .el-scrollbar__thumb {
+                background: red;
+            }
+            .top {
+                padding: 5px 10px 5px 10px; // 上右下左
+                background: rgb(250, 250, 250);
+                font-size: 13px;
+                color: rgb(0, 0, 0);
+                border: 2px solid rgb(235, 232, 232);
+                .div {
+                    font-size: 13px;
+                    color: rgb(0, 0, 0);
+                    margin-top: 10px;
+                }
+                .el-row {
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-between;
+                    text-align: left;
+                    margin-bottom: 3px;
+                }
+                .el-col {
+                    font-style: bold;
+                }
+                .value {
+                    font-style: bold;
+                    color: #67c23a;
+                    font-size: 14px;
+                }
+            }
+            .bottom {
+                background: rgb(250, 250, 250);
+                padding: 5px;
+                border: 2px solid rgb(235, 232, 232);
+            }
+        }
+    }
+}
+
+// 视频整体样式，与地图切换后仍旧使用该样式
+.videomain {
+    height: 100%;
+    width: 100%;
+    padding-bottom: 15px;
+    border-radius: 0px 0px 0px 0px; // 左上角、右上角、右下角、左下角
+    position: relative;
+    box-shadow: 0 2px 12px 0 rgba(7, 7, 7, 0.1);
+    background: rgb(0, 0, 0);
+    opacity: 0.9;
+    filter: alpha(Opacity=90);
+    -moz-opacity: 0.9;
+    .video {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+    .mode {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        width: auto;
+        height: auto;
+        color: #ff0000;
+        font-size: 10px;
+    }
+    .switchBtn1 {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+    }
+    .switchBtn2 {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        cursor: pointer;
+    }
+    .tools {
+        margin-left: 80px;
+        z-index: 901;
+        width: auto;
+        top: 5px;
+        text-align: center;
+        position: absolute;
+        top: 1px;
+        opacity: 0.6;
+        filter: alpha(Opacity=60);
+        -moz-opacity: 0.6;
+    }
+    .cameracmd {
+        z-index: 901;
+        width: auto;
+        bottom: 5px;
+        margin-left: 30px;
+        position: absolute;
+        opacity: 0.4;
+        filter: alpha(Opacity=40);
+        -moz-opacity: 0.4;
+    }
+    .hivestatus {
+        z-index: 905;
+        width: auto;
+        bottom: 5px;
+        margin-left: 30%;
+        position: absolute;
+        opacity: 0.95;
+        color: rgb(10, 157, 255);
+        filter: alpha(Opacity=95);
+        -moz-opacity: 0.95;
+    }
+}
+
+.divLeftBottom {
+    z-index: 900;
+    border-radius: 0 10px 0px 0px; // 左上角、右上角、右下角、左下角
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 300px;
+    height: 220px;
+    background-color: rgb(0, 0, 0);
+    opacity: 0.95;
+    filter: alpha(Opacity=95);
+    -moz-opacity: 0.95;
+    .video {
+        position: absolute;
+        margin: 2px;
+        top: 1px;
+        left: 1px;
+        right: 1px;
+        bottom: 1px;
+        background-color: rgb(49, 49, 49);
+    }
+    .switchBtn1 {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+    }
+    .switchBtn2 {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        cursor: pointer;
+    }
+    .tools {
+        z-index: 901;
+        width: 90%;
+        top: 5px;
+        text-align: center;
+        position: absolute;
+        top: 1px;
+        opacity: 0.6;
+        filter: alpha(Opacity=60);
+        -moz-opacity: 0.6;
+    }
+    .cameracmd {
+        z-index: 901;
+        width: 90%;
+        bottom: 5px;
+        margin-left: 5%;
+        position: absolute;
+        opacity: 0.6;
+        filter: alpha(Opacity=60);
+        -moz-opacity: 0.6;
+    }
+    .hivestatus {
+        z-index: 905;
+        width: auto;
+        bottom: 5px;
+        margin-left: 30%;
+        position: absolute;
+        opacity: 0.95;
+        color: rgb(10, 157, 255);
+        filter: alpha(Opacity=95);
+        -moz-opacity: 0.95;
+    }
+}
+
+.divRightBottom {
+    z-index: 900;
+    border-radius: 10px 0px 0px 0px; // 左上角、右上角、右下角、左下角
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 300px;
+    height: 220px;
+    background-color: rgb(0, 0, 0);
+    opacity: 0.95;
+    filter: alpha(Opacity=95);
+    -moz-opacity: 0.95;
+    .video {
+        position: absolute;
+        margin: 2px;
+        top: 1px;
+        left: 1px;
+        right: 1px;
+        bottom: 1px;
+        background-color: rgb(49, 49, 49);
+    }
+    .switchBtn1 {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+    }
+    .switchBtn2 {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        cursor: pointer;
+    }
+    .tools {
+        z-index: 901;
+        width: auto;
+        top: 5px;
+        right: 5px;
+        position: absolute;
+        top: 1px;
+        opacity: 0.6;
+        filter: alpha(Opacity=60);
+        -moz-opacity: 0.6;
+    }
+    .cameracmd {
+        z-index: 901;
+        width: 90%;
+        bottom: 5px;
+        margin-left: 5%;
+        position: absolute;
+        opacity: 0.6;
+        filter: alpha(Opacity=60);
+        -moz-opacity: 0.6;
+    }
+    .hivestatus {
+        z-index: 905;
+        width: auto;
+        bottom: 5px;
+        margin-left: 30%;
+        position: absolute;
+        opacity: 0.95;
+        color: rgb(10, 157, 255);
+        filter: alpha(Opacity=95);
+        -moz-opacity: 0.95;
+    }
+}
+
+.divStatus {
+    position: absolute;
+    top: 50%;
+    z-index: 3000;
+}
+
+.biggerView {
+    position: absolute;
+    background-color: rgb(82, 80, 80);
+    border-radius: 0 20px 0px 0px; // 左上角、右上角、右下角、左下角
+    width: 100%;
+    height: 100%;
+    .video {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        margin: 2px;
+        top: 1px;
+        left: 1px;
+        right: 1px;
+        bottom: 1px;
+        background-color: rgb(49, 49, 49);
+    }
+    .switchBtn1 {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+    }
+    .switchBtn2 {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        cursor: pointer;
+    }
+    .tools {
+        z-index: 901;
+        width: 90%;
+        top: 5px;
+        text-align: center;
+        position: absolute;
+        top: 1px;
+        opacity: 0.6;
+        filter: alpha(Opacity=60);
+        -moz-opacity: 0.6;
+    }
+    .cameracmd {
+        z-index: 901;
+        width: 90%;
+        bottom: 5px;
+        margin-left: 45%;
+        position: absolute;
+        opacity: 0.6;
+        filter: alpha(Opacity=60);
+        -moz-opacity: 0.6;
+    }
+    .hivestatus {
+        z-index: 905;
+        width: auto;
+        bottom: 5px;
+        margin-left: 30%;
+        position: absolute;
+        opacity: 0.95;
+        color: rgb(10, 157, 255);
+        filter: alpha(Opacity=95);
+        -moz-opacity: 0.95;
+    }
+}
+
+.main2 {
+    &-container {
+        position: absolute;
+        margin: 30px;
+        width: 100%;
+        height: 100%;
+        background-color: red;
+    }
+    &-text {
+        font-size: 30px;
+        line-height: 46px;
+    }
+}
+
+.divTopMiddle {
+    position: absolute;
+    width: auto;
+    margin-top: 5px;
+    top: 5px;
+    // left: 50%;
+    // margin-left: -250px;
+    height: auto;
+}
+
+.divTopMiddleLoading {
+    position: absolute;
+    width: auto;
+    margin-top: 50px;
+    top: 50px;
+    // left: 50%;
+    // margin-left: -250px;
+    height: auto;
+}
+
+.divTopRightTool {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: auto;
+    height: auto;
+}
+
+.divBottomLeftTool {
+    position: absolute;
+    right: 40px;
+    bottom: 5px;
+    width: auto;
+    height: auto;
+    opacity: 0.8;
+    filter: alpha(Opacity=80);
+    -moz-opacity: 0.8;
+    z-index: 50;
+    color: rgb(6, 255, 234);
+}
+
+.divBottomRightToolRemote {
+    position: absolute;
+    right: 35px;
+    bottom: 5px;
+    width: auto;
+    height: auto;
+    opacity: 0.8;
+    filter: alpha(Opacity=80);
+    -moz-opacity: 0.8;
+}
+
+.divBottomRightTool {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    width: auto;
+    height: auto;
+    opacity: 0.5;
+    filter: alpha(Opacity=50);
+    -moz-opacity: 0.5;
+}
+
+.sideUavMini {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: auto;
+    height: auto;
+}
+
+.divCommandButton {
+    position: absolute;
+    // background: black;
+    opacity: 0.8;
+    filter: alpha(Opacity=80);
+    -moz-opacity: 0.8;
+    top: 30%;
+    left: 5px;
+    width: auto;
+    height: auto;
+    border: 5px rgb(0, 0, 0);
+    border-radius: 10 10px 10px 10px; // 左上角、右上角、右下角、左下角
+    padding: 10px;
+    .el-row {
+        margin-top: 5px;
+        .el-button {
+            width: 100%;
+        }
+    }
+}
+
+.divUavControl {
+    position: absolute;
+    background: rgb(201, 201, 201);
+    opacity: 0.8;
+    filter: alpha(Opacity=80);
+    -moz-opacity: 0.8;
+    bottom: 0px;
+    width: 500px;
+    height: auto;
+    border: 5px rgb(0, 0, 0);
+    border-radius: 10px 10px 0px 0px; // 左上角、右上角、右下角、左下角
+    padding: 10px;
+    display: flex;
+    /* 弹性布局 */
+    justify-content: space-between;
+    /* 横向中间自动空间 */
+}
+
+.uavParm {
+    position: absolute;
+    // overflow-y: auto;
+    border: 5px rgb(231, 231, 231);
+    overflow-x: hidden;
+    top: 0px;
+    left: 10px;
+    right: 10px;
+    height: auto;
+    opacity: 0.9;
+    // border-radius: 15px; // 圆角
+    .el-scrollbar {
+        height: 100%;
+    }
+    .el-scrollbar__bar {
+        &.is-vertical {
+            width: 100px; //滚动条宽度
+        }
+    }
+    .el-scrollbar__wrap {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .el-scrollbar__thumb {
+        background: red;
+    }
+    .parmitem {
+        border-radius: 10px;
+        background: rgb(218, 211, 211);
+        padding: 5px;
+        margin: 5px;
+        opacity: 0.65;
+        color: rgb(0, 0, 0);
+        font-size: 14px;
+        .value {
+            color: rgb(2, 133, 255);
+            font-style: bold;
+        }
+        .parmname {
+            color: rgb(0, 0, 0);
+        }
+        .unit {
+            color: rgb(0, 0, 0);
+        }
+    }
+}
+
+.sideLeft {
+    position: absolute;
+    border: 0px solid rgb(235, 232, 232);
+    overflow-x: hidden;
+    flex-direction: row;
+    z-index: 1000;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    width: auto;
+    height: auto;
+    display: flex;
+    background-color: rgb(255, 255, 255);
+}
+
+.sideLeftGridBtn {
+    // overflow-y: auto;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    z-index: 150;
+}
+
+.sideLeftGridParm {
+    // overflow-y: auto;
+    position: absolute;
+    border: 2px solid rgb(235, 232, 232);
+    overflow-x: hidden;
+    z-index: 1000;
+    padding: 5px;
+    top: 50px;
+    left: 5px;
+    width: 200px;
+    height: auto;
+    border-radius: 10px;
+    background: rgb(250, 250, 250);
+    .value {
+        font-size: 13px;
+        color: rgb(0, 0, 0);
+    }
+}
+
+.sideLeftUav {
+    flex: 1;
+    // overflow-y: auto;
+    border: 2px solid rgb(235, 232, 232);
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    width: 300px;
+    height: auto;
+    background-color: rgb(255, 255, 255);
+    // opacity: 0.9;
+    // border-radius: 15px; // 圆角
+    .el-scrollbar {
+        height: 100%;
+    }
+    .el-scrollbar__bar {
+        &.is-vertical {
+            width: 100px; //滚动条宽度
+        }
+    }
+    .el-scrollbar__wrap {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .el-scrollbar__thumb {
+        background: red;
+    }
+    .top {
+        padding: 5px 1px 5px 35px; // 上右下左
+        background: rgb(250, 250, 250);
+        font-size: 13px;
+        color: rgb(0, 0, 0);
+        border: 2px solid rgb(235, 232, 232);
+        .el-col {
+            font-style: bold;
+        }
+        .value {
+            color: rgb(9, 72, 124);
+        }
+    }
+    .bottom {
+        background: rgb(250, 250, 250);
+        padding: 5px;
+        border: 2px solid rgb(235, 232, 232);
+    }
+}
+
+.sideUavHeader {
+    width: 100%;
+    background: #dfe2df;
+    opacity: 0.5;
+    padding: 5px;
+    text-align: right;
+    padding-right: 10px;
+    cursor: pointer;
+}
+
+.img-box {
+    overflow-y: auto;
+    ul {
+        flex-wrap: wrap;
+        justify-content: start;
+        li {
+            padding: 20px 2.5%;
+            .el-card {
+                position: relative;
+                transition: all 1s;
+                .sel-box-bg {
+                    display: inline-block;
+                    width: 0;
+                    height: 0;
+                    border-top: 35px solid #67c23a;
+                    border-left: 35px solid transparent;
+                    position: absolute;
+                    right: 0;
+                    z-index: 10;
+                    top: 0;
+                }
+                .sel-box-icon {
+                    display: inline-block;
+                    position: absolute;
+                    top: 3px;
+                    right: 3px;
+                    z-index: 11;
+                    color: white;
+                    font-size: 15px;
+                }
+            }
+        }
+        li:hover .el-card {
+            box-shadow: 0px 5px 25px 5px rgba(0, 0, 0, 0.1);
+            transition: all 1s;
+        }
+        li:hover .el-card {
+            box-shadow: 0px 5px 25px 5px rgba(0, 0, 0, 0.1);
+            transition: all 1s;
+        }
+    }
+}
+
+.cardBg {
+    position: relative;
+    margin: 10px;
+    height: 60px;
+    padding: 5px;
+    opacity: 0.95;
+    border: 2px solid rgb(199, 221, 165);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 2px;
+    outline-offset: -1px;
+    transition: all 0.3s linear;
+    font-size: 12px;
+    &:hover {
+        background: rgb(181, 211, 233);
+    }
+    // &:hover {
+    //   background: linear-gradient(90deg, #67c23a 50%, transparent 0) repeat-x,
+    //     linear-gradient(90deg, #67c23a 50%, transparent 0) repeat-x,
+    //     linear-gradient(0deg, #67c23a 50%, transparent 0) repeat-y,
+    //     linear-gradient(0deg, #67c23a 50%, transparent 0) repeat-y;
+    //   // background: #67c23a 50%;
+    //   background-size: 4px 1px, 4px 1px, 1px 4px, 1px 4px;
+    //   background-position: 0 0, 0 100%, 0 0, 100% 0;
+    //   animation: linearGradientMove 0.3s infinite linear;
+    // }
+}
+
+.cardBgSelected {
+    position: relative;
+    margin: 10px;
+    height: 60px;
+    padding: 5px;
+    opacity: 0.99;
+    border: 2px solid rgb(0, 140, 255);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 2px;
+    outline-offset: -1px;
+    transition: all 0.3s linear;
+    font-size: 12px;
+    &:hover {
+        background: rgb(181, 211, 233);
+    }
+}
+
+.cardBg_task {
+    position: relative;
+    margin: 10px;
+    height: 130px;
+    padding: 5px;
+    opacity: 0.95;
+    border: 2px solid rgb(199, 221, 165);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 2px;
+    outline-offset: -1px;
+    transition: all 0.3s linear;
+    font-size: 12px;
+    &:hover {
+        background: rgb(181, 211, 233);
+    }
+}
+
+.cardBgSelected_task {
+    position: relative;
+    margin: 10px;
+    height: 130px;
+    padding: 5px;
+    opacity: 0.99;
+    border: 2px solid rgb(0, 140, 255);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 2px;
+    outline-offset: -1px;
+    transition: all 0.3s linear;
+    font-size: 12px;
+    &:hover {
+        background: rgb(181, 211, 233);
+    }
+}
+
+.cardKmz {
+    margin: 5px;
+    width: 300px;
+    opacity: 0.95;
+    border: 2px solid rgb(199, 221, 165);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 2px;
+    outline-offset: -1px;
+    transition: all 0.3s linear;
+    font-size: 14px;
+    &:hover {
+        background: #deffce;
+    }
+}
+
+.cardBgWps {
+    position: relative;
+    margin: 10px;
+    height: auto;
+    padding: 5px;
+    opacity: 0.95;
+    border: 2px solid rgb(199, 221, 165);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 2px;
+    outline-offset: -1px;
+    transition: all 0.3s linear;
+    font-size: 12px;
+    &:hover {
+        background: #deffce;
+    }
+}
+
+.cardBgWpsSelected {
+    position: relative;
+    margin: 10px;
+    height: auto;
+    padding: 5px;
+    opacity: 0.99;
+    border: 2px solid rgb(0, 140, 255);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 2px;
+    outline-offset: -1px;
+    transition: all 0.3s linear;
+    font-size: 12px;
+    &:hover {
+        background: rgb(181, 211, 233);
+    }
+}
+
+.cardLeft {
+    height: 300px;
+    width: auto;
+    margin: 5px;
+    float: left;
+    text-align: center;
+    line-height: 60px;
+}
+
+.cardMiddle {
+    // background:red;
+    // height: 300px;
+    // margin: 0 50px;
+    padding: 10px 0;
+    display: flex;
+    // /*实现垂直居中*/
+    align-items: center;
+    // /*实现水平居中*/
+    // justify-content: center;
+    text-align: justify;
+    height: auto;
+    margin: 0 30px;
+    color: red($color: #000000);
+}
+
+.cardRight {
+    height: 300px;
+    width: auto;
+    float: right;
+}
+
+.cardLeftWps {
+    height: auto;
+    width: auto;
+    margin: 5px;
+    float: left;
+    text-align: center;
+}
+
+.cardMiddleWps {
+    // background:red;
+    // height: 300px;
+    // margin: 0 50px;
+    padding: 0px 0;
+    display: flex;
+    // /*实现垂直居中*/
+    align-items: center;
+    // /*实现水平居中*/
+    // justify-content: center;
+    text-align: justify;
+    height: auto;
+    margin: 0 30px;
+    color: red($color: #000000);
+}
+
+.cardRightWps {
+    height: auto;
+    width: auto;
+    float: right;
+}
+
+.sel-file {
+    border: 2px solid #67c23a !important;
+}
+
+.uavIco {
+    height: 100%;
+    text-align: center;
+}

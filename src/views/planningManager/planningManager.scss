@@ -1,0 +1,475 @@
+$bg-color:#FFFFFF;
+$color:#000000;
+$color-l:#C7E9FA;
+$color-2:#585656;
+$color-2-1:#585656;
+$font-color:#000000;
+
+* {
+  &::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width: 5px;
+    /*高宽分别对应横竖滚动条的尺寸*/
+    //   height: 1px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    border-radius: 2px;
+    box-shadow: inset 0 0 2px $color-2;
+    background: $color-2;
+  }
+
+  &::-webkit-scrollbar-track {
+    /*滚动条里面轨道*/
+    box-shadow: inset 0 0 2px $bg-color;
+    border-radius: 2px;
+    background: $bg-color;
+  }
+}
+
+
+/**
+ * @name: 
+ * @msg: 弹性布局
+ * @return {*}
+ */
+@mixin flexLayout($direction: row, $justifyContent: center, $alignItems: stretch) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justifyContent;
+  align-items: $alignItems;
+}
+
+::v-deep .el-empty {
+  padding: 10px 0;
+}
+
+
+//   对象
+// #region
+
+// #region外层 布局
+.con {
+  display: flex;
+  outline: 4px solid rosybrown;
+  height: 100%;
+  width: 100%;
+  // position:fixed;
+}
+
+main {
+  background-color: rgb(238, 241, 246);
+  flex: 1;
+  /* 竖直方向拉伸 */
+  display: flex;
+  flex-direction: column;
+}
+
+// #endregion 外层布局
+
+// #region 左侧区域
+aside {
+  position: relative;
+  z-index: 9;
+
+}
+
+//左侧内容
+.section {
+  position: absolute;
+  inset: 0 4px 0 0;
+  padding: 8px;
+  background-color: antiquewhite;
+}
+
+.resize {
+  min-width: 455px;
+  width: 725px;
+  height: 20px;
+  overflow: scroll;
+  resize: horizontal;
+  transform: scaleY(100);
+
+  opacity: 0;
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 60px;
+
+  }
+}
+
+.line {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  bottom: 0;
+  background-color: royalblue;
+
+  transition: .3s;
+  pointer-events: none;
+  opacity: 0;
+}
+.resize:hover+.line,
+.resize:active+.line{
+ opacity: 1;
+}
+
+// #endregion 左侧区域
+
+// #region 左侧内部布局 
+::v-deep .aside-section {
+  .abP{
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 9;
+  }
+  .aside-flex {
+    height: 100%;
+    // @include flexLayout(row, center);
+    display: flex;
+    // 每一列
+    .flex-item {
+      flex: 1;
+      margin: 0 5px;
+      @include flexLayout(column, center);
+    }
+
+    .top-card {
+      @include flexLayout(row, center, center);
+      .el-card__body {
+        padding: 15px;
+      }
+      font-size: 13px;
+      color: #606266;
+      .formatter{
+        font-size: 20px;
+        color: #303133;
+        text-align: center;
+      }
+    }
+    .table-card {
+      overflow: auto;
+      flex: 1;
+      margin-top: 15px;
+      .el-card {
+        margin: -3px 0 8px 0;
+  
+        .el-card__header,
+        .el-card__body {
+          padding: 5px 8px;
+        }
+      }
+  
+      .flexDiv{
+        @include flexLayout(row, space-between, center);
+        flex-wrap: wrap;
+         .el-radio {
+          margin-right: 10px;
+      
+        }
+      }
+      
+      .image-demo {
+        .image-info {
+          container-type: inline-size;
+          // contain: :in;
+          .demo-text{
+              font-size: 6cqw;
+          }
+        }
+      }
+
+    }
+    
+  }
+
+}
+
+
+// #region 右侧区域
+// 外层整个
+main{
+  display: flex;
+ flex-direction: column;
+}
+
+.main {
+  min-width: 450px;
+  background-color: rgb(225, 199, 134);
+  flex: 1;
+  overflow: hidden;
+  // outline: 4px solid rosybrown;
+}
+
+
+footer {
+  position: relative;
+}
+.footer-section{
+  position: absolute;
+  inset: 4px 0 0 0;
+}
+
+.resize-top {
+  min-height: 230px;
+  height: 300px;
+  width: 16px;
+  overflow: scroll;
+  resize: vertical;
+opacity: 0;
+  transform: scale(165,-1);
+  &::-webkit-scrollbar {
+    width: 16px;
+    height: 5px;
+
+  }
+}
+.line-level{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 4px;
+  bottom: 0;
+  background-color: royalblue;
+  transition: .3s;
+  pointer-events: none;
+  opacity: 0;
+}
+.resize-top:hover+.line-level,
+.resize-top:active+.line-level{
+   opacity: 1;
+}
+// #endregion 右侧区域
+
+// #region右侧下
+::v-deep .footer-section{
+  .footer-bottom{
+    padding: 5px 0 0 5px;
+    .hascheckedPoint {
+      .settingBnt{
+        margin-bottom: 5px;
+        display: flex;
+        .block{
+          margin:0px 15px;
+          flex: 1;
+        }
+      }
+    }
+    .el-row{
+      .el-col{
+        min-width: 220px;
+      }
+    }
+    .el-card__header{
+      padding: 5px 8px;
+      .card-header{
+        flex-wrap: wrap;
+
+      }
+    }
+  }
+}
+
+// #endregion
+
+// #region 一般存储卡片样式
+
+
+// #endregion
+
+::v-deep .card-header {
+  @include flexLayout(row, center, center);
+  justify-content: space-around;
+
+}
+.cursorStyle{
+  cursor: pointer;
+}
+
+// #region 字体鼠标样式
+.card-header{
+.card-header-text{
+  color: #606266;
+  display: inline-block;
+      padding-left: 10px;
+      line-height: 19px;
+      font-size: 14px;
+  font-weight: 500;
+}
+}
+.flytime{
+  font-size: 14px;
+  color: #606266;
+  line-height: 19px;
+  font-weight: 500;
+}
+.formatter{
+  position: relative;
+}
+
+::v-deep .fly-card{
+  position: relative;
+   .fly-statistic{
+    .head{
+      margin: 0px;
+    }
+  
+    .fly-select{
+    opacity: 0;
+    position: absolute;
+    left: 0px;
+      .el-input input{
+        height: 20px;
+      }
+    }
+  
+  }
+
+  /* 控制全选按钮样式 */
+.select-popover-class .el-scrollbar__view > .el-checkbox{
+  padding: 5px 20px;
+}
+
+/* 取消多选框触发事件 */
+.select-popover-class .el-scrollbar__view > li .el-checkbox {
+  pointer-events: none;
+}
+
+/* 隐藏多选框选中勾选样式 √ */
+.select-popover-class .el-scrollbar__view > li::after {
+  display: none;
+}
+
+}
+::v-deep .pp{
+
+}
+::v-deep .el-select-dropdown__item{
+  padding: 0 10px;
+}
+
+// #region 处理弹窗
+#handleDialog{
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1999;
+  .content{
+    background: #eeeeee;
+    width: 20%;
+    z-index: 1;
+    margin: 12% auto;
+    overflow: auto;
+    border-radius: 5px;
+
+    .formchild{
+      padding: 10px;
+      font-size: 13px;
+      line-height: 21px;
+      &:last-child{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      &> .submit{
+        margin: 2px;
+      }
+      .input-list{
+        label{
+          margin-left: 5px;
+        }
+        input{
+          width: 82px;
+        }
+        & >input:last-child{
+          width: 48px;
+        }
+
+      }
+    }
+    #footer{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 45px;
+  
+    }
+  }
+
+}
+// #endegion
+
+// #region
+#fileDialog{
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1999;
+  .content{
+    background: #eeeeee;
+    width: 20%;
+    z-index: 1;
+    margin: 12% auto;
+    overflow: auto;
+    border-radius: 5px;
+
+    .formchild{
+
+    }
+    #footer{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 45px;
+  
+    }
+  }
+
+}
+// #endregion 
+
+// #region 普通弹窗
+.dialog{
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1999;
+}
+.content{
+  background: #eeeeee;
+  width: 20%;
+  z-index: 1;
+  margin: 12% auto;
+  overflow: auto;
+  border-radius: 5px;
+  min-height: 200px;
+}
+// #endregion
+
+
+
+
+
+
+
+
+// #region 弹窗样式
+.al-dialog{
+  
+}

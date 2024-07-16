@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" 
+	xmlns:atom="http://www.w3.org/2005/Atom" 
+	xmlns:gx="http://www.google.com/kml/ext/2.2" 
+	>
+	<Document>
+		<name>OvitalMap_20240327_153541</name>
+		<Placemark>
+			<name>3</name>
+			<description>"id":"3"</description>
+			<Style>
+				<LineStyle><color>7fff0000</color><width>1</width></LineStyle>
+				<PolyStyle><color>7fff0000</color></PolyStyle>
+			</Style>
+				<Polygon>
+					<tessellate>1</tessellate>
+					<outerBoundaryIs>
+						<LinearRing>
+							<coordinates>114.47039418,29.62779816,0 114.49177884,29.63444254,0 114.49635906,29.63035374,0 114.49660663,29.62922392,0 114.49543063,29.62685661,0 114.49159315,29.62395121,0 114.49047904,29.62373600,0 114.48534177,29.61628379,0 114.49199547,29.61192521,0 114.48961252,29.60864269,0 114.48914831,29.60845434,0 114.48110198,29.61179068,0 114.47834766,29.61431977,0 114.47710976,29.61434666,0 114.47401502,29.61310904,0 114.47423166,29.61421214,0 114.47327228,29.61679498,0 114.47311756,29.61762900,0 114.47234387,29.61929702,0 114.47203439,29.62158380,0 114.47153923,29.62384361,0 114.47107502,29.62607647,0 114.47023944,29.62739465,0 114.47039418,29.62779816,0 </coordinates>
+						</LinearRing>
+					</outerBoundaryIs>
+				</Polygon>
+		</Placemark>
+	</Document>
+</kml>
