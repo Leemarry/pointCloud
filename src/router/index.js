@@ -128,27 +128,6 @@ export const constantRoutes = [{
         name: 'uavsmanage',
         meta: { title: '监控管理', icon: 'el-icon-setting' },
         children: [
-            // {
-            //     path: '/pointmanager',
-            //     name: 'index',
-            //     component: () =>
-            //         import ('@/views/pointManager/pointmanager.vue'),
-            //     meta: { title: '航点管理', icon: 'uav_manage' }
-            // },{
-            //     path: '/replayAndReturnFlight',
-            //     name: 'replayAndReturnFlight',
-            //     component: () =>
-            //         import ('@/views/replayAndReturnFlight/replayAndReturnFlight.vue'),
-            //     meta: { title: '补播返航管理', icon: 'uav_manage' },
-            //     // hidden: true
-            // },{
-            //     path: '/echars',
-            //     name: 'echars',
-            //     component: () =>
-            //         import ('@/views/components/ECharts/waterLevelECharts.vue'),
-            //     meta: { title: 'echars', icon: 'uav_manage' },
-            //     hidden: true
-            // },
             {
                 path: '/lookmanager',
                 name: 'index',
