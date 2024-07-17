@@ -11,8 +11,8 @@ import {
 import $ from 'jquery'
 import flvjs from 'flv.js'
 import store from '@/store'
-import MyModule from './myModule.js';
-var myModuleInstance;
+
+
 export default {
   name: '',
   //import引入的组件需要注入到对象中才能使用
@@ -447,9 +447,6 @@ export default {
   },
   //生命周期 - 创建完成（可以访问当前this实例）
   created() {
-    myModuleInstance = new MyModule();
-    this.uavs = myModuleInstance.uavs
-    console.log(this.uavs);
 
   },
   //生命周期 - 挂载完成（可以访问DOM元素）

@@ -36,7 +36,7 @@
         <el-table-column fixed="right" label="操作" width="100">
           <template slot-scope="scope">
             <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-            <el-button type="text" size="small">下载</el-button>
+            <el-button type="text" size="small" @click='downimg()'>下载</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -60,6 +60,7 @@
         <div slot="tip" class="el-upload__tip">只能上传zip文件，且不超过50M</div>
       </el-upload>
     </AlDialog>
+    <AlImagePreview :visible='previewVisible'></AlImagePreview>
     <el-image-viewer v-if="imgViewerVisible" :on-close="closeImgViewer" :url-list="imgList" />
   </div>
 </template>
@@ -68,11 +69,13 @@
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等!）
 //例如：import 《组件名称》 from '《组件路径》';
 import AlDialog from '@/views/AlDialog/index.vue'
+import AlImagePreview from '@/views/AlImagePreview/index.vue'
 export default {
   name: 'photoManager',
   //import引入的组件需要注入到对象中才能使用
   components: {
     AlDialog,
+    AlImagePreview,
     'el-image-viewer': () => import('element-ui/packages/image/src/image-viewer')
   },
   data() {
@@ -111,7 +114,8 @@ export default {
       imgList:[
         'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
         'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
-      ]
+      ],
+      previewVisible:true
     };
   },
   //让组件接收外部传来的数据
@@ -134,6 +138,9 @@ export default {
     /**擦靠3 */
     handleClick(row) {
       this.showImgViewer()
+    },
+    downimg(){
+
     },
     showImgViewer(){
       this.imgViewerVisible = true;

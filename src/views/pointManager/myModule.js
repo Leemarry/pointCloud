@@ -6,7 +6,7 @@
  * @LastEditors: Andy
  * @LastEditTime: 2023-11-21 10:37:44
  */
-// myModule.js
+
 class MyModule {
     constructor() {
       this.prop1 = 'value1';
