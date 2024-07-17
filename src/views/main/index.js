@@ -211,8 +211,6 @@ export default {
       },
       hiveHeartbeatNow: {},
       hives: [],
-      inspectionUavs: [],
-      seedingUavs: [],
       // 飞行架次
       flyedSorties: [],
       // 单架次数据
@@ -402,8 +400,8 @@ export default {
     this.startDataCheckTimer(); // 在组件被挂载后启动检查数据定时器
     // this.startTimeoutCheckTimer(); // 在组件被挂载后启动超时提示定时器
     const CesiumMap = this.$refs.CesiumMap;
-    if(CesiumMap){
-        this.$refs.CesiumMap.handleOperation();
+    if (CesiumMap) {
+      this.$refs.CesiumMap.handleOperation();
     }
   },
   // created() {},
@@ -536,34 +534,17 @@ export default {
     /**查询所有无人机 */
     async queryAllUavs() {
       this.uavs = await this.queryAllUavsByMix()
-      this.uavTypeInfo(this.uavs)
-    },
-    /**区分播种\巡检无人机 */
-    uavTypeInfo(data = this.uavs) {
-      if (!data || data.length <= 0) {
+      if (!this.uavs || this.uavs.length <= 0) {
         return false;
       }
       this.setUavCount() //当前无人机数量
       // 检查LocalStorage中的"defaultUav"值
       let key = "defaultUav-" + this.userId;
 
-      this.defaultUavSn = getDefaultData(key, data, 'uavId')
-      this.defaultUavInfo = getDefaultObj(data, 'uavId', this.defaultUavSn)
-
-      const newArray1 = []; // typeProtocol 为 1 的数组
-      const newArray2 = []; // typeProtocol 为 2 的数组
-
-      data.forEach(item => {
-        if (item.efUavType.typeProtocol === 0) {
-          newArray1.push(item);
-        } else if (item.efUavType.typeProtocol === 1) {
-          newArray2.push(item);
-        }
-      });
-      this.inspectionUavs = newArray1
-      this.seedingUavs = newArray2
-
+      this.defaultUavSn = getDefaultData(key,  this.uavs , 'uavId')
+      this.defaultUavInfo = getDefaultObj( this.uavs , 'uavId', this.defaultUavSn)
     },
+
 
     //#endregion
 
@@ -1871,9 +1852,9 @@ export default {
           altType: 0,
           takeoffAlt: route.unifiedHeight, //unifiedHeight
           homeAlt: 30, // 如果不需要传递homeAlt，可以设置为null
-          startTime:route.startTime,
-          endTime:route.endTime,
-          speed:route.speed,
+          startTime: route.startTime,
+          endTime: route.endTime,
+          speed: route.speed,
           spacing: route.spacing || 2,
         };
         const data = {
@@ -1884,7 +1865,7 @@ export default {
         await this.$store.dispatch("uavs/uploadMission", data).then((response) => {
           const { code, message, data } = response;
           if (code === 1) {
-            const { mid, positions, unifiedHeight, text , startTime ,endTime ,speed } = route
+            const { mid, positions, unifiedHeight, text, startTime, endTime, speed } = route
             this.$store.dispatch("routeData/setRouteData", { mid, geoCoordinates: positions, unifiedHeight }); // 存储store
             this.showMessage(message, "success");
           } else {
@@ -1983,8 +1964,8 @@ export default {
         homeAlt: 30, // 如果不需要传递homeAlt，可以设置为null
         name: name,
         speed: speed,
-        startTime : route.startTime,
-        endTime : route.endTime
+        startTime: route.startTime,
+        endTime: route.endTime
 
       };
       const data = {

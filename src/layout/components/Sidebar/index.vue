@@ -1,3 +1,9 @@
+<!--
+ * @Date: 2024-07-16 09:54:47
+ * @LastEditors: likai 2806699104@qq.com
+ * @FilePath: \pointCouldPages\src\layout\components\Sidebar\index.vue
+ * @Description: Do not edit
+-->
 <template>
   <div :class="{'has-logo':showLogo}">
     <logo v-if="showLogo" :collapse="isCollapse" />

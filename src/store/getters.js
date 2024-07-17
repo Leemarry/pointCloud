@@ -4,13 +4,10 @@
  * @Author: Eugene
  * @Date: 2023-11-13 10:49:39
  * @LastEditors: likai 2806699104@qq.com
- * @LastEditTime: 2024-07-12 19:18:54
+ * @LastEditTime: 2024-07-16 14:33:38
  */
 const getters = {
     sidebar: state => state.app.sidebar,
-    // sidebar(state){
-    //     state.app.sidebar
-    // }, 
     device: state => state.app.device,
     token: state => state.user.token,
     clientId: state => state.user.clientId,

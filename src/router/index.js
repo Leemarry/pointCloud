@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-/* Layout */
+/* 后台 */
 import Layout from '@/layout'
 
 /**
@@ -32,8 +32,7 @@ import Layout from '@/layout'
  */
 export const constantRoutes = [{
         path: '/login',
-        component: () =>
-            import ('@/views/login/index'),
+        component: () =>import ('@/views/login/index'),
         hidden: true,
         children: []
     },
@@ -45,263 +44,180 @@ export const constantRoutes = [{
     },
     {
         path: "/index",
-        component: () =>
-            import ('@/views/main/index.vue'),
-        meta: {
-            icon: "main",
-            title: "我的首页"
-        },
+        component: () =>import ('@/views/main/index.vue'),
+        meta: { icon: "main", title: "我的首页" },
         name: "index"
     },
-    // {
-    //     path: "/newpage",
-    //     component: () =>
-    //         import ('@/views/components/Cesium/drowcesium.vue'),
-    //     meta: {
-    //         icon: "main",
-    //         // target: "_blank" // 在新窗口中打开
-    //     },
-    //     name: "newpage"
+  
+//#region 无人机监控管理
+    //     {
+    //     path: '/uavsmanage', 
+    //     component: Layout,
+    //     name: 'uavsmanage',
+    //     meta: { title: '监控管理', icon: 'el-icon-setting' },
+    //     // 重定向
+    //     redirect: '/lookmanager',
+    //     children: [
+    //         {
+    //             path: '/lookmanager',
+    //             name: 'look',
+    //             component: () =>
+    //                 import ('@/views/lookmanager/lookmanager.vue'),
+    //             meta: { title: '1识别管理', icon: 'uav_manage' },
+    //             // hidden: true
+    //         },{
+    //             path: '/planningManager',
+    //             name: 'planningManager',
+    //             component: () =>
+    //                 import ('@/views/planningManager/planningManager.vue'),
+    //             meta: { title: '2规划补播管理', icon: 'uav_manage' }
+    //         },{
+    //             path: '/uavmanager',
+    //             name: 'index',
+    //             component: () =>
+    //                 import ('@/views/uavManager/uavmanager.vue'),
+    //             meta: { title: '3无人机监控管理', icon: 'uav_manage' },
+    //             // hidden: true
+    //         },
+    //     ]
     // },
-
-    // {
-    //     path: "/so",
-    //     component: () =>
-    //         import ('@/views/components/ceshi/so.vue'),
-    //     meta: {
-    //         icon: "main",
-    //         // target: "_blank" // 在新窗口中打开
-    //     },
-    //     name: "so"
-    // },
-    // {
-    //     path: "/jsresize",
-    //     component: () =>
-    //         import ('@/views/lookmanager/jsresize.vue'), 
-    //     meta: {
-    //         icon: "main",
-    //         // target: "_blank" // 在新窗口中打开
-    //         title: "jsresize"
-    //     },
-    //     name: "jsresize"
-    // },
-    // {
-    //     path: "/myChart",
-    //     component: () =>
-    //         import ('@/views/lookmanager/myChart.vue'), 
-    //     meta: {
-    //         icon: "main",
-    //         // target: "_blank" // 在新窗口中打开
-    //         title: "myChart"
-    //     },
-    //     name: "myChart"
-    // },
-    // myChart
-    // {
-    //     path: "/indexDb",
-    //     component: () =>
-    //         import ('@/views/components/ceshi/ceshi.vue'), 
-    //     meta: {
-    //         icon: "main",
-    //         // target: "_blank" // 在新窗口中打开
-    //         title: "indexDb"
-    //     },
-    //     name: "indexDb"
-    // },
-
-
-
-
-    // {
-    //     path: '/lookmanager',
-    //     name: 'index',
-    //     component: () =>
-    //         import ('@/views/lookmanager/lookmanager.vue'),
-    //     meta: { title: '1识别管理', icon: 'uav_manage' },
-    //     // hidden: true
-    // },
-
-// 无人机监控管理
-        {
-        path: '/uavsmanage', 
+    // #endregion
+    {
+        path:'/uploadpage',
+        meta: { title: '上传窗口', icon: 'el-icon-setting' },
+        name: "uploadpage",
+        component: () => import ('@/views/mediaUpload/index.vue'),
+        hidden:true
+    },
+    {
+        path:'/preview',
+        meta: { title: '预览', icon: 'el-icon-setting' },
+        name: "preview",
+        component: () => import ('@/views/mediaPreview/index.vue'),
+        hidden:true
+    },
+    {
+        path:'/previewPointcloud',
+        meta: { title: '预览', icon: 'el-icon-setting' },
+        name: "previewPointcloud",
+        component: () => import ('@/views/mediaPreviewPointCloud/index.vue'),
+        hidden:true
+    },
+    //#region 媒体
+    {
+        path: '/mediaManage', 
         component: Layout,
-        name: 'uavsmanage',
-        meta: { title: '监控管理', icon: 'el-icon-setting' },
+        name: 'mediaManage',
+        meta: { title: '数据管理', icon: 'el-icon-setting' },
+        // 重定向
+        redirect: '/photoMedia',
         children: [
             {
-                path: '/lookmanager',
-                name: 'index',
-                component: () =>
-                    import ('@/views/lookmanager/lookmanager.vue'),
-                meta: { title: '1识别管理', icon: 'uav_manage' },
-                // hidden: true
-            },{
-                path: 'planningManager',
-                name: 'planningManager',
-                component: () =>
-                    import ('@/views/planningManager/planningManager.vue'),
-                meta: { title: '2规划补播管理', icon: 'uav_manage' }
-            },{
-                path: '/uavmanager',
-                name: 'index',
-                component: () =>
-                    import ('@/views/uavManager/uavmanager.vue'),
-                meta: { title: '3无人机监控管理', icon: 'uav_manage' },
-                // hidden: true
-            },
-            // {
-            //     path: '/margin',
-            //     name: 'margin',
-            //     component: () =>
-            //         import ('@/views/components/ceshi1/margin'),
-            //     meta: { title: '巡检任务管理', icon: 'uav_manage' },
-            //     // hidden: true
-            // },
-            // {
-            //     path: '/ceshi2',
-            //     name: 'ceshi2',
-            //     component: () =>
-            //         import ('@/views/components/ceshi2/ceshi2'),
-            //     meta: { title: '二次定点航飞', icon: 'uav_manage' },
-            //     // hidden: true
-            // },
-            // {
-            //     path: '/ceshi3',
-            //     name: 'ceshi3',
-            //     component: () =>
-            //         import ('@/views/components/ceshi3/ceshi3'),
-            //     meta: { title: '客户现场实际任务规划', icon: 'uav_manage' },
-            //     // hidden: true
-            // },
-            // {
-            //     path: "/newpages",
-            //     component: () =>
-            //         import ('@/views/components/Cesium/drowcesium.vue'),
-            //     meta: {
-            //         icon: "main",
-            //         title: "新页面",
-            //         // target: "_blank" // 在新窗口中打开
-            //     },
-            //     name: "newpage"
-            // },
-        ]
-    },
-
-
-    // {
-    //     path: '/index',
-    //     name: 'index',
-    //     redirect: '/index',
-    //     component: Layout,
-    //     children: [{
-    //         path: '/index',
-    //         name: 'index',
-    //         component: () =>
-    //             import ('@/views/main/index.vue'),
-    //         meta: { title: '实时', icon: 'index' },
-    //         hidden: true
-    //     }]
-    // },
-    //系统管理(超管)
-    {
-        path: '/sysmanage', // menu id : 70
-        component: Layout,
-        name: 'sysmanage',
-        meta: { title: '系统管理(超管)', icon: 'el-icon-setting' },
-        children: [{
-                path: 'company',
-                name: 'company',
-                component: () =>
-                    import ('@/views/sysmanage/company'),
-                meta: { title: '公司管理', icon: 'el-icon-goods' }
+                path: '/photoMedia',
+                name: 'photoMedia',
+                component: () => import ('@/views/mediaManage/index.vue'),
+                meta: { title: '图片媒体', icon: 'el-icon-picture' },
             },
             {
-                path: 'uavfactory',
-                name: 'uavfactory',
+                path: '/videoMeia',
+                name: 'videoMeia',
                 component: () =>
-                    import ('@/views/sysmanage/uavFactory'),
-                meta: { title: '无人机厂商', icon: 'factory' }
+                    import ('@/views/mediaManage/videoMedia/index.vue'),
+                meta: { title: '视频媒体', icon: 'el-icon-camera-solid' },
             },
             {
-                path: 'uavtype',
-                name: 'uavtype',
+                path: '/pointCloud',
+                name: 'pointCloud',
                 component: () =>
-                    import ('@/views/sysmanage/uavType'),
-                meta: { title: '无人机类型', icon: 'uav_type' }
+                    import ('@/views/mediaManage/pointcloudMedia/index.vue'),
+                meta: { title: '点云数据', icon: 'el-icon-s-help' },
             },
             {
-                path: 'uav',
-                name: 'uav',
+                path: '/reportMedia',
+                name: 'reportMedia',
                 component: () =>
-                    import ('@/views/sysmanage/uav'),
-                meta: { title: '无人机管理', icon: 'uav_manage' }
-            },
-            {
-                path: 'hive',
-                name: 'hive',
-                component: () =>
-                    import ('@/views/sysmanage/hive'),
-                meta: { title: '停机坪管理', icon: 'hive_gray' }
-            },
-            {
-                path: 'uavhiverel',
-                name: 'uavhiverel',
-                component: () =>
-                    import ('@/views/sysmanage/uavHiveSnIdRel'),
-                meta: { title: '设备映射', icon: 'uavhiverel' }
-            },
-            {
-                path: 'useradmin',
-                name: 'useradmin',
-                component: () =>
-                    import ('@/views/sysmanage/userAdmin'),
-                meta: { title: '管理员账户', icon: 'user_admin' }
+                    import ('@/views/mediaManage/analysisReport/index.vue'),
+                meta: { title: '分析报告', icon: 'uav_manage' },
             }
         ]
     },
-    //系统管理(超管)
+    //#endregion
 
-    // {
-    //     path: '/user',
+    //  //#region 媒体
+    //  {
+    //     path: '/mediaManage', 
     //     component: Layout,
-    //     name: 'user',
-    //     meta: { title: '用户管理', icon: 'el-icon-user' },
-    //     children: [{
-    //             path: 'add',
-    //             name: 'add',
-    //             component: () =>
-    //                 import ('@/views/user/add'),
-    //             meta: { title: '添加用户', icon: 'el-icon-plus' }
-    //         },
+    //     name: 'mediaManage',
+    //     meta: { title: '数据管理', icon: 'el-icon-setting' },
+    //     // 重定向
+    //     redirect: '/photoMedia',
+    //     children: [
     //         {
-    //             path: 'manage',
-    //             name: 'manage',
+    //             path: '/photoMedia',
+    //             name: 'photoMedia',
     //             component: () =>
-    //                 import ('@/views/user/manage'),
-    //             meta: { title: '用户信息', icon: 'tree' }
+    //                 import ('@/views/mediaManage/index.vue'),
+    //             meta: { title: '图片媒体', icon: 'uav_manage' },
     //         }
     //     ]
     // },
-
+    // //#endregion
+    //系统管理(超管)
     // {
-    //     path: '/notice',
+    //     path: '/sysmanage', // menu id : 70
     //     component: Layout,
+    //     name: 'sysmanage',
+    //     meta: { title: '系统管理(超管)', icon: 'el-icon-setting' },
     //     children: [{
-    //         path: 'notice',
-    //         name: 'notice',
-    //         component: () =>
-    //             import ('@/views/service/notice'),
-    //         meta: { title: '公告', icon: 'notice' }
-    //     }]
-    // },
-
-    // {
-    //     path: 'external-link',
-    //     component: Layout,
-    //     children: [{
-    //         path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-    //         meta: { title: '关于我们', icon: 'user' }
-    //     }]
+    //             path: 'company',
+    //             name: 'company',
+    //             component: () =>
+    //                 import ('@/views/sysmanage/company'),
+    //             meta: { title: '公司管理', icon: 'el-icon-goods' }
+    //         },
+    //         {
+    //             path: 'uavfactory',
+    //             name: 'uavfactory',
+    //             component: () =>
+    //                 import ('@/views/sysmanage/uavFactory'),
+    //             meta: { title: '无人机厂商', icon: 'factory' }
+    //         },
+    //         {
+    //             path: 'uavtype',
+    //             name: 'uavtype',
+    //             component: () =>
+    //                 import ('@/views/sysmanage/uavType'),
+    //             meta: { title: '无人机类型', icon: 'uav_type' }
+    //         },
+    //         {
+    //             path: 'uav',
+    //             name: 'uav',
+    //             component: () =>
+    //                 import ('@/views/sysmanage/uav'),
+    //             meta: { title: '无人机管理', icon: 'uav_manage' }
+    //         },
+    //         {
+    //             path: 'hive',
+    //             name: 'hive',
+    //             component: () =>
+    //                 import ('@/views/sysmanage/hive'),
+    //             meta: { title: '停机坪管理', icon: 'hive_gray' }
+    //         },
+    //         {
+    //             path: 'uavhiverel',
+    //             name: 'uavhiverel',
+    //             component: () =>
+    //                 import ('@/views/sysmanage/uavHiveSnIdRel'),
+    //             meta: { title: '设备映射', icon: 'uavhiverel' }
+    //         },
+    //         {
+    //             path: 'useradmin',
+    //             name: 'useradmin',
+    //             component: () =>
+    //                 import ('@/views/sysmanage/userAdmin'),
+    //             meta: { title: '管理员账户', icon: 'user_admin' }
+    //         }
+    //     ]
     // },
     // 404 page must be placed at the end !!!
     { path: '*', redirect: '/404', hidden: true }
@@ -310,7 +226,7 @@ export const constantRoutes = [{
 const createRouter = () => new Router({
     // mode: 'history', // require service support
     scrollBehavior: () => ({ y: 0 }),
-    mode: 'hash',
+    mode: 'history',//'hash',
     routes: constantRoutes
 })
 

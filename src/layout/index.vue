@@ -3,12 +3,12 @@
  * @version: 
  * @Author: Eugene
  * @Date: 2023-11-13 10:49:39
- * @LastEditors: Andy
- * @LastEditTime: 2023-11-23 18:44:19
+ * @LastEditors: likai 2806699104@qq.com
+ * @LastEditTime: 2024-07-16 13:14:59
 -->
 <template>
   <div :class="classObj" class="app-wrapper">
-    <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" ></div>
+    <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" >1</div>
     <sidebar class="sidebar-container" />
     <div class="main-container">
       <div :class="{'fixed-header':fixedHeader}">

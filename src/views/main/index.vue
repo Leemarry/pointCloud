@@ -25,7 +25,7 @@
                         </el-image>
                         <!-- <dv-decoration-8 :reverse="true" style="width:100%;height:40px;" /> -->
                         <div style="height:50%;text-align:right;" @mouseover="isHeaderMouse = true" @mouseout="isHeaderMouse = false">
-                            <router-link to="/sysmanage" style="color:#3de7c9;margin-right:15px;font-size:12px"><i class="el-icon-s-home" />
+                            <router-link to="/mediaManage" style="color:#3de7c9;margin-right:15px;font-size:12px"><i class="el-icon-s-home" />
                                 进入平台</router-link>
                             <el-button type="text" @click="logout" style="color:#3de7c9;font-size:12px;margin-right:15px;"><i class="el-icon-switch-button"></i>
                                 退出系统</el-button>
@@ -65,18 +65,18 @@
                         <dv-border-box-7 class="main_left_uav">
                             <div class="main_left_uav_body">
                                 <div class="uav-list" v-if="uavs.length>0">
-                                    <label class="label-text">巡检无人机</label>
+                                    <!-- <label class="label-text">巡检无人机</label> -->
                                     <el-scrollbar style="width:98%" wrap-style="overflow-x:hidden;flex:1">
-                                        <el-row v-for="(item,index) in inspectionUavs" :key="index" :gutter="1" justify="flex" align="middle" style="margin:8px">
+                                        <el-row v-for="(item,index) in uavs" :key="index" :gutter="1" justify="flex" align="middle" style="margin:8px">
                                             <uavItem ref="uavItems" :uavName="item.uavName" :uavSn="item.uavId" :online="item.online" @dblclick.native="cameraSettingVisible = !cameraSettingVisible" @click.native="clickUavItem(item)" />
                                         </el-row>
                                     </el-scrollbar>
-                                    <label class="label-text">播种无人机</label>
+                                    <!-- <label class="label-text">播种无人机</label>
                                     <el-scrollbar style="width:98%" wrap-style="overflow-x:hidden;flex:1">
                                         <el-row v-for="(item,index) in seedingUavs" :key="index" :gutter="1" justify="flex" align="middle" style="margin:8px">
                                             <uavItem ref="uavItems" :uavName="item.uavName" :uavSn="item.uavId" :online="item.online" @dblclick.native="cameraSettingVisible = !cameraSettingVisible" @click.native="clickUavItem(item)" />
                                         </el-row>
-                                    </el-scrollbar>
+                                    </el-scrollbar> -->
 
                                 </div>
                                 <div v-else class="no_uav"><i class="el-icon-warning-outline">未绑定无人机</i></div>

@@ -4,7 +4,7 @@
  * @Author: Eugene
  * @Date: 2023-11-23 19:08:24
  * @LastEditors: likai 2806699104@qq.com
- * @LastEditTime: 2024-07-15 17:05:15
+ * @LastEditTime: 2024-07-16 17:11:18
 -->
 <!--  -->
 <template>
@@ -1399,10 +1399,9 @@ export default {
         //打开新窗口 this.windows={}
         openpage(item) {
             console.log(this.$router.options.routes)
-            // window.open("/#/newpage", "_blank"); // 设定窗口名称
             const windowName = "newWindow-" + item.id;
             const existingWindow = window.open("", windowName);
-            existingWindow.location.href = "#/newpage?ip=" + item.id;
+            existingWindow.location.href = "#/uploadpage?ip=" + item.id;
             existingWindow.focus();
             // 将窗口对象引用存储到对象中
             this.windows[windowName] = existingWindow;
