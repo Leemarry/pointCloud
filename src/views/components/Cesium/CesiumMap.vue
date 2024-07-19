@@ -144,7 +144,7 @@ export default {
         /**获取坐标信息 */
         getCoordinates() {
             // 注册屏幕点击事件
-            var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+            var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas); 
             // 监听鼠标点击事件
             handler.setInputAction(function (click) {
                 var ellipsoid = viewer.scene.globe.ellipsoid;

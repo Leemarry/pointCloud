@@ -108,6 +108,9 @@ export default {
         const queryString = `?id=${row.id}&src=${encodeURIComponent(row.fileUrl)}&data=${encodeURIComponent(JSON.stringify(row))}`;
         const url = '/previewPointcloud' + queryString;
         const existingWindow = window.open(url, windowName);
+        console.log('this.windows', window.tableData);
+        console.log('this.windows', existingWindow);
+        existingWindow.tableData = this.tableData;
         this.windows[windowName] = existingWindow;
       }else{
         this.windows[windowName].focus();
@@ -119,10 +122,6 @@ export default {
       if (!this.windows[windowName] || this.windows[windowName].closed) {
         const existingWindow = window.open('', windowName);
         existingWindow.location.href = "/uploadpage" + "?id=" + item.id + "&fileType=" + item.fileType;
-        console.log('this.windows', window);
-        console.log('this.windows', existingWindow);
-
-
         this.windows[windowName] = existingWindow;
       } else {
         this.windows[windowName].focus();

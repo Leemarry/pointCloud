@@ -83,16 +83,7 @@ export default {
     },
     //生命周期 - 挂载完成（可以访问DOM元素）
     mounted() {
-        // // 获取当前页面的 URL
-        // const url = new URL(window.location.href);
-        // console.log('Current URL:', url);
-        // // const urlParams = new URLSearchParams(window.location.search);
-        // // console.log('Parameter Value:', urlParams);
-        // // // 获取指定参数的值
-        // const idValue = url.searchParams.get('id');
-        // const srcValue = url.searchParams.get('src');
-        // // // 现在 parameterValue 就包含了传递的参数值
-        // console.log('idValue', idValue,srcValue);
+        console.log('this.windowsssss', window.tableData);
         const slef = this;
         const urlParams = new URLSearchParams(window.location.search);
         const id = parseInt(urlParams.get('id'), 10); // 假设 id 是整数  

@@ -388,6 +388,27 @@ export function createElementTodownload(blob, filename = '') {
   URL.revokeObjectURL(blobUrl)
 }
 
+//xml解析
+export function parseXML(xml) {
+  var parser = new DOMParser();
+  var xmlDoc = parser.parseFromString(xml, "text/xml");
+  var coordinates = xmlDoc.getElementsByTagName('coordinates') ; // 获取所有coordinates标签
+  const points = [];
+  coordinates.forEach(coordinate => {
+    const coordinateStr = coordinate.textContent; //
+     if (coordinateStr.includes(',')) {
+      const [longitude, latitude] = coordinateStr.split(',');
+      points.push({
+        longitude: parseFloat(longitude),
+        latitude: parseFloat(latitude)
+      });
+    } else {
+      console.error('Invalid coordinate format:', coordinateStr);
+    }
+  });
+  return points;
+
+}
 
 //#endregion dom 处理操作
 

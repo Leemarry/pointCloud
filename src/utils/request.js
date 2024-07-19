@@ -3,8 +3,8 @@
  * @version: 
  * @Author: Eugene
  * @Date: 2023-11-13 10:49:39
- * @LastEditors: Andy
- * @LastEditTime: 2024-03-07 11:26:46
+ * @LastEditors: likai 2806699104@qq.com
+ * @LastEditTime: 2024-07-18 17:34:59
  */
 import axios from 'axios'
 // import { MessageBox, Message } from 'element-ui'
@@ -24,7 +24,7 @@ const urls = ['/efUser/login', 'efapi/uavsystem/efUser/login']
     // create an axios instance
 const service = axios.create({
         // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-        baseURL:'efapi/reseeding', // url = base url + request url
+        baseURL:'efapi/pointcloud', // url = base url + request url
         
         timeout: 8000 // request timeout
     })

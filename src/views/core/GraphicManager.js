@@ -1289,7 +1289,7 @@ class GraphicManager {
       self.handler.removeInputAction(MOUSE_UP);
       // self.handler.removeInputAction(MOUSE_DOWN);
     }
-    this.handler.setInputAction(clickHandler, LEFT_CLICK);
+    this.handler.setInputAction(clickHandler, LEFT_CLICK); 
     this.handler.setInputAction(rightHandler, RIGHT_CLICK);
   }
   /**

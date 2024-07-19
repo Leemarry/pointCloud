@@ -1,80 +1,4 @@
-<!--  -->
-<template>
-  <div class='media'>
-    <div class='media-top'>
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item label="文件描述">
-          <el-input v-model="formInline.name" placeholder="文件详情..."></el-input>
-        </el-form-item>
-        <el-form-item label="时间范围">
-          <el-col :span="12">
-            <!-- <el-date-picker type="date" placeholder="选择日期" v-model="formInline.date1" style="width: 100%;"></el-date-picker> -->
-            <el-date-picker v-model="formInline.startTime" type="datetime" placeholder="选择起始时间" align="right" :picker-options="pickerOptions">
-            </el-date-picker>
-          </el-col>
-          <el-col class="line" :span="2">至</el-col>
-          <el-col :span="10">
-            <el-date-picker v-model="formInline.endTime" type="datetime" placeholder="选择日期时间" default-time="12:00:00">
-            </el-date-picker>
-          </el-col>
-        </el-form-item>
-      </el-form>
-      <div>
-        <el-button type="primary" @click="queryPhotolist()">查询</el-button>
-        <el-button type="primary" @click="openUploadDialog()">上传</el-button>
-      </div>
-    </div>
-    <div class='media-container'>
-      <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" stripe style="width: 100%">
-        <el-table-column prop="date" label="日期" width="180">
-        </el-table-column>
-        <el-table-column prop="fileName" label="文件名" width="180">
-        </el-table-column>
-        <el-table-column prop="fileType" label="类型">
-        </el-table-column>
-        <el-table-column prop="fileSize" label="大小">
-        </el-table-column>
-        <el-table-column prop="fileUrl" label="地址">
-        </el-table-column>
-        <el-table-column prop="fileUrl" label="地址">
-          <el-image
-      style="width: 100px; height: 100px"
-      src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-      fit="fit"></el-image>
-        </el-table-column>
-        <el-table-column fixed="right" label="操作" width="100">
-          <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-            <el-button type="text" size="small" @click='downimg()'>下载</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <div class='media-footer'>
-      <el-pagination align='center' @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[1, 5, 10, 20]" :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper" :total="tableData.length">
-      </el-pagination>
-    </div>
-    <!-- <AlDialog title='弹窗' :visible="dialogVisible" height='200px' width='280px' @close="dialogVisible=false">
-      <el-upload class="upload-demo" ref="upload" action="/" :on-preview="handlePreview" size="mini" :before-remove="beforeRemove" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false"
-        :on-change="changeFile">
-        <el-button slot="trigger" size="mini" type="primary">点击上传</el-button>
-        <div slot="tip" class="el-upload__tip">只能上传zip文件，且不超过50M</div>
-      </el-upload>
-    </AlDialog> -->
-    <AlDialog title='弹窗' :visible="dialogVisible" height='200px' width='280px' @close="dialogVisible = false">
-      <el-upload class="upload-demo" ref="upload" action="/" :on-preview="handlePreview" size="mini" :before-remove="beforeRemove" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false"
-        :on-change="changeFile">
-        <el-button slot="trigger" size="mini" type="primary">点击上传</el-button>
-        <div slot="tip" class="el-upload__tip">只能上传zip文件，且不超过50M</div>
-      </el-upload>
-    </AlDialog>
-    <AlImagePreview :visible='previewVisible'></AlImagePreview>
-    <el-image-viewer v-if="imgViewerVisible" :on-close="closeImgViewer" :url-list="imgList" />
-  </div>
-</template>
 
-<script>
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等!）
 //例如：import 《组件名称》 from '《组件路径》';
 import AlDialog from '@/views/AlDialog/index.vue'
@@ -95,14 +19,14 @@ export default {
 
     for (let i = 1; i <= 200; i++) {
       const randomDate = new Date(Math.random() * (new Date().getTime() - new Date('2023-01-01').getTime()) + new Date('2023-01-01').getTime()).toLocaleDateString(undefined, dateOptions);
-      const fileName = `file_${i}.${['txt', 'jpg', 'p4', 'p3', 'pdf'][Math.floor(Math.random() * 5)]}`;
+      const name = `#0${i}`;
       const fileType = fileTypes[Math.floor(Math.random() * fileTypes.length)];
       const fileSize = `${Math.floor(Math.random() * 1000)} KB`;
       const fileUrl = `https://example.com/file${i}`;
 
       tableData.push({
         date: randomDate,
-        fileName,
+        name,
         fileType,
         fileSize,
         fileUrl
@@ -135,9 +59,10 @@ export default {
       value2: '',
       value3: '',
       formInline: {
+        total: 500,
         name: '',
-        startTime:'',
-        endTime:'',
+        startTime: '',
+        endTime: '',
       },
       tableData,
       //分页
@@ -163,7 +88,7 @@ export default {
   //方法集合
   methods: {
     onSubmit() {
-     
+
     },
     openUploadDialog() {
       this.dialogVisible = true;
@@ -180,40 +105,40 @@ export default {
 
     //#region ---------------------------------------------------   查询   ---------------------------------------------------
     async queryPhotolist() {
-      try{
+      try {
         let formdata = new FormData();
-        formdata.append('startTime',this.formInline.startTime);
+        formdata.append('startTime', this.formInline.startTime);
         formdata.append('endTime', this.formInline.endTime);
-        formdata.append('name',this.formInline.name)
-          const res = await this.$store.dispatch('media/queryPhotolist',formdata)
-      const { code, message, data } = res;
-      if (code === 1) {
+        formdata.append('name', this.formInline.name)
+        const res = await this.$store.dispatch('media/queryPhotolist', formdata)
+        const { code, message, data } = res;
+        // if (code === 1) {
 
-        
-      }
-      }catch(err){
+
+        // }
+      } catch (err) {
         this.showToast(error, "error");
-      }finally{
+      } finally {
 
       }
-    
+
     },
 
     //#endregion
-    
+
     // #region ---------------------------------------------------  图片预览 ---------------------------------------------------
     showImgViewer() {
       this.imgViewerVisible = true;
-      const m = (e) => { e.preventDefault() };
-      document.body.style.overflow = 'hidden';
+      const m = (e) => { e.preventDefault() }
+      document.body.style.overflow = 'hidden'
       document.addEventListener("touchmove", m, false); // 禁止页面滑动
 
     },
     closeImgViewer() {
-      this.imgViewerVisible = false;
-      const m = (e) => { e.preventDefault() };
-      document.body.style.overflow = 'auto';
-      document.removeEventListener("touchmove", m, true);
+      this.imgViewerVisible = false
+      const m = (e) => { e.preventDefault() }
+      document.body.style.overflow = 'auto'
+      document.removeEventListener('touchmove', m, true);
     },
     //#endregion
     // #region ---------------------------------------------------  分页 ---------------------------------------------------
@@ -295,7 +220,7 @@ export default {
   //生命周期 - 挂载完成（可以访问DOM元素）
   mounted() {
     this.formInline.startTime = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    this.formInline.endTime= new Date(Date.now());
+    this.formInline.endTime = new Date(Date.now());
     this.queryPhotolist()
   },
   beforeCreate() { }, //生命周期 - 创建之前
@@ -306,31 +231,3 @@ export default {
   destroyed() { }, //生命周期 - 销毁完成
   activated() { }, //如果页面有keep-alive缓存功能，这个函数会触发
 }
-</script>
-<style lang='scss' scoped>
-//@import url(); 引入公共css类
-.media {
-  background-color: #F3F6F8;
-  height: 100%;
-  width: 100%;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1;
-}
-
-.media-top {
-  display: flex;
-  justify-content: space-between;
-  .demo-form-inline{
-    flex: 1;
-  }
-  
-}
-
-.media-container {
-  flex: 1;
-  background-color: #FAFAFA;
-  overflow: auto;
-}
-</style>

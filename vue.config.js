@@ -63,7 +63,7 @@ module.exports = {
           changeOrigin: true,
           logLevel: 'debug',
           pathRewrite: {
-              '^/resourceminio': '/efapi/reseeding/resourceminio'
+              '^/resourceminio': '/efapi/pointcloud/resourceminio'
           }
       },
       /**代理查询天气 */
@@ -72,7 +72,7 @@ module.exports = {
         changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
         // logLevel: 'debug', // 打印代理日志
         pathRewrite: {
-          '^/efapi/reseeding/uav/queryWeather': '/v3/weather/now.json' // 重写url
+          '^/efapi/pointcloud/uav/queryWeather': '/v3/weather/now.json' // 重写url
         }
       },
 
@@ -107,7 +107,7 @@ module.exports = {
         changeOrigin: true,
         logLevel: 'debug',
         pathRewrite: {
-          '^/resource': '/efapi/reseeding/resource'
+          '^/resource': '/efapi/pointcloud/resource'
         }
       },
       '/efuavword': {
@@ -127,7 +127,7 @@ module.exports = {
         }
       },
       '/websocketapi': {
-        target: process.env.HOST_URL.replace('http', 'ws').replace('https', 'ws') + 'efapi/reseeding/websocket',
+        target: process.env.HOST_URL.replace('http', 'ws').replace('https', 'ws') + 'efapi/pointcloud/websocket',
         ws: true, // 开启ws, 如果是http代理此处可以不用设置
         changeOrigin: true,
         logLevel: 'debug',
@@ -136,7 +136,7 @@ module.exports = {
         }
       },
       '/sse': {
-        target: process.env.HOST_URL + '/efapi/reseeding/sse',
+        target: process.env.HOST_URL + '/efapi/pointcloud/sse',
         changeOrigin: true,
         logLevel: 'debug',
         pathRewrite: {

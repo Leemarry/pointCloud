@@ -10,8 +10,7 @@
           <iframe
   className="pdf-iframe"
   title="预览文档"
-  src="http://127.0.0.1:9090/ceshi/11.pdf"
-  
+  :src="src"
   width="100%"
   height="100%"
 ></iframe>
@@ -54,14 +53,25 @@ created() {
 //生命周期 - 挂载完成（可以访问DOM元素）
 mounted() {
 // 获取当前页面的 URL
-const url = new URL(window.location.href);
-console.log('Current URL:', url);
+// const url = new URL(window.location.href);
+// console.log('Current URL:', url);
+// const urlParams = new URLSearchParams(window.location.search);
+// console.log('Parameter Value:', urlParams);
+// // 获取指定参数的值
+// const parameterValue = url.searchParams.get('id');
+// // 现在 parameterValue 就包含了传递的参数值
+// console.log('parameterValue',parameterValue);
+
+const slef = this;
 const urlParams = new URLSearchParams(window.location.search);
-console.log('Parameter Value:', urlParams);
-// 获取指定参数的值
-const parameterValue = url.searchParams.get('id');
-// 现在 parameterValue 就包含了传递的参数值
-console.log('parameterValue',parameterValue);
+const id = parseInt(urlParams.get('id'), 10);
+const src = decodeURIComponent(urlParams.get('src'));
+const dataString = urlParams.get('data');
+const data = JSON.parse(decodeURIComponent(dataString));
+const myObject = { id, src, data };
+this.src= src;
+console.log('src',this.src);
+
 
 // const sn = this.$route.query.ip
 // document.title = "临时上传-"+ sn;  // 设置页面标题

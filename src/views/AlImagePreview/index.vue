@@ -8,7 +8,7 @@
 <template>
 <div class='al-mask al-image-preview' :style='{display: visible ? "block" : "none"}'>
     <!-- 图片处理动作 -->
-    
+    <div class='al-image-preview-tool'></div>
     <!-- <div class='al-mask-btn al-image-preview-close'>
         <span>X</span>
     </div>
