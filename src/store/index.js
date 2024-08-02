@@ -1,10 +1,10 @@
 /*
- * @Descripttion: 
- * @version: 
+ * @Descripttion:
+ * @version:
  * @Author: Eugene
  * @Date: 2023-11-13 10:49:39
  * @LastEditors: likai 2806699104@qq.com
- * @LastEditTime: 2024-07-18 18:18:08
+ * @LastEditTime: 2024-07-22 11:02:44
  */
 
 import Vue from 'vue'
@@ -21,8 +21,8 @@ import publicData from './modules/publicData'; // 公用数据仓库
 import websocket from './modules/websocket'
 import routeData from './modules/routeData'
 import ws from './modules/ws'
-
-
+import routeManage from './modules/routeManage.js'
+import business from './modules/business.js'
 // import permission from './modules/permission'
 Vue.use(Vuex)
 
@@ -37,7 +37,9 @@ const store = new Vuex.Store({
         websocket,
         routeData,
         ws,
-        media
+        media,
+        routeManage,
+        business
     },
     getters
 })

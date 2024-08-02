@@ -1,6 +1,4 @@
 import router from './router'
-import store from './store'
-import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
@@ -8,10 +6,19 @@ import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
+// 创建一个全局变量，用于存储所有未完成的 Axios 请求的 cancel 函数
+window._axiosPromiseArr = [];
 // 草地补斑 注意 ************** 去掉redirect，否则可能一直死循环
 var getRouter
 const whiteList = ['/login', '/flying'] // no redirect whitelist
 router.beforeEach(async(to, from, next) => {
+    // 遍历所有未完成的请求，并调用 cancel 方法
+    window._axiosPromiseArr.forEach(({ cancel }, index) => {
+        cancel(); // 取消请求
+        delete window._axiosPromiseArr[index]; // 删除已取消的请求项
+    });
+
+    // 原文链接：https://blog.csdn.net/weixin_45366905/article/details/110134795
     // start progress bar
     NProgress.start()
     // set page title
@@ -34,28 +41,28 @@ router.beforeEach(async(to, from, next) => {
         } else {
             console.log('数据全都正常，正常方向');
             next() // 数据全都正常，正常方向
-                // const hasGetUserInfo = store.getters.name
-                //     // console.log('当前登录用户信息：' + hasGetUserInfo)
-                // let accessRoutes = store.getters.permission_routes
-                // let isLogin = false // 是否已经登录
-                // let hasRoute = true // 是否有路由表
-                // if (hasGetUserInfo) {
-                //     isLogin = true
-                // }
-                // if (accessRoutes && accessRoutes.length > 0) {
-                //     hasRoute = true
-                // }
-                // if (isLogin === true && hasRoute === true && getRouter === true) {
-                //     next() // 数据全都正常，正常方向
-                // } else {
-                //     next(`/login?` + Date.now())
-                //     NProgress.done()
-                // }
+            // const hasGetUserInfo = store.getters.name
+            //     // console.log('当前登录用户信息：' + hasGetUserInfo)
+            // let accessRoutes = store.getters.permission_routes
+            // let isLogin = false // 是否已经登录
+            // let hasRoute = true // 是否有路由表
+            // if (hasGetUserInfo) {
+            //     isLogin = true
+            // }
+            // if (accessRoutes && accessRoutes.length > 0) {
+            //     hasRoute = true
+            // }
+            // if (isLogin === true && hasRoute === true && getRouter === true) {
+            //     next() // 数据全都正常，正常方向
+            // } else {
+            //     next(`/login?` + Date.now())
+            //     NProgress.done()
+            // }
         }
     } else {
         // 没有登录
         getRouter = null
-            /* 没有 token */
+        /* 没有 token */
         if (whiteList.indexOf(to.path) !== -1) {
             // 在免费登录白名单中，直接进入
             next()
@@ -72,41 +79,13 @@ router.afterEach(() => {
     NProgress.done()
 })
 
+// async function routerGo(to, next) {
+//     try {
+//         getRouter = filterAsyncRouter(getRouter) //过滤路由
+//     } catch (error) {}
+//     router.addRoutes(getRouter) //动态添加路由
+//     global.antRouter = getRouter //将路由数据传递给全局变量，做侧边栏菜单渲染工作
+//     next({
+//         ...to,
+//         replace: true
 
-async function routerGo(to, next) {
-    try {
-        getRouter = filterAsyncRouter(getRouter) //过滤路由
-    } catch (error) {}
-    router.addRoutes(getRouter) //动态添加路由
-    global.antRouter = getRouter //将路由数据传递给全局变量，做侧边栏菜单渲染工作
-    next({
-        ...to,
-        replace: true
-    })
-}
-
-function saveObjArr(name, data) { //localStorage 存储数组对象的方法
-    localStorage.setItem(name, JSON.stringify(data))
-}
-
-function getObjArr(name) { //localStorage 获取数组对象的方法
-    return JSON.parse(window.localStorage.getItem(name));
-}
-
-function filterAsyncRouter(asyncRouterMap) { //遍历后台传来的路由字符串，转换为组件对象
-    const accessedRouters = asyncRouterMap.filter(route => {
-        if (route.component) {
-            if (route.component === 'Layout') { //Layout组件特殊处理
-                route.component = Layout
-            } else {
-                route.component = _import(route.component)
-            }
-        }
-        if (route.children && route.children.length) {
-            route.children = filterAsyncRouter(route.children)
-        }
-        return true
-    })
-
-    return accessedRouters
-}

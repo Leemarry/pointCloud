@@ -1,4 +1,4 @@
- import {
+import {
     connect,
     login,
     logout,
@@ -41,7 +41,7 @@ const _import = require('@/router/_import_' + process.env.NODE_ENV) // 获取组
 
 const getDefaultState = () => {
     return {
-        minke:'minke',
+        minke: 'minke',
         token: getToken(),
         refreshPage: true, // 是否是刷新页面，登录后变为false,如果刷新，则恢复为默认值true
         routes: [],
@@ -57,7 +57,7 @@ const getDefaultState = () => {
         avatar: '',
         SM2PrivateKey: '',
         SM2PublicKey: '',
-        trtcModel: {},
+        trtcModel: {}
     }
 }
 
@@ -69,19 +69,19 @@ const state = getDefaultState()
 
 // 3、set 方法, 提交状态修改。也就是set、get中的set，这是vuex中唯一修改state的方式，但不支持异步操作。 第一个参数默认是state。
 // 外部调用方式：store.commit('SET_AGE', 18)。和vue中的methods类似。
-const mutations = { 
+const mutations = {
     RESET_STATE: (state) => {
         // Object.assign() 对象实现拷贝。
         Object.assign(state, getDefaultState())
     },
     SET_ROUTES: (state, routes) => {
         state.addRoutes = routes
-            // console.log('添加之前路由：↓')
-            // console.log(constantRoutes)
+        // console.log('添加之前路由：↓')
+        // console.log(constantRoutes)
         state.routes = constantRoutes.concat(routes)
-            // console.log('添加之后路由：↓')
-            // console.log(state.routes)
-            // sessionStorage.setItem('routes', state.routes)
+        // console.log('添加之后路由：↓')
+        // console.log(state.routes)
+        // sessionStorage.setItem('routes', state.routes)
     },
     SET_SM2_PRIKEY: (state, key) => {
         state.SM2PrivateKey = key
@@ -97,7 +97,7 @@ const mutations = {
         state.refreshPage = refreshPage
     },
     SET_USER_ID: (state, userId) => {
-        localStorage.setItem('userId',userId)
+        localStorage.setItem('userId', userId)
         state.userId = userId
     },
     SET_LOGIN_ID: (state, loginId) => {
@@ -212,7 +212,7 @@ const actions = {
                 // 调用resolve方法时，Promise的状态就变成fulfilled，即操作成功状态
             }).catch(error => {
                 reject(error)
-                    // 意味着操作失败。
+                // 意味着操作失败。
             })
         })
     },
@@ -255,7 +255,7 @@ const actions = {
                 // 调用resolve方法时，Promise的状态就变成fulfilled，即操作成功状态
             }).catch(error => {
                 reject(error)
-                    // 意味着操作失败。
+                // 意味着操作失败。
             })
         })
     },
@@ -268,8 +268,8 @@ const actions = {
                 if (code === 1) {
                     commit('SET_REFRESH_PAGE', false)
                     const accessedRoutes = filterAsyncRouter(data)
-                        // accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
-                        // console.log(accessedRoutes)
+                    // accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
+                    // console.log(accessedRoutes)
                     commit('SET_ROUTES', accessedRoutes)
                     resolve()
                 } else {
@@ -278,7 +278,7 @@ const actions = {
                 // 调用resolve方法时，Promise的状态就变成fulfilled，即操作成功状态
             }).catch(error => {
                 reject(error)
-                    // 意味着操作失败。
+                // 意味着操作失败。
             })
         })
     },
@@ -393,7 +393,7 @@ const actions = {
 
     // 用户绑定
     // 查询所有用户
-    queryAllUser({ commit }, ) {
+    queryAllUser({ commit }) {
         return new Promise((resolve, reject) => {
             queryAllUser().then(response => {
                 resolve(response)
@@ -403,7 +403,7 @@ const actions = {
         })
     },
 
-    queryAllUserHiveUav({ commit }, ) {
+    queryAllUserHiveUav({ commit }) {
         return new Promise((resolve, reject) => {
             queryAllUserHiveUav().then(response => {
                 resolve(response)
@@ -480,7 +480,7 @@ const actions = {
             })
         })
     },
-    // 删除用户所有光伏板 
+    // 删除用户所有光伏板
     deleteUserAllPv({ commit }, parm) {
         return new Promise((resolve, reject) => {
             deleteUserAllPv(parm).then(response => {

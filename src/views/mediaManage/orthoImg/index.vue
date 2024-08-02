@@ -1,78 +1,171 @@
-<!--
- * @Date: 2024-07-18 11:11:11
- * @LastEditors: likai 2806699104@qq.com
- * @FilePath: \pointCouldPages\src\views\mediaManage\orthoImg\index.vue
- * @Description: Do not edit
--->
+<!--  -->
 <template>
-  <div>
-    <el-table
-ref="multipleTable"
-:data="newDataList"
-tooltip-effect="dark"
-class="tableStyle"
-empty-text="暂无数据"
-@selection-change="handleSelectionChange"
-      style="width: 100%"
-:header-cell-style="{ background: '#FAFAFA', color: '#333333' }"
-v-loading="tbLoading"
-:expand-row-keys="expands"
-@expand-change="expandChange"
-:row-key='getRowKeys'>
-      <el-table-column type="expand" label="查看货品" width="80">
-        <!--查看货品表格--下面的表格就是封装的表格组件 -->
-        <template>
-          <table-tem :tblData="tblData" :column="column" :isSelect="false"></table-tem>
-        </template>
-      </el-table-column>
-      <el-table-column header-align="center" align="center" prop="goodsImg" label="图片" min-width="80">
-        <template slot-scope="scope">
-          <img :src="scope.row.goodsImg" width="50px" height="50px" />
-        </template>
-      </el-table-column>
-      <el-table-column header-align="center" align="center" prop="stockNum" label="库存" min-width="90"></el-table-column>
-    </el-table>
+  <div class="media">
+    <div class="media-top">
+      <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline">
+        <el-form-item label="正射标注" prop="mark">
+          <el-input v-model="formInline.mark" placeholder="文件详情..." />
+        </el-form-item>
+        <el-form-item label="时间范围" prop="startTime">
+          <el-col :span="12">
+            <el-date-picker v-model="formInline.startTime" type="datetime" placeholder="选择起始时间" align="right" :picker-options="pickerOptions" />
+          </el-col>
+          <el-col class="line" :span="2">至</el-col>
+          <el-col :span="10">
+            <el-date-picker v-model="formInline.endTime" type="datetime" placeholder="选择日期时间" default-time="12:00:00" />
+          </el-col>
+        </el-form-item>
+      </el-form>
+      <div>
+        <el-button type="primary" @click="queryList1">查询</el-button>
+        <el-button type="primary" @click="uploadFiles({ fileType: 'orthoimg' , id : 0,reqUrl:'efapi/pointcloud/media/orthoimg/uploads' })">上传</el-button>
+      </div>
+    </div>
+    <div class="media-container">
+      <el-table
+        :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+        stripe
+        style="width: 100%"
+      >
+        <el-table-column prop="date" label="日期" width="180">
+          <template slot-scope="scope">
+            {{ parseTime(scope.row.createTime) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="mark" label="标注名" width="120" />
+        <el-table-column prop="amendType" label="类型" />
+        <el-table-column prop="size" label="大小">
+          <template  slot-scope="scope">
+            <span>{{ filtersType(scope.row.size) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="path" label="地址" />
+        <el-table-column fixed="right" label="操作" width="100">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="beforeView(scope.row)">查看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+    <div class="media-footer">
+      <el-pagination
+        align="center"
+        :current-page="currentPage"
+        :page-sizes="[1, 5, 10, 20]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="tableData.length"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </div>
   </div>
 </template>
 <script>
+import currencyMinins from '@/utils/currencyMinins'
 export default {
-  data() {
-    return {
-      expands: [], //展开table相关
-      getRowKeys(row, index) { //设置row-key只展示一行
-        return row.goodsId
-      }
-    }
-  },
-  methods: {
-    // 展开触发api
-    expandChange(row, expandedRows) {
-      this.listQuery.goodsId = row.goodsId
-      //加载前先将上次的数据模型清空，
-      // 不然会出现点击展开嵌套表格后，先显示上一次的数据，然后渲染这次的数据。
-      this.tblData = [];
-      //只展开一行
-      if (expandedRows.length) {//说明展开了
-        this.expands = [];
-        if (row) {
-          this.expands.push(row.goodsId);//只展开当前行id
-        }
-        // 获取展开行的表格数据
-        this.GetExpendRowData()
-      } else {//说明收起了
-        this.expands = [];
-      }
+    name: 'PointCloud',
+    //import引入的组件需要注入到对象中才能使用
+    components: {},
+    mixins: [currencyMinins],
+    //让组件接收外部传来的数据
+    props: {
     },
-    // 获取展开行的表格数据
-    GetExpendRowData() {
-      //掉接口
-      getExpendRowList().then(res => {
-        //由于上面把this.tblData清空了，所以下面直接进行数组赋值会出现一个问题
-        //问题是数据已经打印出来了，但是试图没有更新
-        //接口请求后的数据不可直接赋值，例如：this.tblData=res.data,这样是错位的
+    data() {
+    //这里存放数据
+        return {
+            reqUrl: '/media/orthoImg/querylist'
+        };
+    },
+    //监听属性 类似于data概念
+    computed: {},
+    //监控data中的数据变化
+    watch: {},
+    //生命周期 - 创建完成（可以访问当前this实例）
+    created() {
 
-      })
-    }
-  }
+    },
+    //生命周期 - 挂载完成（可以访问DOM元素）
+    mounted() {
+
+    },
+    beforeCreate() { }, //生命周期 - 创建之前
+    beforeMount() { }, //生命周期 - 挂载之前
+    beforeUpdate() { }, //生命周期 - 更新之前
+    updated() { }, //生命周期 - 更新之后
+    beforeDestroy() { }, //生命周期 - 销毁之前
+    destroyed() { }, //生命周期 - 销毁完成
+    activated() { },
+    //方法集合
+    methods: {
+
+        // #region ------------------------------------------------------------- 查询 ----------------------------------------------------
+        // #endregion
+
+        // #region ---------------------------------------------------------- 打开新标签页 ----------------------------------------------------
+        /**查看 */
+        beforeView(row) {
+            console.log('row', row);
+            const path = row.scalePath
+            const id = row.id
+            const formats = row.formats
+            const windowName = 'windowName-' + row.mark;
+            if (!this.windows[windowName] || this.windows[windowName].closed) {
+                // 创建新窗口
+                const existingWindow = window.open('', windowName);
+                const queryString = `?id=${id}&src=${encodeURIComponent(path)}&formats=${encodeURIComponent(formats)}`;
+                existingWindow.location.href = '/preview' + queryString;
+                this.windows[windowName] = existingWindow;
+                // // 为新窗口添加 message 事件监听器
+                // existingWindow.addEventListener('message', handleMessage);
+            } else {
+                this.windows[windowName].focus();
+            }
+        },
+        openpage(item) {
+            console.log('   console.log(this.$router.options.routes)', this.$router.options.routes)
+            window.open(this.$router.resolve({ path: '/uploadpage?ip=' + item.fileType }).href, '_blank')
+        },
+        // #endregion
+
+        // #region ---------------------------------------------------  分页 ---------------------------------------------------
+        //每页条数改变时触发 选择一页显示多少行
+        handleSizeChange(val) {
+            console.log(`每页 ${val} 条`);
+            this.currentPage = 1;
+            this.pageSize = val;
+        },
+        //当前页改变时触发 跳转其他页
+        handleCurrentChange(val) {
+            console.log(`当前页: ${val}`);
+            this.currentPage = val;
+        }
+
+        // #endregion
+
+    } //如果页面有keep-alive缓存功能，这个函数会触发
 }
 </script>
+<style lang="scss" scoped>
+//@import url(); 引入公共css类
+.media {
+  background-color: #f3f6f8;
+  height: 100%;
+  width: 100%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1;
+}
+
+.media-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.media-container {
+  flex: 1;
+  background-color: #fafafa;
+  overflow: auto;
+}
+</style>

@@ -3,11 +3,11 @@
  * @version: 
  * @Author: Eugene
  * @Date: 2023-11-23 11:39:32
- * @LastEditors: Andy
- * @LastEditTime: 2024-04-24 13:27:08
+ * @LastEditors: likai 2806699104@qq.com
+ * @LastEditTime: 2024-07-22 09:38:48
  */
 import * as uavApi from '@/api/uav';
- //头部引入： import * as uavApi from '@/api/uav';
+//头部引入： import * as uavApi from '@/api/uav';
 
 const getDefaultState = () => {
     return {

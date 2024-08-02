@@ -5,7 +5,6 @@
           <svg-icon :icon-class="uavImage" :style="getOnlineStyle()" />
         </div>
         <div class="mainMiddle" :style="online?'color:#3de7c9':'color:white'">{{getSubsstring(uavName,12)}}</div>
-        
         <div class="mainRight">{{getSubstring(uavSn,16)}}</div>
       </div>
     </el-card>

@@ -6,7 +6,7 @@
 -->
 <!-- 预览点云-->
 <template>
-    <div class='cesiumCon' id='cesiumViewer'></div>
+  <div id="cesiumViewer" class="cesiumCon" />
 </template>
 
 <script>
@@ -17,22 +17,50 @@ export default {
     name: '',
     //import引入的组件需要注入到对象中才能使用
     components: {},
+    //让组件接收外部传来的数据
+    props: {
+    },
     data() {
         //这里存放数据
         return {
             Viewer: null,
             cesiumLoading: false,
             tileset: null,
-            src: null,
+            src: null
         };
-    },
-    //让组件接收外部传来的数据
-    props: {
     },
     //监听属性 类似于data概念
     computed: {},
     //监控data中的数据变化
     watch: {},
+    //生命周期 - 创建完成（可以访问当前this实例）
+    created() {
+    },
+    //生命周期 - 挂载完成（可以访问DOM元素）
+    mounted() {
+        console.log('this.windowsssss', window.tableData);
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = parseInt(urlParams.get('id'), 10); // 假设 id 是整数
+        const src = decodeURIComponent(urlParams.get('src'));
+        const dataString = urlParams.get('data');
+        const data = JSON.parse(decodeURIComponent(dataString));
+        // const data = decodeURIComponent(urlParams.get('data'));
+        const myObject = { id, src, data };
+        console.log(myObject, urlParams); // 输出: { id: 1, name: 'Example', data: 'Some data' }
+        this.src = src;
+        // eslint-disable-next-line no-undef
+        this.tileset = new Cesium.Cesium3DTileset({
+            url: src// 'http://127.0.0.1:9090/efuavmodel/pointCloud/kunmingPv/tileset.json',
+        });
+        this.initCesium(this.src);
+    },
+    beforeCreate() { }, //生命周期 - 创建之前
+    beforeMount() { }, //生命周期 - 挂载之前
+    beforeUpdate() { }, //生命周期 - 更新之前
+    updated() { }, //生命周期 - 更新之后
+    beforeDestroy() { }, //生命周期 - 销毁之前
+    destroyed() { }, //生命周期 - 销毁完成
+    activated() { },
     //方法集合
     methods: {
         // 实例Cesium
@@ -40,7 +68,7 @@ export default {
             // 初始时，判断视口是否存在
             Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjNzRiNzNkYS0zZTRmLTRhOTMtODFlNS0zOWFhN2FmYzZmYjkiLCJpZCI6MTUyMTEwLCJpYXQiOjE2ODg2OTYyMDl9.sWkoSUmLFPfbMTMFgAZeQKjBQERg-TZPBBtIN34sDNQ'; //密钥 否则页面提示
             // 将窗口设置为cesiumViewer
-            let viewer = new Cesium.Viewer("cesiumViewer", {
+            const viewer = new Cesium.Viewer('cesiumViewer', {
                 selectionIndicator: false, //关闭绿色点击框
                 //需要进行可视化的数据源的集合
                 animation: false, //是否显示动画控件
@@ -56,9 +84,9 @@ export default {
                 requestRenderMode: true, //启用请求渲染模式
                 scene3DOnly: false, //每个几何实例将只能以3D渲染以节省GPU内存
                 sceneMode: 3, //初始场景模式 1 2D模式 2 2D循环模式 3 3D模式  Cesium.SceneMode
-                terrainProvider: Cesium.createWorldTerrain(),
+                terrainProvider: Cesium.createWorldTerrain()
             });
-            viewer.cesiumWidget.creditContainer.style.display = "none"; // 去除logo
+            viewer.cesiumWidget.creditContainer.style.display = 'none'; // 去除logo
             viewer.scene.globe.depthTestAgainstTerrain = true; //解决地形遮挡entity问题
             // 开启抗锯齿
             viewer.scene.postProcessStages.fxaa.enabled = true;
@@ -68,8 +96,9 @@ export default {
         },
         addtileset(src) {
             if (!this.tileset) {
+                // eslint-disable-next-line no-undef
                 this.tileset = new Cesium.Cesium3DTileset({
-                    url:src , // 'http://127.0.0.1:9090/efuavmodel/pointCloud/kunmingPv/tileset.json', // http://127.0.0.1:9090/efuavmodel/pointCloud/kunmingPv/tileset.json 
+                    url: src // 'http://127.0.0.1:9090/efuavmodel/pointCloud/kunmingPv/tileset.json', // http://127.0.0.1:9090/efuavmodel/pointCloud/kunmingPv/tileset.json
                     // ./pv/tileset.json
                 });
             }
@@ -77,36 +106,19 @@ export default {
             this.Viewer.scene.primitives.add(this.tileset);
             this.Viewer.zoomTo(this.tileset);
         },
-    },
-    //生命周期 - 创建完成（可以访问当前this实例）
-    created() {
-    },
-    //生命周期 - 挂载完成（可以访问DOM元素）
-    mounted() {
-        console.log('this.windowsssss', window.tableData);
-        const slef = this;
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = parseInt(urlParams.get('id'), 10); // 假设 id 是整数  
-        const src = decodeURIComponent(urlParams.get('src'));
-        const dataString = urlParams.get('data');
-        const data = JSON.parse(decodeURIComponent(dataString));
-        // const data = decodeURIComponent(urlParams.get('data'));  
-        const myObject = { id, src, data };
-        console.log(myObject, urlParams); // 输出: { id: 1, name: 'Example', data: 'Some data' }  
-        this.src = src;
-        this.tileset = new Cesium.Cesium3DTileset({
-            url: src,// 'http://127.0.0.1:9090/efuavmodel/pointCloud/kunmingPv/tileset.json',
-        });
-        this.initCesium(this.src);
-
-    },
-    beforeCreate() { }, //生命周期 - 创建之前
-    beforeMount() { }, //生命周期 - 挂载之前
-    beforeUpdate() { }, //生命周期 - 更新之前
-    updated() { }, //生命周期 - 更新之后
-    beforeDestroy() { }, //生命周期 - 销毁之前
-    destroyed() { }, //生命周期 - 销毁完成
-    activated() { }, //如果页面有keep-alive缓存功能，这个函数会触发
+        addimageryProvider() {
+            var viewer = this.viewer
+            // eslint-disable-next-line no-undef
+            var imageryProvider = new Cesium.UrlTemplateImageryProvider({
+                // url: "./result/{z}/{x}/{y}.png",
+                url: 'http://localhost:456/result/{z}/{x}/{y}.png'
+                // url: "/map/Map/result/{z}/{x}/{y}.png",
+                //http://localhost:456/map/Map/result/{z}/{x}/{y}.png
+            });
+            // 图层添加
+            viewer.imageryLayers.addImageryProvider(imageryProvider);
+        }
+    } //如果页面有keep-alive缓存功能，这个函数会触发
 }
 </script>
 <style lang='scss' scoped>

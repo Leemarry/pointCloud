@@ -1,3 +1,9 @@
+/*
+ * @Date: 2024-07-16 09:54:48
+ * @LastEditors: likai 2806699104@qq.com
+ * @FilePath: \pointCouldPages\src\utils\cryptoUtil.js
+ * @Description: Do not edit
+ */
 // DES 加密 crypto-js
 import CryptJS from 'crypto-js'
 
@@ -16,12 +22,12 @@ export function encryptDes(message) {
 export function decryptDes(message) {
     var keyHex = CryptJS.enc.Utf8.parse(KEY)
     var decrypted = CryptJS.DES.decrypt({
-            ciphertext: CryptJS.enc.Hex.parse(message)
-        },
-        keyHex, {
-            mode: CryptJS.mode.ECB,
-            padding: CryptJS.pad.Pkcs7
-        }
+        ciphertext: CryptJS.enc.Hex.parse(message)
+    },
+    keyHex, {
+        mode: CryptJS.mode.ECB,
+        padding: CryptJS.pad.Pkcs7
+    }
     )
     return decrypted.toString(CryptJS.enc.Utf8)
 }
@@ -34,7 +40,7 @@ export function decryptDes(message) {
  * @return 返回经 BASE64 处理之后的密文
  */
 export function encryptAes(_content, _key, _iv) {
-    if (typeof(_content) !== 'string') {
+    if (typeof (_content) !== 'string') {
         _content = JSON.stringify(_content)
     }
     // 先以 UTF-8 编码解码参数 返回 any 类型
@@ -44,11 +50,11 @@ export function encryptAes(_content, _key, _iv) {
 
     // 加密
     const encrypted = CryptJS.AES.encrypt(content, aesKey, {
-            iv: iv,
-            mode: CryptJS.mode.CBC,
-            padding: CryptJS.pad.Pkcs7
-        })
-        // console.log(encrypted)
+        iv: iv,
+        mode: CryptJS.mode.CBC,
+        padding: CryptJS.pad.Pkcs7
+    })
+    // console.log(encrypted)
     return CryptJS.enc.Base64.stringify(encrypted.ciphertext);
 }
 
@@ -67,11 +73,11 @@ export function decryptAes(_content, _key, _iv) {
 
     // 解密
     const decrypted = CryptJS.AES.decrypt(_content, aesKey, {
-            iv: iv,
-            mode: CryptJS.mode.CBC,
-            padding: CryptJS.pad.Pkcs7
-        })
-        // console.log(decrypted)
-    let doDecrypt = decrypted.toString(CryptJS.enc.Utf8);
+        iv: iv,
+        mode: CryptJS.mode.CBC,
+        padding: CryptJS.pad.Pkcs7
+    })
+    // console.log(decrypted)
+    const doDecrypt = decrypted.toString(CryptJS.enc.Utf8);
     return JSON.parse(doDecrypt)
 }

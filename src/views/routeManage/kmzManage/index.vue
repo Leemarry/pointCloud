@@ -1,3 +1,4 @@
+<!-- eslint-disable no-undef -->
 <!--
  * @Date: 2024-07-18 10:33:53
  * @LastEditors: likai 2806699104@qq.com
@@ -6,50 +7,58 @@
 -->
 <!-- kmz管理 -->
 <template>
-    <div class='kmzManage'>
-        <div class='kmzManage-aside'>
-            <el-alert v-if='kmzData && kmzData.length <= 0' title="当前航线信息为空!" type="warning" show-icon>
-            </el-alert>
-
-            <el-card class="box-card" v-else v-for='(item, index) in kmzData'>
-                <div slot="header" class="clearfix">
-                    <span> {{ item.name }}</span>
-                    <div style='float: right;'>
-                        <el-button @click="openVideoTag(item)" type="text" size="small">查看</el-button>
-                        <el-button @click="downloadVideo(item)" type="text" size="small">下载</el-button>
-                    </div>
-                </div>
-                <div>
-                    {{ `创建时间：${item.time}` }}
-                </div>
-                <div>
-                    {{ `文件大小：${Number(item.size).toFixed(2)}kb` }}
-                </div>
-            </el-card>
-
-            <div class='upload-content'>
-                <!-- :on-change="changeFile" :before-upload="beforeAvatarUpload"  :show-file-list="false" :limit="1"  -->
-
-                <div class='upload-header'>
-                    <el-upload class="upload-demo" :on-change="changeFile" :on-preview="handlePreview" action="/" multiple :auto-upload="false" :file-list="fileList"  :show-file-list="false"
-                        :on-exceed="handleExceed">
-                        <el-button size="small" type="primary">点击上传</el-button>
-                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-                    </el-upload>
-                    <div>
-                        <el-button size="small" type="success" @click="submitUpload">确定上传</el-button>
-                    </div>
-                </div>
-                <div v-for='(file, index) in fileList' class='file-item'>
-                    <span @click='handlePreview(file)'>{{ file.name }}</span> <span @click='handleRemove(file, fileList)'>X</span>
-                </div>
+  <div class="kmzManage">
+    <div class="kmzManage-aside">
+      <el-alert v-if="kmzData && kmzData.length <= 0" title="当前航线信息为空!" type="warning" show-icon />
+      <template v-else>
+        <el-card v-for="(item, index) in kmzData" :key="index" class="box-card">
+          <div slot="header" class="clearfix">
+            <span> {{ item.kmzName }}</span>
+            <div style="float: right;">
+              <el-button type="text" size="small" @click="openVideoTag(item)">查看</el-button>
+              <el-button type="text" size="small" @click="downloadVideo(item)">下载</el-button>
             </div>
+          </div>
+          <div>
+            {{ `创建时间：${parseTime(item.kmzCreateTime)}` }}
+          </div>
+          <div>
+            {{ `文件大小：${filtersType(Number(item.kmzSize).toFixed(2))}` }}
+          </div>
+        </el-card>
+      </template>
+
+      <div class="upload-content">
+        <!-- :on-change="changeFile" :before-upload="beforeAvatarUpload"  :show-file-list="false" :limit="1"  -->
+        <div class="upload-header">
+          <el-upload
+            class="upload-demo"
+            :on-change="changeFile"
+            :on-preview="handlePreview"
+            action="/"
+            multiple
+            :auto-upload="false"
+            :file-list="fileList"
+            :show-file-list="false"
+            :on-exceed="handleExceed"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+          </el-upload>
+          <div>
+            <el-button size="small" type="success" @click="beforeSubmit">确定上传</el-button>
+          </div>
         </div>
-        <div class='Map-viewer'>
-            <OlMaps :centerPosition='[114.27932686576446, 37.540419484036846]' :points='points'></OlMaps>
+        <div v-for="(file, index) in fileList" :key="index" class="file-item">
+          <span @click="handlePreview(file)">{{ file.name }}</span>
+          <span @click="handleRemove(file, fileList)">X</span>
         </div>
-        <!-- <div></div> -->
+      </div>
     </div>
+    <div class="Map-viewer">
+      <OlMaps :center-position="[114.27932686576446, 37.540419484036846]" :points="points" />
+    </div>
+  </div>
 </template>
 
 <script>
@@ -57,51 +66,75 @@
 //例如：import 《组件名称》 from '《组件路径》';
 import OlMaps from '@/views/components/mapManage/OpenLayersMap/index.vue'
 import { parseXML } from '@/utils/currency'
+import currencyMinins from '@/utils/currencyMinins'
 export default {
     name: '',
     //import引入的组件需要注入到对象中才能使用
     components: { OlMaps },
+    mixins: [currencyMinins],
+    //让组件接收外部传来的数据
+    props: {
+    },
     data() {
         //这里存放数据
         const kmzData = []
-        for (let index = 0; index < 2; index++) {
-            const time = new Date().toLocaleString();
-            const size = `${Math.random() * 1000}`;
-            const url = 'http://127.0.0.1:9090/efuavkmz/wpmz%20%282%29.kmz';
-            const name = `kmz${index}`;
-            kmzData.push({
-                name,
-                file: '',
-                url,
-                type: 'kmz',
-                size,
-                time
-            })
-        }
-
+        // for (let index = 0; index < 2; index++) {
+        //     const time = new Date().toLocaleString();
+        //     const size = `${Math.random() * 1000}`;
+        //     const kmzPath = 'http://127.0.0.1:9090/efuavkmz/wpmz%20%282%29.kmz';
+        //     const kmzName = `kmz${index}`;
+        //     kmzData.push({
+        //         kmzName,
+        //         file: '',
+        //         kmzPath,
+        //         type: 'kmz',
+        //         size,
+        //         time
+        //     })
+        // }
         return {
             fileList: [],
             kmzData,
             points: [],
+            efTaskKmzMap: new Map()
 
         };
-    },
-    //让组件接收外部传来的数据
-    props: {
     },
     //监听属性 类似于data概念
     computed: {},
     //监控data中的数据变化
     watch: {},
+    //生命周期 - 创建完成（可以访问当前this实例）
+    created() {
+
+    },
+    //生命周期 - 挂载完成（可以访问DOM元素）
+    mounted() {
+        this.queryKmzlist()
+    },
+    beforeCreate() { }, //生命周期 - 创建之前
+    beforeMount() { }, //生命周期 - 挂载之前
+    beforeUpdate() { }, //生命周期 - 更新之前
+    updated() { }, //生命周期 - 更新之后
+    beforeDestroy() { }, //生命周期 - 销毁之前
+    destroyed() { }, //生命周期 - 销毁完成
+    activated() { },
     //方法集合
     methods: {
         //#regin ------------------------------------------------------ 查询 ------------------------------------------------------------
-        queryPhotolist() {
-            
+        /**查询航线信息By分页 */
+        queryKmzlist() {
+            // kmzData
+            this.$store.dispatch('routeManage/queryKmzlist').then(res => {
+                this.kmzData = res.data;
+            }, rej => {
+                this.showMessage('查询航线信息失败', 'error')
+            }
+            )
         },
         //#endregion
         openVideoTag(item) {
-            const url = item.url;
+            const url = item.kmzPath;
             this.fetchAndExtractZipContent(url).then(res => {
                 this.points = parseXML(res);
             }, rej => {
@@ -116,8 +149,8 @@ export default {
 
                 if (response.status === 200) {
                     const arrayBuffer = await response.arrayBuffer();
+                    // eslint-disable-next-line no-undef
                     const zip = await JSZip.loadAsync(arrayBuffer);
-
                     // 假设您要获取的文件名是 'file.txt'
                     const file = zip.file('waylines.wpml');
                     if (file) {
@@ -137,7 +170,6 @@ export default {
             }
         },
 
-   
         async downloadVideo(item) {
             this.getMethod(item.url).then((blob) => {
                 this.downloadFile(blob)
@@ -170,12 +202,58 @@ export default {
                 }
             })
             return res.blob();
-
         },
 
-         submitUpload() {
-            
-          
+        beforeSubmit() {
+            if (this.fileList.length === 0) {
+                this.showMessage('请选择文件', 'error')
+                return false;
+            }
+            const files = []
+            this.fileList.forEach(item => {
+                files.push(item.raw)
+            })
+            this.submitUpload(files)
+        },
+        async submitUpload(files) {
+            const formData = new FormData();
+            const efTaskKmzs = [];
+
+            for (let index = 0; index < files.length; index++) {
+                const file = files[index];
+                const filename = file.name;
+                let kmzInfo = {};
+                // 判断文件名是否在 this.efTaskKmzMap 中
+                if (this.efTaskKmzMap.has(filename)) {
+                    kmzInfo = this.efTaskKmzMap.get(filename);
+                } else {
+                    try {
+                        console.log('efTaskKmzssspar', file);
+                        const res = await this.parseFileToXml(file); // 等待异步操作完成
+                        this.efTaskKmzMap.set(filename, res);
+                        kmzInfo = res;
+                    } catch (error) {
+                        // 处理错误
+                        this.showMessage(`${filename}文件有误,已取消上传!`, 'warning');
+                        this.fileList = this.fileList.filter(item => item.name !== filename);
+                        continue; // 跳过当前循环迭代
+                    }
+                }
+                formData.append(`files`, file); // 使用索引生成唯一的字段名
+                efTaskKmzs.push(kmzInfo);
+            }
+
+            // 将对象数组转换为JSON字符串
+            var efTaskKmzsStr = JSON.stringify(efTaskKmzs);
+            formData.append('efTaskKmzs', new Blob([efTaskKmzsStr], { type: 'application/json' }));
+
+            // 发送 formData
+            this.$store.dispatch('routeManage/uploadKmz', formData).then(res => {
+                this.showToast('上传成功');
+                // this.queryKmzlist();
+            }, rej => {
+                this.showToast('上传失败');
+            });
         },
         handleRemove(file, fileList) {
             fileList.splice(fileList.indexOf(file), 1);
@@ -183,7 +261,6 @@ export default {
         /**上传前 */
         changeFile(file, fileList) {
             let fileName = file.name;
-            let size = file.size;
             fileName = fileName.substring(fileName.lastIndexOf('.'))
             const isKmz = fileName === '.kmz'; // ||'.kml'
             const isLt2M = file.size / 1024 / 1024 < 10;
@@ -200,51 +277,50 @@ export default {
         handleExceed(files, fileList) {
             this.$message.warning(`当前限制文件上传数量，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
         },
-        async handlePreview(file) {
-            var xmlString = null;
+        /**预览 */
+        handlePreview(file) {
+            const kmzname = file.name;
+            this.parseFileToXml(file.raw).then(res => {
+                this.efTaskKmzMap.set(kmzname, res)
+                this.points = res.points;
+            },
+            reject => {
+                this.showMessage('解析kmz文件失败,请勿上传错误文件!', 'error')
+            }
+            )
+        },
+        async parseFileToXml(file) {
+            let efTaskKmz = {}
             try {
-                const zip = await JSZip.loadAsync(file.raw);
+                // eslint-disable-next-line no-undef
+                const zip = await JSZip.loadAsync(file);
+                // const wpmlFile = zip.file('wpml.xml');
                 for (const filename of Object.keys(zip.files)) {
                     if (filename.indexOf('.wpml') > -1) {
-                        const content = await zip.files[filename].async('text');
-                        xmlString = content;
+                        const xmlString = await zip.files[filename].async('text');
                         if (!xmlString) return;
-                        this.points = parseXML(xmlString);
+                        efTaskKmz = parseXML(xmlString);
+                        console.log('efTaskKmz:', efTaskKmz);
+                        // 文件名 文件大小 文件类型
+                        return { kmzName: file.name, kmzCreateTime: new Date(), kmzUpdateTime: new Date(), ...efTaskKmz };
                     }
                 }
+                return null;
             } catch (err) {
                 console.error('Error reading zip:', err);
-                this.points = []
             }
         },
-
-
         showToast(msg) {
             this.$layer.msg(msg);
         },
         showMessage(msg, type) {
             this.$message({
                 message: msg,
-                type: type,
+                type: type
             });
-        },
+        }
 
-    },
-    //生命周期 - 创建完成（可以访问当前this实例）
-    created() {
-
-    },
-    //生命周期 - 挂载完成（可以访问DOM元素）
-    mounted() {
-
-    },
-    beforeCreate() { }, //生命周期 - 创建之前
-    beforeMount() { }, //生命周期 - 挂载之前
-    beforeUpdate() { }, //生命周期 - 更新之前
-    updated() { }, //生命周期 - 更新之后
-    beforeDestroy() { }, //生命周期 - 销毁之前
-    destroyed() { }, //生命周期 - 销毁完成
-    activated() { }, //如果页面有keep-alive缓存功能，这个函数会触发
+    } //如果页面有keep-alive缓存功能，这个函数会触发
 }
 </script>
 <style lang='scss' scoped>

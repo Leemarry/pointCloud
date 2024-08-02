@@ -64,7 +64,7 @@ export function parseTime(time, cFormat) {
     }
     const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
         const value = formatObj[key]
-            // Note: getDay() returns 0 on Sunday
+        // Note: getDay() returns 0 on Sunday
         if (key === 'a') {
             return ['日', '一', '二', '三', '四', '五', '六'][value]
         }
@@ -108,7 +108,7 @@ export function parseDateTime(time, cFormat) {
     }
     const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
         const value = formatObj[key]
-            // Note: getDay() returns 0 on Sunday
+        // Note: getDay() returns 0 on Sunday
         if (key === 'a') {
             return ['日', '一', '二', '三', '四', '五', '六'][value]
         }
@@ -183,9 +183,9 @@ export function param2Obj(url) {
 }
 export function numberFormat(value) {
     let unit = '';
-    var k = 10000,
-        sizes = ['', '万', '亿', '万亿'],
-        i;
+    var k = 10000;
+    var sizes = ['', '万', '亿', '万亿'];
+    var i;
     if (value < k) {
         value = value;
     } else {
@@ -198,9 +198,10 @@ export function numberFormat(value) {
 
 export function filtersType(value) {
     if (value === 0) return '0 B';
-    let k = 1024;
-    let type = ["B", "KB", "MB"],
-        i = Math.floor(Math.log(value) / Math.log(k));
-    return new Number((value / Math.pow(k, i)).toPrecision(3)) + " " + type[i];
+    const k = 1024;
+    const type = ['B', 'KB', 'MB'];
+    const i = Math.floor(Math.log(value) / Math.log(k));
+    // eslint-disable-next-line no-new-wrappers
+    return new Number((value / Math.pow(k, i)).toPrecision(3)) + ' ' + type[i];
     // return ((value / Math.pow(k, i)).toPrecision(3)) + " " + type[i];
 }

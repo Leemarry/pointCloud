@@ -21,6 +21,7 @@
     "axios": "0.18.1",
     "core-js": "3.6.5",
     "crypto-js": "^4.1.1",
+    "docx-preview": "^0.3.2",
     "element-ui": "^2.15.14",
     "event-source-polyfill": "^1.0.31",
     "file-saver": "^2.0.5",

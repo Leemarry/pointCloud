@@ -31,11 +31,25 @@ const actions = {
         })
     },
 
+    queryList1({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            mediaApi.queryList1(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+    downimg({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            mediaApi.downimg(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
 
-
-       
-
-   
 }
 
 export default {
