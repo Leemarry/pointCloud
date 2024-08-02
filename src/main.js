@@ -20,8 +20,6 @@ import store from './store'
 // import s from './store/index' 
 import router from './router'
 import VueAMap from 'vue-amap'
-
-
 import '@/icons' // icon
 import '@/permission' // permission control
 
