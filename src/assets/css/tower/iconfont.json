@@ -1,0 +1,51 @@
+{
+  "id": "4646618",
+  "name": "杆塔",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "8817473",
+      "name": "设置",
+      "font_class": "shezhi",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "27876572",
+      "name": "审核 盖章",
+      "font_class": "a-shenhegaizhang",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "35505084",
+      "name": "盖章",
+      "font_class": "gaizhang2",
+      "unicode": "e671",
+      "unicode_decimal": 58993
+    },
+    {
+      "icon_id": "5387546",
+      "name": "全局设置",
+      "font_class": "quanjushezhi",
+      "unicode": "eafb",
+      "unicode_decimal": 60155
+    },
+    {
+      "icon_id": "3756803",
+      "name": "盖章",
+      "font_class": "gaizhang",
+      "unicode": "e669",
+      "unicode_decimal": 58985
+    },
+    {
+      "icon_id": "11308579",
+      "name": "盖章",
+      "font_class": "gaizhang1",
+      "unicode": "e653",
+      "unicode_decimal": 58963
+    }
+  ]
+}

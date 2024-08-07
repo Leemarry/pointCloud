@@ -137,15 +137,15 @@ export default {
                 const isJPG = file.type === 'image/jpeg';
                 const isPNG = file.type === 'image/png';
                 const isGIF = file.type === 'image/gif';
-                const isLt5M = file.size / 1024 / 1024 < 10;
+                const isLt15M = file.size / 1024 / 1024 < 15;
                 if (!isJPG && !isPNG && !isGIF && !suffix) {
                     flag = false;
                     this.$message.error('上传图片只能是 JPG、PNG')
                     return flag;
                 }
-                if (!isLt5M) {
+                if (!isLt15M) {
                     flag = false;
-                    this.$message.error('上传文件大小不能超过 10MB!');
+                    this.$message.error('上传文件大小不能超过 15MB!');
                     return flag;
                 }
             } else if (type === 'video') {
@@ -154,13 +154,6 @@ export default {
                 if (!isMP4 && !suffix) {
                     flag = false;
                     this.$message.error('上传视频只能是 音频 格式!');
-                    return flag;
-                }
-            } else if (type === 'cloud') {
-                const suffix = (fileName.toLowerCase() === '.pnts' || fileName.toLowerCase() === '.pnts');
-                if (!suffix) {
-                    flag = false;
-                    this.$message.error('上传点云只能是 pnts 格式!');
                     return flag;
                 }
             } else if (type === 'report') {
@@ -177,7 +170,23 @@ export default {
                     this.$message.error('上传图像只能是 tif, tiff格式!');
                     return flag;
                 }
+            } else if (type === 'cloud') {
+                // 只能是压缩包类
+                const suffix = (fileName.toLowerCase() === '.zip' || fileName.toLowerCase() === '.rar' || fileName.toLowerCase() === '.7z');
+                if (!suffix) {
+                    flag = false;
+                    this.$message.error('上传点云请先压缩 zip, rar, 7z格式!');
+                    return flag;
+                }
             }
+            // else if (type === 'cloud') {
+            //     const suffix = (fileName.toLowerCase() === '.pnts' || fileName.toLowerCase() === '.pnts');
+            //     if (!suffix) {
+            //         flag = false;
+            //         this.$message.error('上传点云只能是 pnts 格式!');
+            //         return flag;
+            //     }
+            // }
             return flag;
         },
         async changeFile(file) {
@@ -186,6 +195,7 @@ export default {
                 const obj = { ...file, progress: 20, status: 'uploading' };
                 this.uploadFilesList.push(obj);
                 const res = await uploadFiles(obj, this.uploadFilesList, this.reqUrl);
+                // obj.status = res.status;
                 console.log('res', res); // mark
             }
         },

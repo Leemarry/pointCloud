@@ -199,7 +199,7 @@ export function numberFormat(value) {
 export function filtersType(value) {
     if (value === 0) return '0 B';
     const k = 1024;
-    const type = ['B', 'KB', 'MB'];
+    const type = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     const i = Math.floor(Math.log(value) / Math.log(k));
     // eslint-disable-next-line no-new-wrappers
     return new Number((value / Math.pow(k, i)).toPrecision(3)) + ' ' + type[i];

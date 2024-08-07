@@ -90,19 +90,40 @@ module.exports = {
             //         proxyRes.headers['A-Real-Url'] = realUrl; // 添加响应标头(A-Real-Url为自定义命名)，在浏览器中显示
             //     }
             // },
-            // '/otherDownload': {
-            //     target: 'https://front-gateway.mtime.com',
-            //     changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
-            //     logLevel: 'debug', // 打印代理日志
-            //     pathRewrite: {
-            //         '^/efapi/pointcloud/media/otherDownload': '/library/index/app/topList.api?tt=1663510444829&' // 重写url
-            //     },
-            //     onProxyRes(proxyRes, req, res) {
-            //         const realUrl = 'https://front-gateway.mtime.com' + req.url || ''; // 真实请求网址
-            //         console.log(realUrl); // 在终端显示
-            //         proxyRes.headers['A-Real-Url'] = realUrl; // 添加响应标头(A-Real-Url为自定义命名)，在浏览器中显示
-            //     }
-            // },
+            '/otherDownload': {
+                target: 'http://114.132.62.199:9000',
+                changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
+                logLevel: 'debug', // 打印代理日志
+                pathRewrite: {
+                    '^/efapi/pointcloud/media/otherDownload': '' // 重写url
+                },
+                // 代理  /pointcloud/web/test/ou4t/web.html 到 http://8.148.10.90:9000/test/ou4t/web.html
+                onProxyRes(proxyRes, req, res) {
+                    const realUrl = 'https://front-gateway.mtime.com' + req.url || ''; // 真实请求网址
+                    console.log(realUrl); // 在终端显示
+                    proxyRes.headers['A-Real-Url'] = realUrl; // 添加响应标头(A-Real-Url为自定义命名)，在浏览器中显示
+                }
+            },
+            '/pointcloud/web': {
+                target: 'http://8.148.10.90:9000',
+                changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
+                logLevel: 'debug', // 打印代理日志
+                pathRewrite: {
+                    '^/pointcloud/web': '' // 重写url
+                },
+                onProxyReq: function(proxyReq, req, res) {
+                    console.log('proxyReq', proxyReq);
+                    console.log('req', req);
+                    console.log('res', res);
+                    // const realUrl = proxyRes.req.path; // 'http://vjs.zencdn.net' + req.url || ''; // 真实请求网址
+                    // proxyRes.headers['A-Real-Url'] = realUrl; // 添加响应标头(A-Real-Url为自定义命名)，在浏览器中显示
+                }
+                //          onProxyRes(proxyRes, req, res) {
+                //     const realUrl = proxyRes.req.path; // 'http://vjs.zencdn.net' + req.url || ''; // 真实请求网址
+                //     console.log(realUrl); // 在终端显示
+                //     proxyRes.headers['A-Real-Url'] = realUrl; // 添加响应标头(A-Real-Url为自定义命名)，在浏览器中显示
+                // }
+            },
 
             [process.env.VUE_APP_BASE_API]: {
                 target: process.env.HOST_URL,
@@ -110,6 +131,11 @@ module.exports = {
                 logLevel: 'debug', // 打印代理日志
                 pathRewrite: {
                     ['^' + process.env.VUE_APP_BASE_API]: '' // 重写url
+                },
+                onProxyRes(proxyRes, req, res) {
+                    const realUrl = process.env.HOST_URL + req.url || ''; // 真实请求网址
+                    console.log(realUrl); // 在终端显示
+                    proxyRes.headers['A-Real-Url'] = realUrl; // 添加响应标头(A-Real-Url为自定义命名)，在浏览器中显示
                 }
             },
             '/geoserver': {

@@ -54,12 +54,46 @@ export default {
             this.dialogVisible = true;
         },
 
-        downimg() {
-            this.$store.dispatch('media/downimg').then(res => {
+        downimg(row , name = Date.now()) {
+            const url = row.path;
+            if (!url) {
+                this.showToast('请选择图片');
+                return false;
+            }
+            // 获取链接的图片名 为最后一个/
+            const nameArr = url.split('/');
+            name = nameArr[nameArr.length - 1]
+            // 使用 XMLHttpRequest 发起 GET 请求
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
 
-            }).catch(error => {
-                console.log('sss', error);
-            })
+            // eslint-disable-next-line quotes
+            xhr.responseType = "blob"; // 设置响应类型为 blob
+
+            xhr.onload = function() {
+                if (this.status === 200) {
+                    // 将 blob 数据赋值给变量 a
+                    var a = this.response;
+                    // 在这里可以进行后续的处理，例如创建下载链接
+                    var url = URL.createObjectURL(a);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    // eslint-disable-next-line quotes
+                    link.download = name || "DJI_20231223122702_0008_D.JPG";
+                    document.body.appendChild(link);
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    // 删除 a 标签
+                    document.body.removeChild(link);
+                }
+            };
+
+            xhr.send();
+            // this.$store.dispatch('media/downimg').then(res => {
+
+            // }).catch(error => {
+            //     console.log('sss', error);
+            // })
         },
 
         // #region ---------------------------------------------------  图片预览 ---------------------------------------------------

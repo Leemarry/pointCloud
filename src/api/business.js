@@ -29,4 +29,19 @@ export function getTowerList(formdata) {
     })
 }
 
+export function handTower(reqData) {
+    const { data, url } = reqData
+    return request({
+        url,
+        method: 'post',
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+        // cancelToken: new CancelToken(cancelFn => {
+        //     cancel && cancel()
+        //     cancel = cancelFn
+        // })
+    })
+}
 //#endregion

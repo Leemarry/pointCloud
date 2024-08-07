@@ -17,7 +17,7 @@ export default {
     data() {
     //这里存放数据
         return {
-            reqUrl: '/media/video/querylist',
+            reqUrl: '/media/video/querylist'
         };
     },
     //监听属性 类似于data概念
@@ -41,19 +41,7 @@ export default {
     activated() { },
     //方法集合
     methods: {
-        /*查看 */
-        openVideoTag(row) {
-            // 窗口名
-            const windowName = 'videoTag-' + row.mark;
-            if (!this.windows[windowName] || this.windows[windowName].closed) {
-                const existingWindow = window.open('', windowName);
-                const queryString = `?id=${row.id}&src=${encodeURIComponent(row.path)}&formats=${encodeURIComponent(row.formats)}}`;
-                existingWindow.location.href = '/preview' + queryString;
-                this.windows[windowName] = existingWindow;
-            } else {
-                this.windows[windowName].focus();
-            }
-        },
+
         downloadVideo(row) {
             this.getMethod(row.path).then((blob) => {
                 this.downloadFile(blob)
@@ -75,7 +63,7 @@ export default {
 
         async getMethod(url, data = {}) {
             console.log('getMethod');
-            const res = await fetch('http://8.148.10.90:9000/efuavkmz/407080.kmz', {
+            const res = await fetch(url, {
                 method: 'GET', // *GET, POST, PUT, DELETE, etc.
                 mode: 'cors', // no-cors, *cors, same-origin
                 cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -88,6 +76,19 @@ export default {
                 }
             })
             return res.blob();
+        },
+        sendXhr(row) {
+            const url = row.path;
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'blob';
+            xhr.onload = function() {
+                if (this.status === 200) {
+                    const blob = xhr.response;
+                    this.downloadFile(blob, Date.now() + '.mp4');
+                }
+            }
+            xhr.send();
         }
     }
     //如果页面有keep-alive缓存功能，这个函数会触发

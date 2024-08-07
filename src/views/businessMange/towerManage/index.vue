@@ -21,7 +21,13 @@
       </el-form>
       <div>
         <el-button type="primary" @click="queryTowerlist()">查询</el-button>
-        <el-button type="primary" @click="addTower()">新增</el-button>
+        <el-dropdown split-button type="primary" style="margin-left: 5px;" @click="addTowers(reqData)">
+          {{ title }}
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item @click.native="operationType('手动新增',{ operation: 'hand' , id : 0, reqUrl:'/business/hand/addOrupdateTower' })">手动新增</el-dropdown-item>
+            <el-dropdown-item @click.native="operationType('批量导入',{ operation: 'batch' , id : 1, reqUrl:'/business/batch/batchInsertTower' })">批量导入</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
     </div>
     <div class="media-container">
@@ -150,7 +156,30 @@
     <AlImagePreview :visible="previewVisible" />
     <el-image-viewer v-if="imgViewerVisible" :on-close="closeImgViewer" :url-list="imgList" />
     <!--弹窗 -->
-    <TowerDrawer :drawer="drawerVisible" :tower="{...towerInfo}" @update:visible="handleClose" />
+    <TowerDrawer :drawer="drawerVisible" :tower="{...towerInfo}" @update:visible="handleClose" @hand:tower="handTower" />
+    <AlDialog title="弹窗" :visible="dialogVisible" height="200px" width="280px" @close="dialogVisible = false">
+      <el-upload
+        ref="upload"
+        class="upload-demo"
+        action="/"
+        :on-preview="handlePreview"
+        size="mini"
+        :before-remove="beforeRemove"
+        :on-remove="handleRemove"
+        :file-list="fileList"
+        :auto-upload="false"
+        :on-change="changeFile"
+      >
+        <el-button slot="trigger" size="mini" type="primary">点击导入</el-button>
+        <div slot="tip" class="el-upload__tip">只能上传zip文件，且不超过50M</div>
+        <el-button
+          style="margin-left: 10px;"
+          size="mini"
+          type="success"
+          @click="submitUpload"
+        >提交上传</el-button>
+      </el-upload>
+    </AlDialog>
   </div>
 </template>
 

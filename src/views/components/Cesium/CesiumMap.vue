@@ -1,81 +1,39 @@
 <!-- cesium.js  组件面 -->
 <template>
-    <div class="cesiumOutdiv">
-        <div class='tooltip'>
-            <i :class="['iconfont', isLockView ? 'icon-gudingshikou' : 'icon-shikou']" :title="isLockView ? '已锁定' : '设置锁定'" @click="setViewport"></i>
-            <div class='tooltip-text' v-if='areaText'>{{ `面积：${Number(areaText).toFixed(3)}平方米` }}</div>
-        </div>
-
-        <div id="cesiumContainer"></div>
-
-        <!-- 绘画 -->
-        <CesiumDraw v-bind="$attrs" v-on="$listeners" :CursorTipDistance="CursorTipDistance" @sendclearLinesAndstore="clearLinesAndStore" @senddoFlyCommands="senddoFlyCommandsEvent"
-            @editEvent="CesiumEditEvent" @sendAreaText='setAreaText' :viewer="viewer" v-if="viewer" v-show="visible"></CesiumDraw>
+  <div class="cesiumOutdiv">
+    <div class="tooltip">
+      <i :class="['iconfont', isLockView ? 'icon-gudingshikou' : 'icon-shikou']" :title="isLockView ? '已锁定' : '设置锁定'" @click="setViewport" />
+      <div v-if="areaText" class="tooltip-text">{{ `面积：${Number(areaText).toFixed(3)}平方米` }}</div>
     </div>
+
+    <div id="cesiumContainer" />
+    <!-- 绘画 -->
+    <CesiumDraw
+      v-if="viewer"
+      v-show="visible"
+      v-bind="$attrs"
+      :cursor-tip-distance="CursorTipDistance"
+      :viewer="viewer"
+      v-on="$listeners"
+      @sendclearLinesAndstore="clearLinesAndStore"
+      @senddoFlyCommands="senddoFlyCommandsEvent"
+      @editEvent="CesiumEditEvent"
+      @sendAreaText="setAreaText"
+    />
+  </div>
 </template>
 
 <script>
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
 //例如：import 《组件名称》 from '《组件路径》';
-import { markRaw } from "vue";
-import CesiumDraw from "./cesiumDrawViewer.vue";
-import { mapGetters } from "vuex";
-import { calculateSquareCoordinates, } from "@/views/core/Geo"
-var palaceTileset = null; //3DTilest模型
-const dataSourcePromises = [];
-const kmlUrls = [
-    "http://127.0.0.1:9090/ceshi/kml/1.kml",
-    "http://127.0.0.1:9090/ceshi/kml/2.kml",
-    "http://127.0.0.1:9090/ceshi/kml/3.kml",
-    "http://127.0.0.1:9090/ceshi/kml/4.kml",
-    "http://127.0.0.1:9090/ceshi/kml/5.kml",
-    "http://127.0.0.1:9090/ceshi/kml/6.kml",
-    "http://127.0.0.1:9090/ceshi/kml/7.kml",
-    "http://127.0.0.1:9090/ceshi/kml/8.kml"
-];
+import CesiumDraw from './cesiumDrawViewer.vue';
+import { mapGetters } from 'vuex';
+import { calculateSquareCoordinates } from '@/views/core/Geo'
 let imagelayer;
 export default {
-    name: "CesiumMap",
+    name: 'CesiumMap',
     //import引入的组件需要注入到对象中才能使用
     components: { CesiumDraw },
-    data() {
-        //这里存放数据
-        return {
-            areaText: null,
-            isLockView: true,
-            /**心跳数据 */
-            beatData: null,
-            /**心跳包展示的无人机 */
-            currentDisplayUavId: null,
-            modelFlightStatusOrNot: false, // 是否模型飞行状态 
-            /**状态 提示器 */
-            lastToast: "",
-            /**模型*/
-            vehicleEntity: null,
-            viewer: null,
-            value: "",
-            signProvider: null, //标记图层
-            imageryProvider: null, //影像图层
-            terrainProvider: null, //地形图层
-            entityMap: {}, //实体对象
-            TitlesMap: {}, // 瓦片
-            imageryLayersMap: {}, // 影像 用于二维
-            index: 0,
-            mapUrlMap: {
-                baidu:
-                    "http://shangetu0.map.bdimg.com/it/u=x={x};y={y};z={z};v=009;type=sate&fm=46",
-                gaode:
-                    "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
-                tiandi:
-                    "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"
-            },
-            CursorTipDistance: {
-                distanceX: 0,
-                distanceY: 0
-            },
-            billboardsEntities: [],
-        };
-    },
     //让组件接收外部传来的数据
     props: {
         /**是否飞行移动 */
@@ -90,38 +48,76 @@ export default {
         // 2D/3D ，值改变后则改变地图为2d或3d
         MapType: {
             type: String,
-            default: "3D"
+            default: '3D'
         },
         // 高德/百度/天地图 等，值改变后改变地图类型(url,服务接口,图层类型)
         MapProvider: {
             type: String,
-            default: "tiandi"
+            default: 'tiandi'
         },
         //客户密钥
         CesiumAccessToken: {
             type: String,
             default:
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4ZmVjNGI2Zi1kMTA3LTQ4NjEtOWY5Mi1hOTQ0NjkwYzM0Y2YiLCJpZCI6NjQyMiwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NjQ4MjQzMH0.TmEcQVmerVoMPXZ2_xa9D2Dy5Wysy2j6_tgPeiV88aM"
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4ZmVjNGI2Zi1kMTA3LTQ4NjEtOWY5Mi1hOTQ0NjkwYzM0Y2YiLCJpZCI6NjQyMiwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NjQ4MjQzMH0.TmEcQVmerVoMPXZ2_xa9D2Dy5Wysy2j6_tgPeiV88aM'
             // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjNzRiNzNkYS0zZTRmLTRhOTMtODFlNS0zOWFhN2FmYzZmYjkiLCJpZCI6MTUyMTEwLCJpYXQiOjE2ODg2OTYyMDl9.sWkoSUmLFPfbMTMFgAZeQKjBQERg-TZPBBtIN34sDNQ"
         },
         /**默认无人机 */
         defaultUavSn: {
             type: String,
-            default: "defaultUavSn"
+            default: 'defaultUavSn'
         }
+    },
+    data() {
+        //这里存放数据
+        return {
+            areaText: null,
+            isLockView: true,
+            /**心跳数据 */
+            beatData: null,
+            /**心跳包展示的无人机 */
+            currentDisplayUavId: null,
+            modelFlightStatusOrNot: false, // 是否模型飞行状态
+            /**状态 提示器 */
+            lastToast: '',
+            /**模型*/
+            vehicleEntity: null,
+            viewer: null,
+            value: '',
+            signProvider: null, //标记图层
+            imageryProvider: null, //影像图层
+            terrainProvider: null, //地形图层
+            entityMap: {}, //实体对象
+            TitlesMap: {}, // 瓦片
+            imageryLayersMap: {}, // 影像 用于二维
+            index: 0,
+            mapUrlMap: {
+                baidu:
+                    'http://shangetu0.map.bdimg.com/it/u=x={x};y={y};z={z};v=009;type=sate&fm=46',
+                gaode:
+                    'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
+                tiandi:
+                    'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
+            },
+            CursorTipDistance: {
+                distanceX: 0,
+                distanceY: 0
+            },
+            billboardsEntities: []
+        };
     },
 
     //监听属性 类似于data概念
     computed: {
         ...mapGetters([
-            "currentMid",
-            "currentMidUnifiedHeight",
-            "geoCoordinates",
-            "webSocketMsg",
-            "webSocketData",
-            "messageId",
-            "defaultUavHeartbeat"
-        ]),
+            'currentMid',
+            'currentMidUnifiedHeight',
+            'geoCoordinates',
+            'webSocketMsg',
+            'webSocketData',
+            'messageId',
+            'defaultUavHeartbeat'
+        ])
     },
     //监控data中的数据变化
     watch: {
@@ -131,22 +127,70 @@ export default {
         geoCoordinates: {
             handler(newVal, oldVal) {
                 if (!newVal) {
-                    console.log("geosCoordinates is null");
+                    console.log('geosCoordinates is null');
                 } else {
-                    console.log("geosCoordinates:", newVal);
+                    console.log('geosCoordinates:', newVal);
                 }
             },
             immediate: true // 立即执行一次
         }
     },
+    //生命周期 - 创建完成（可以访问当前this实例）
+    created() {
+    },
+    //生命周期 - 挂载完成（可以访问DOM元素）
+    mounted() {
+        document.addEventListener('sendmsg', this.receivemsg);
+        //
+        const cesiumElement = document.querySelector('.cesiumOutdiv');
+        // 创建 MutationObserver 实例 鼠标文字位置
+        var observer = new MutationObserver(
+            debounce((mutationsList, observer) => {
+                const rect = cesiumElement.getBoundingClientRect();
+                this.CursorTipDistance.distanceX = rect.left;
+                this.CursorTipDistance.distanceY = rect.top;
+                // 处理位置变化的逻辑
+                console.log(this.CursorTipDistance);
+            }, 300)
+        ); // 设置节流的延迟时间，例如 200 毫秒
+
+        function debounce(fu, delay) {
+            let timeoutId;
+            return (...arg) => {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => fu(...arg), delay);
+            };
+        }
+        // 开始观察目标元素的变化
+        observer.observe(cesiumElement, {
+            attributes: true,
+            childList: true,
+            subtree: false
+        });
+
+        this.CreateCesium();
+        this.addimageryLayers(this.MapProvider);
+
+        console.log('子组件');
+    },
+    beforeCreate() { }, //生命周期 - 创建之前
+    beforeMount() { }, //生命周期 - 挂载之前
+    beforeUpdate() { }, //生命周期 - 更新之前
+    updated() { }, //生命周期 - 更新之后
+    beforeDestroy() {
+        this.clearAllPointAndLine()
+        // observer.disconnect();
+    }, //生命周期 - 销毁之前
+    destroyed() { }, //生命周期 - 销毁完成
+    activated() { },
     //方法集合
     methods: {
         /**获取坐标信息 */
         getCoordinates() {
             // 注册屏幕点击事件
-            var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas); 
+            var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
             // 监听鼠标点击事件
-            handler.setInputAction(function (click) {
+            handler.setInputAction(function(click) {
                 var ellipsoid = viewer.scene.globe.ellipsoid;
                 var cartesian = viewer.camera.pickEllipsoid(click.position, ellipsoid);
 
@@ -155,7 +199,7 @@ export default {
                     var longitude = Cesium.Math.toDegrees(cartographic.longitude);
                     var latitude = Cesium.Math.toDegrees(cartographic.latitude);
 
-                    console.log("注册地图点击事件", "经度：", longitude, "，纬度：", latitude);
+                    console.log('注册地图点击事件', '经度：', longitude, '，纬度：', latitude);
                 }
             }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
         },
@@ -169,15 +213,15 @@ export default {
                 //定义一个屏幕点击的事件，pickPosition封装的是获取点击的位置的坐标
                 var position = viewer.scene.pickPosition(event.position);
                 //输出之后我们发现坐标信息都是大数目，因为cesium定义的球体坐标都是笛卡尔坐标，所以我们需要转换笛卡尔坐标
-                console.log("笛卡尔：" + position);
+                console.log('笛卡尔：' + position);
                 //将笛卡尔坐标转化为弧度坐标
                 var cartographic = Cesium.Cartographic.fromCartesian(position);
-                console.log("弧度：" + cartographic);
+                console.log('弧度：' + cartographic);
                 //将弧度坐标转换为经纬度坐标（先转弧度再转经纬度简单一点，直接转换的方法也有，不过推荐用这种）
                 var longitude = Cesium.Math.toDegrees(cartographic.longitude); //经度
                 var latitude = Cesium.Math.toDegrees(cartographic.latitude); //纬度
                 var height = cartographic.height; //高度
-                console.log("经纬度：" + longitude, latitude, height);
+                console.log('经纬度：' + longitude, latitude, height);
                 positionList.push({
                     lat: latitude,
                     lng: longitude,
@@ -206,7 +250,7 @@ export default {
                 // 添加点
                 viewer.entities.add({
                     position: position,
-                    name: "111", //点击描上的显示信息
+                    name: '111', //点击描上的显示信息
                     point: {
                         color: Cesium.Color.YELLOW,
                         pixelSize: 10
@@ -223,7 +267,7 @@ export default {
             } // 初始时，判断视口是否存在
             Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjNzRiNzNkYS0zZTRmLTRhOTMtODFlNS0zOWFhN2FmYzZmYjkiLCJpZCI6MTUyMTEwLCJpYXQiOjE2ODg2OTYyMDl9.sWkoSUmLFPfbMTMFgAZeQKjBQERg-TZPBBtIN34sDNQ'; //密钥 否则页面提示
             // 将窗口设置为cesiumshiko
-            window.viewer = new Cesium.Viewer("cesiumContainer", {
+            window.viewer = new Cesium.Viewer('cesiumContainer', {
                 selectionIndicator: false, //关闭绿色点击框
                 //需要进行可视化的数据源的集合
                 animation: false, //是否显示动画控件
@@ -238,7 +282,7 @@ export default {
                 infoBox: false, //是否显示点击要素之后显示的信息
                 // requestRenderMode: true, //启用请求渲染模式
                 scene3DOnly: false, //每个几何实例将只能以3D渲染以节省GPU内存
-                sceneMode: 3, //初始场景模式 1 2D模式 2 2D循环模式 3 3D模式  Cesium.SceneMode
+                sceneMode: 3 //初始场景模式 1 2D模式 2 2D循环模式 3 3D模式  Cesium.SceneMode
                 // fullscreenElement: document.body, //全屏时渲染的HTML元素 暂时没发现用处
                 // 天地图地形
                 // terrainProvider: new Cesium.CesiumTerrainProvider({
@@ -247,7 +291,7 @@ export default {
                 // })
             });
 
-            window.viewer.cesiumWidget.creditContainer.style.display = "none"; // 去除logo
+            window.viewer.cesiumWidget.creditContainer.style.display = 'none'; // 去除logo
             window.viewer.scene.globe.depthTestAgainstTerrain = true; //解决地形遮挡entity问题
             // var imageryProvider = new Cesium.WebMapServiceImageryProvider({
             //       // 这里是你的 geoserver服务点击查看图层的 url
@@ -301,13 +345,11 @@ export default {
             //   });
         },
         reloadLoadProgress(viewer = window.viewer) {
-            let that = this
             var helper = new Cesium.EventHelper();
-            helper.add(viewer.scene.globe.tileLoadProgressEvent, function (e) {
+            helper.add(viewer.scene.globe.tileLoadProgressEvent, function(e) {
                 console.log('每次加载地图服务矢量切片都会进入这个回调', e);
-                if (e == 0) {
-                    console.log("矢量切片加载完成时的回调");
-
+                if (e === 0) {
+                    console.log('矢量切片加载完成时的回调');
                     // that.cesiumLoading = false;//关闭加载动画
                 } else {
                     console.log('每次加载地图服务矢量切片都会进入这个回调', e);
@@ -315,14 +357,14 @@ export default {
             });
         },
         /**添加影像--默认tiandi 天地图 */
-        addimageryLayers(MapProvider = "tiandi") {
+        addimageryLayers(MapProvider = 'tiandi') {
             const url = this.mapUrlMap[MapProvider];
             if (!url) {
                 return false;
             }
             this.deleteAllImageryProvider();
             // 影像
-            if (MapProvider == "tiandi") {
+            if (MapProvider === 'tiandi') {
                 this.imageryProvider = new Cesium.ArcGisMapServerImageryProvider({
                     url: url
                 });
@@ -334,12 +376,12 @@ export default {
             window.viewer.imageryLayers.addImageryProvider(this.imageryProvider);
             // 地形
             this.terrainProvider = new Cesium.createWorldTerrain({
-                url: "http://data.mars3d.cn/terrain",
+                url: 'http://data.mars3d.cn/terrain',
                 show: false
             });
 
             // window.viewer.terrainProvider = this.terrainProvider;
-            let viewer = window.viewer
+            const viewer = window.viewer
             const layers = viewer.imageryLayers;
             console.log('layers', layers);
             // //  高德路网中文注记
@@ -350,12 +392,11 @@ export default {
             //     maximumLevel: 18
             // });
             // window.viewer.imageryLayers.addImageryProvider(this.signProvider);
-
         },
         // 修改地图中心纬度，参数为经纬高，相机的水平方向视角（0正北，90正东，以此类推），相机的俯仰角度（0水平，-90俯视，90仰天）
         updateMapCenter(lat, lng, alt, heading, pitch) {
-            let viewer = window.viewer; //
-            let Position = Cesium.Cartesian3.fromDegrees(lat, lng, alt);
+            const viewer = window.viewer; //
+            const Position = Cesium.Cartesian3.fromDegrees(lat, lng, alt);
             var duration = 2.0; // 动画过渡时间，单位秒
             // 设置默认相机视角
             viewer.camera.setView({
@@ -369,20 +410,20 @@ export default {
         },
         //移除所有的实体对象
         deleteAll3dModel() {
-            let viewer = window.viewer;
+            const viewer = window.viewer;
             viewer.entities.removeAll();
         },
         // 删除某个3D模型
         delete3dModel(url) {
-            let viewer = window.viewer;
-            let entity = this.entityMap[url]; // 根据 URL 从映射表中获取对应的实体对象
+            const viewer = window.viewer;
+            const entity = this.entityMap[url]; // 根据 URL 从映射表中获取对应的实体对象
             if (entity) {
                 // 取消将相机设置到模型位置
                 viewer.trackedEntity = null;
                 viewer.entities.remove(entity); // 从场景中移除实体对象
                 delete this.entityMap[url]; // 从映射表中移除对应的实体对象
             } else {
-                console.log("未找到对应 URL 的实体对象");
+                console.log('未找到对应 URL 的实体对象');
             }
             viewer.scene.requestRender();
         },
@@ -397,24 +438,24 @@ export default {
         },
         // url为模型路径，setViewport（lat,lng，alt）为添加3D模型在地图上显示的位置，false是否设置视口，(x,y,z）观察模型视口偏移量
         show3dModel(url, id, lat = 0, lng = 0, alt = 0, heading = 0, pitch = 0, roll = 0, scale = 0.5, setViewport = true, x = 0, y = 0, z = 20) {
-            let viewer = window.viewer;
+            const viewer = window.viewer;
             viewer.entities.removeAll();
             if (this.entityMap[url]) { return false; }
             heading = 0; // -93
             // 设置模型初始朝向
-            let headingValue = Cesium.Math.toRadians(heading); // 将角度值转换为弧度
-            let Position = Cesium.Cartesian3.fromDegrees(lat, lng, alt);
-            let orientation = Cesium.Transforms.headingPitchRollQuaternion(
+            const headingValue = Cesium.Math.toRadians(heading); // 将角度值转换为弧度
+            const Position = Cesium.Cartesian3.fromDegrees(lat, lng, alt);
+            const orientation = Cesium.Transforms.headingPitchRollQuaternion(
                 Position,
                 new Cesium.HeadingPitchRoll(headingValue, pitch, roll) //模型的偏航角（heading）模型的俯仰角（pitch） 表示模型的横滚角（roll）
             );
             // 添加模型，并将实体对象保存到对象映射中
-            let entity = window.viewer.entities.add({
+            const entity = window.viewer.entities.add({
                 id: id,
                 // 设置方向
                 orientation: orientation,
                 position: Position,
-                name: "飞机",
+                name: '飞机',
                 model: {
                     uri: url,
                     scale: scale //模型大小比例
@@ -423,11 +464,11 @@ export default {
             // 检查实体是否成功添加 // 设置模型初始朝向
             const entityAdded = viewer.entities.contains(entity);
             if (entityAdded) {
-                console.log("模型实体成功添加");
+                console.log('模型实体成功添加');
                 // 存储实体对象到映射表中
                 this.entityMap[url] = entity; // 以 URL 为 key，实体对象为 value 的映射表
             } else {
-                console.log("模型实体添加失败");
+                console.log('模型实体添加失败');
             }
             if (setViewport) {
                 viewer.trackedEntity = entity; // 将相机设置到模型位置
@@ -437,20 +478,20 @@ export default {
         },
         // 删除某个3d title
         delete3dTitles(url) {
-            let viewer = window.viewer;
-            let Tileset = this.TitlesMap[url]; // 根据 URL 从映射表中获取对应的实体对象
+            const viewer = window.viewer;
+            const Tileset = this.TitlesMap[url]; // 根据 URL 从映射表中获取对应的实体对象
             if (Tileset) {
                 // 取消将相机设置到模型位置
                 viewer.scene.primitives.remove(Tileset);
                 delete this.TitlesMap[url]; // 从映射表中移除对应的实体对象
             } else {
-                console.log("未找到对应 URL 的实体TitlesMap对象");
+                console.log('未找到对应 URL 的实体TitlesMap对象');
             }
             viewer.scene.requestRender();
         },
         // 显示 3d title在地图上 --url
         showTitles(url) {
-            let viewer = window.viewer;
+            const viewer = window.viewer;
             viewer.trackedEntity = undefined;
             const palace3DTileset = new Cesium.Cesium3DTileset({
                 url: url, //加载倾斜示范数据
@@ -465,10 +506,10 @@ export default {
                 viewer.scene.primitives.add(palace3DTileset);
                 const layerAdded = viewer.scene.primitives.contains(palace3DTileset);
                 if (layerAdded) {
-                    console.log("影像图层成功添加");
+                    console.log('影像图层成功添加');
                     this.TitlesMap[url] = palace3DTileset; // 映射瓦片模型
                 } else {
-                    console.log("影像图层添加失败");
+                    console.log('影像图层添加失败');
                 }
                 //设置相机视角
                 window.viewer.zoomTo(
@@ -484,7 +525,7 @@ export default {
         },
         // 显示3d title在地图上
         showTitlesOffset(url, offsetAlt = 15, offsetLat, offsetLng) {
-            let viewer = window.viewer;
+            const viewer = window.viewer;
             viewer.trackedEntity = undefined; //模型-- 实体模型视口锁定问题
             const palace3DTileset = new Cesium.Cesium3DTileset({
                 url: url, //加载倾斜示范数据
@@ -521,9 +562,9 @@ export default {
                 //模型本身的位置
                 // var surface = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, cartographic.height);
                 //模型改变的位置
-                let lng =
+                const lng =
                     offsetLng == undefined || 0 ? cartographic.longitude : longitude;
-                let lat =
+                const lat =
                     offsetLat == undefined || 0 ? cartographic.latitude : latitude;
                 var offset = Cesium.Cartesian3.fromRadians(lng, lat, heightOffset);
                 //定义模型的改变状态---offset需求位置---surface本身位置
@@ -550,47 +591,47 @@ export default {
             viewer.scene.requestRender();
         },
         //添加影像图层 格式--// url: "../../../static/Maps/result/{z}/{x}/{y}.png",
-        showImageryProvider(url, MapProviderDrive = "UrlTemplateImageryProvider") {
-            let viewer = window.viewer;
+        showImageryProvider(url, MapProviderDrive = 'UrlTemplateImageryProvider') {
+            const viewer = window.viewer;
             var imageryProvider = new Cesium[MapProviderDrive]({
-                url: url + "/{z}/{x}/{y}.png"
+                url: url + '/{z}/{x}/{y}.png'
             });
-            var layerName = "图层名称";
+            var layerName = '图层名称';
             var layer = viewer.imageryLayers.addImageryProvider(imageryProvider);
             layer.name = layerName;
             this.imageryLayersMap[url] = layer;
         },
         //移除影像 参数 url
         deleteImageryProvider(url) {
-            let viewer = window.viewer;
+            const viewer = window.viewer;
             imagelayer = this.imageryLayersMap[url]; // 根据 URL 从映射表中获取对应的实体对象
             if (imagelayer != null) {
                 viewer.imageryLayers.remove(imagelayer);
                 delete this.imageryLayersMap[url]; // 从映射表中移除对应的实体对象
             } else {
-                console.log("未找到对应 URL 的实体imagelayer对象");
+                console.log('未找到对应 URL 的实体imagelayer对象');
             }
             viewer.scene.requestRender();
         },
         deleteAllImageryProvider() {
-            let viewer = window.viewer;
+            const viewer = window.viewer;
             viewer.imageryLayers.removeAll();
             viewer.scene.requestRender();
         },
         //切换 3维模式    let type = "2D"
         switchSceneMode(type) {
-            let viewer = window.viewer;
+            const viewer = window.viewer;
             switch (type) {
-                case "3D":
+                case '3D':
                     viewer.scene.mode = Cesium.SceneMode.SCENE3D; //3维模式
                     break;
-                case "2D":
+                case '2D':
                     viewer.scene.mode = Cesium.SceneMode.SCENE2D; // 切换到 2D 模式
                     break;
-                case "2.5D":
+                case '2.5D':
                     viewer.scene.mode = Cesium.SceneMode.COLUMBUS_VIEW; // 2.5D 哥伦布模式
                     break;
-                case "1D":
+                case '1D':
                     viewer.scene.mode = Cesium.SceneMode.MORPHING; // 变形模式
                     break;
 
@@ -604,16 +645,16 @@ export default {
             function show3dModel(url, lat, lng, alt, setViewport, x = 0, y = 0, z = 0) {
                 if (arguments.length === 1) {
                     // 处理只有url的情况
-                    console.log("处理只有url的情况:", url);
-                } else if (arguments.length === 5 && typeof setViewport === "boolean") {
+                    console.log('处理只有url的情况:', url);
+                } else if (arguments.length === 5 && typeof setViewport === 'boolean') {
                     // 处理不带偏移量的情况
-                    console.log("处理不带偏移量的情况:", url, lat, lng, alt, setViewport);
-                } else if (arguments.length === 8 && typeof setViewport === "boolean") {
+                    console.log('处理不带偏移量的情况:', url, lat, lng, alt, setViewport);
+                } else if (arguments.length === 8 && typeof setViewport === 'boolean') {
                     // 处理带偏移量的情况
-                    console.log("处理带偏移量的情况:", url, lat, lng, alt, setViewport, x, y, z);
+                    console.log('处理带偏移量的情况:', url, lat, lng, alt, setViewport, x, y, z);
                 } else {
                     // 其他情况的处理逻辑
-                    console.log("其他情况的处理");
+                    console.log('其他情况的处理');
                 }
             }
         },
@@ -621,32 +662,31 @@ export default {
         handleOperation() {
             // 是否是主界面
             if (this.geoCoordinates.length > 0) {
-                console.log("规划中心点");
+                console.log('规划中心点');
                 this.updateMapCenter(this.geoCoordinates[0][0], this.geoCoordinates[0][1], 600.05766199658808, 0, -45);
                 this.drawLines()
             } else if (this.defaultUavHeartbeat && this.defaultUavHeartbeat.lng !== 0 && this.defaultUavHeartbeat.lng !== 0) {
-                console.log("无人机中心点");
-                let longitude = this.defaultUavHeartbeat.lng
-                let latitude = this.defaultUavHeartbeat.lat;
+                console.log('无人机中心点');
+                const longitude = this.defaultUavHeartbeat.lng
+                const latitude = this.defaultUavHeartbeat.lat;
                 this.updateMapCenter(longitude, latitude, 400.05766199658808, 0, -45);
             } else {
-                console.log("默认中心点");
+                console.log('默认中心点');
                 // 数据库： 113.36887409647213，23.155143504551752
                 this.updateMapCenter(113.36887409647213, 23.155143504551752, 400.05766199658808, 0, -90);
             }
         },
         handleOperation2() {
             if (this.defaultUavHeartbeat && this.defaultUavHeartbeat.lng !== 0 && this.defaultUavHeartbeat.lng !== 0) {
-                console.log("无人机中心点");
-                let longitude = this.defaultUavHeartbeat.lng
-                let latitude = this.defaultUavHeartbeat.lat;
+                console.log('无人机中心点');
+                const longitude = this.defaultUavHeartbeat.lng
+                const latitude = this.defaultUavHeartbeat.lat;
                 this.updateMapCenter(longitude, latitude, 400.05766199658808, 0, -45);
             } else {
-                console.log("默认中心点");
+                console.log('默认中心点');
                 // 数据库： 113.36887409647213，23.155143504551752
                 this.updateMapCenter(113.36887409647213, 23.155143504551752, 400.05766199658808, 0, -90);
             }
-
         },
         /**
          * @name:
@@ -659,7 +699,7 @@ export default {
             const endColor = new Cesium.Color.fromCssColorString('#9EE8E7').withAlpha(0.3)
             const color = Cesium.Color.BLUE
             const lineColor = new Cesium.Color.fromCssColorString('#E6E6E6').withAlpha(0.3) // #9EE8E7
-            let viewer = window.viewer;
+            const viewer = window.viewer;
             if (PositionsList.length > 0) {
                 // 设置默认相机视角
                 viewer.camera.setView({
@@ -703,13 +743,13 @@ export default {
                 var pointEntity = new Cesium.Entity({
                     position: newPosition,
                     label: {
-                        font: "16px sans-serif",
+                        font: '16px sans-serif',
                         // text: "航点",
                         horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
                         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
                         pixelOffset: new Cesium.Cartesian2(0, -10)
                     },
-                    id: "storePoint" + i,
+                    id: 'storePoint' + i,
                     point: {
                         color: currentCorlor,
                         pixelSize: 10
@@ -724,12 +764,12 @@ export default {
             }
             // 添加航线
             var redLine = viewer.entities.add({
-                id: "storePolyline",
-                name: "绘制上传的航线",
+                id: 'storePolyline',
+                name: '绘制上传的航线',
                 polyline: {
                     positions: waypoints,
                     width: 3,
-                    material: lineColor,//  Cesium.Color.RED,
+                    material: lineColor, //  Cesium.Color.RED,
                     granularity: 0.03
                 }
             });
@@ -752,7 +792,7 @@ export default {
             const endColor = new Cesium.Color.fromCssColorString('#9EE8E7').withAlpha(0.3)
             const color = Cesium.Color.BLUE
             const lineColor = new Cesium.Color.fromCssColorString('#E6E6E6').withAlpha(0.3) // #9EE8E7
-            let viewer = window.viewer;
+            const viewer = window.viewer;
             if (PositionsList.length > 0) {
                 // 设置默认相机视角
                 viewer.camera.setView({
@@ -775,7 +815,6 @@ export default {
             // 添加航点
             window.viewer.scene.globe.depthTestAgainstTerrain = false;
             for (let i = 0; i < PositionsList.length; i++) {
-
                 const currentCorlor = i == 0 ? startColor : endColor; //Cesium.Color.YELLOW;
                 var Position = PositionsList[i];
                 var longitude = Position[0];
@@ -797,13 +836,13 @@ export default {
                 var pointEntity = new Cesium.Entity({
                     position: newPosition,
                     label: {
-                        font: "16px sans-serif",
+                        font: '16px sans-serif',
                         // text: "航点",
                         horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
                         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
                         pixelOffset: new Cesium.Cartesian2(0, -10)
                     },
-                    id: "storePoint" + i,
+                    id: 'storePoint' + i,
                     point: {
                         color: currentCorlor,
                         pixelSize: 10
@@ -826,17 +865,17 @@ export default {
             const endColor = new Cesium.Color.fromCssColorString('#9EE8E7').withAlpha(0.3)
             const color = Cesium.Color.BLUE
             const lineColor = new Cesium.Color.fromCssColorString('#00FF00').withAlpha(0.9) // #9EE8E7
-            let viewer = window.viewer;
+            const viewer = window.viewer;
             var waypoints = [];
             var entities = viewer.entities.values;
             for (var i = 0; i < entities.length; i++) {
                 if (
                     entities[i].id &&
-                    (entities[i].id.indexOf("storePoint") !== -1 ||
-                        entities[i].id.startsWith("storePoint"))
+                    (entities[i].id.indexOf('storePoint') !== -1 ||
+                        entities[i].id.startsWith('storePoint'))
                 ) {
                     console.log(' entities[i]', entities[i].id); // id : storePoint_0
-                    entities[i].point.color =endColor;
+                    entities[i].point.color = endColor;
                 }
             }
             for (let index = 0; index < indexArr.length; index++) {
@@ -844,10 +883,10 @@ export default {
                 var radar = viewer.entities.getById(PointId);
                 if (radar !== undefined) {
                     var position = radar.position.getValue(Cesium.JulianDate.now());
-                    if(index === 0){
+                    if (index === 0) {
                         radar.point.color = startColor;
-                    }else{
-                    radar.point.color = Cesium.Color.RED;
+                    } else {
+                        radar.point.color = Cesium.Color.RED;
                     }
                     waypoints.push(position);
                 }
@@ -855,25 +894,25 @@ export default {
             this.clearOnlyLines()
             // // 添加航线
             var redLine = viewer.entities.add({
-                id: "storePolyline",
-                name: "绘制上传的航线",
+                id: 'storePolyline',
+                name: '绘制上传的航线',
                 polyline: {
                     positions: waypoints,
                     width: 3,
-                    material: lineColor,//  Cesium.Color.RED,
+                    material: lineColor, //  Cesium.Color.RED,
                     granularity: 0.03
                 }
             });
         },
         clearOnlyLines() {
-            let viewer = window.viewer;
-            viewer.entities.removeById("storePolyline");
+            const viewer = window.viewer;
+            viewer.entities.removeById('storePolyline');
             viewer.scene.requestRender();
         },
 
         /**清除上传航线 */
         clearAllPointAndLine() {
-            let viewer = window.viewer;
+            const viewer = window.viewer;
             // 获取所有实体的数组
             var entities = viewer.entities.values;
             // 遍历数组，移除所有非 this.vehicleEntity 的实体
@@ -881,19 +920,19 @@ export default {
             for (var i = 0; i < entities.length; i++) {
                 if (
                     entities[i].id &&
-                    (entities[i].id.indexOf("store") !== -1 ||
-                        entities[i].id.startsWith("store"))
+                    (entities[i].id.indexOf('store') !== -1 ||
+                        entities[i].id.startsWith('store'))
                 ) {
                     viewer.entities.remove(entities[i]);
                     i--;
                     viewer.scene.requestRender();
                 }
             }
-            viewer.entities.removeById("storePolyline");
+            viewer.entities.removeById('storePolyline');
             viewer.scene.requestRender();
         },
         clearLines() {
-            let viewer = window.viewer;
+            const viewer = window.viewer;
             // 获取所有实体的数组
             var entities = viewer.entities.values;
             // 遍历数组，移除所有非 this.vehicleEntity 的实体
@@ -901,15 +940,15 @@ export default {
             for (var i = 0; i < entities.length; i++) {
                 if (
                     entities[i].id &&
-                    (entities[i].id.indexOf("store") !== -1 ||
-                        entities[i].id.startsWith("store"))
+                    (entities[i].id.indexOf('store') !== -1 ||
+                        entities[i].id.startsWith('store'))
                 ) {
                     viewer.entities.remove(entities[i]);
                     i--;
                     viewer.scene.requestRender();
                 }
             }
-            viewer.entities.removeById("storePolyline");
+            viewer.entities.removeById('storePolyline');
             viewer.scene.requestRender();
             // for (var i = 0; i < entities.length; i++) {
             //     var entity = entities[i];
@@ -919,22 +958,20 @@ export default {
             //         viewer.scene.requestRender();
             //     }
             // }
-
-
         },
 
-        showBillboard(pointlist, mainType = 'billboard', description = '', labelShow = false,) {
-            let viewer = window.viewer;
+        showBillboard(pointlist, mainType = 'billboard', description = '', labelShow = false) {
+            const viewer = window.viewer;
             this.billboardsEntities = []
             if (!pointlist || pointlist.length <= 0) { return false; }
 
-            let pinBuilder = new Cesium.PinBuilder();
+            const pinBuilder = new Cesium.PinBuilder();
 
-            console.log("pointlist", pointlist);
+            console.log('pointlist', pointlist);
 
             pointlist.forEach((pointInfo, index) => {
                 // 生成唯一的 id
-                let url = pointInfo[2]; //
+                const url = pointInfo[2]; //
                 const id = 'Billboard-' + Date.now();
                 var entities = viewer.entities.values;
                 // 检查 id 是否已经存在于实体数组中
@@ -950,29 +987,29 @@ export default {
                     position: Cesium.Cartesian3.fromDegrees(pointInfo[0], pointInfo[1], 300),
                     label: {
                         show: labelShow,
-                        font: "16px sans-serif", // 设置字体大小为16像素，使用sans-serif字体
+                        font: '16px sans-serif', // 设置字体大小为16像素，使用sans-serif字体
                         // text: "航点",
                         horizontalOrigin: Cesium.HorizontalOrigin.CENTER, // 水平对齐方式为中心
                         verticalOrigin: Cesium.VerticalOrigin.BOTTOM, // 垂直对齐方式为底部
                         pixelOffset: new Cesium.Cartesian2(0, -10), // 标签相对于点的偏移量
                         heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                        disableDepthTestDistance: 99000000,
+                        disableDepthTestDistance: 99000000
                     },
                     billboard: {
                         heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
                         disableDepthTestDistance: 99000000,
-                        image: pinBuilder.fromText("?", Cesium.Color.RED, 48).toDataURL(),// this.gasJPG, // 
+                        image: pinBuilder.fromText('?', Cesium.Color.RED, 48).toDataURL(), // this.gasJPG, //
                         horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
                         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
                         disableDepthTestDistance: Number.POSITIVE_INFINITY,
                         pixelOffset: new Cesium.Cartesian2(-6, 6),
-                        scale: 0.45,
+                        scale: 0.45
                     },
                     id: id,
                     // name: pointInfo.name,
                     monitoItems: {
-                        data: pointInfo,
-                    },
+                        data: pointInfo
+                    }
                 });
                 // entity.description = '<div style="height: 360px;">' + '重写infoBox' + '</div>'; src="${url}"
                 entity.description = `
@@ -989,22 +1026,20 @@ export default {
                 // viewer.entities.add(entity);
                 this.billboardsEntities.push(id)
             })
-
         },
         /**重新绘制清除 信息包括 航线信息 与 执行任务后图片信息 与 分析图信息 列表信息 */
         clearLinesAndStore() {
             this.clearAllPointAndLine()
             // imageHeartbeatList  resultimageHeartbeatList
-            let data = { imageHeartbeatList: [], defaultUavImageData: null, resultimageHeartbeatList: [], defaultUavResultImageData: null }
+            const data = { imageHeartbeatList: [], defaultUavImageData: null, resultimageHeartbeatList: [], defaultUavResultImageData: null }
             // this.$store.dispatch('ws/setUavImageListAboutAll', data)
             this.$store.dispatch('ws/cleardefaultUavImageData', { uavId: this.defaultUavSn })
             /**清除store 航线数据 组件传递 移除 */
-            this.$store.dispatch("routeData/setRouteData", { mid: null, geoCoordinates: [], unifiedHeight: null })
+            this.$store.dispatch('routeData/setRouteData', { mid: null, geoCoordinates: [], unifiedHeight: null })
         },
         /**图片覆盖 */
         addImageryBaseLayer(img, lng, lat) {
-
-            let viewer = window.viewer
+            const viewer = window.viewer
             window.viewer.trackedEntity = undefined;
             this.isLockView = false; // 解除锁定问题
             // console.log('图片覆盖', img);
@@ -1013,11 +1048,11 @@ export default {
             const squareSize = 1000; // 正方形边长，假设单位为米
 
             const squareCoordinates = calculateSquareCoordinates(centerLatitude, centerLongitude, squareSize);
-            console.log("工作地块中心点:", lng, lat);
-            console.log("工作地块Northeast:", squareCoordinates.northeast);
-            console.log("工作地块Southeast:", squareCoordinates.southeast);
-            console.log("工作地块Northwest:", squareCoordinates.northwest);
-            console.log("工作地块Southwest:", squareCoordinates.southwest);
+            console.log('工作地块中心点:', lng, lat);
+            console.log('工作地块Northeast:', squareCoordinates.northeast);
+            console.log('工作地块Southeast:', squareCoordinates.southeast);
+            console.log('工作地块Northwest:', squareCoordinates.northwest);
+            console.log('工作地块Southwest:', squareCoordinates.southwest);
             //#region  图片四个点位置
             const topLeft = squareCoordinates.northeast;
 
@@ -1055,28 +1090,27 @@ export default {
             // 创建图像基础图层
             const imageryBaseLayer = new Cesium.ImageryLayer(
                 new Cesium.ArcGisMapServerImageryProvider({
-                    url: "https://elevation3d.arcgis.com/arcgis/rest/services/World_Imagery/MapServer",
+                    url: 'https://elevation3d.arcgis.com/arcgis/rest/services/World_Imagery/MapServer',
                     rectangle: Cesium.Rectangle.fromDegrees(
                         Math.min(topLeft.longitude, bottomLeft.longitude),
                         Math.min(bottomLeft.latitude, bottomRight.latitude),
                         Math.max(topRight.longitude, bottomRight.longitude),
                         Math.max(topLeft.latitude, topRight.latitude)
-                    ),
+                    )
                 })
             );
             // 将图像基础图层添加到图层集合中
             layers.add(imageryBaseLayer);
-
 
             imageryBaseLayer.cutoutRectangle = coverRectangle; //在 imageryBaseLayer 图层上创建一个裁剪矩形。裁剪矩形可以用来在显示图层的时候裁剪掉一部分区域，只显示裁剪矩形内的部分。
             const logo = new Cesium.ImageryLayer(
                 new Cesium.SingleTileImageryProvider({
                     // url: "https://picsum.photos/150/200",
                     url: `data:image/png;base64,${img}`, // 使用 Base64 图像
-                    rectangle: coverRectangle,
+                    rectangle: coverRectangle
                 }), {
-                alpha: 1,
-            }
+                    alpha: 1
+                }
             );
             layers.add(logo);
 
@@ -1096,10 +1130,8 @@ export default {
                 }
             });
             viewer.scene.requestRender();
-            // console.log('图片覆盖执行完');  
+            // console.log('图片覆盖执行完');
             //#endregion
-
-
         },
         // #region --------------------------------------------------------- 组件传递 ---------------------------------------------------------
         setAreaText(areaText) {
@@ -1109,11 +1141,11 @@ export default {
             // console.log(data);
         },
         senddoFlyCommandsEvent() {
-            this.$emit("senddoFlyCommands");
+            this.$emit('senddoFlyCommands');
         },
         /**获取父组件传递过来心跳数据包 */
         async GetHeartbeatNows(uavHeartbeatNow) {
-            let viewer = window.viewer;
+            const viewer = window.viewer;
 
             var position = Cesium.Cartographic.fromDegrees(
                 uavHeartbeatNow.lng,
@@ -1129,7 +1161,7 @@ export default {
             height = updatedPositions[0].height; // 27.592189191613983 字符串
             //心跳高度+当前获取的高度
             // let newheight = parseFloat(height) + parseFloat(uavHeartbeatNow.alt)
-            let newheight = parseFloat(uavHeartbeatNow.alt)
+            const newheight = parseFloat(uavHeartbeatNow.alt)
             viewer.clock.shouldAnimate = true;
             this.flymovenew(
                 this.defaultUavSn,
@@ -1138,20 +1170,20 @@ export default {
                 newheight,
                 uavHeartbeatNow.yaw,
                 uavHeartbeatNow.pitch,
-                uavHeartbeatNow.roll,
+                uavHeartbeatNow.roll
             );
         },
         /**心跳异常异常模型 */
         GetHeartbeatNowToremoveModel(uavHeartbeatNow) {
-            console.log("心跳异常异常模型");
-            let viewer = window.viewer;
+            console.log('心跳异常异常模型');
+            const viewer = window.viewer;
             viewer.entities.remove(this.vehicleEntity);
             window.viewer.trackedEntity = undefined;
             this.vehicleEntity = null;
         },
         async GetHeartbeatNow(uavHeartbeatNow) {
             // 心跳数据
-            console.log("当前在线无人机经纬度点",
+            console.log('当前在线无人机经纬度点',
                 uavHeartbeatNow.lng,
                 uavHeartbeatNow.lat,
                 uavHeartbeatNow.altabs
@@ -1164,7 +1196,7 @@ export default {
                 uavHeartbeatNow.altabs,
                 uavHeartbeatNow.yaw
             );
-            //#region 
+            //#region
             // console.log("父传子---获取心跳数据");
             // // console.log(uavHeartbeatNow);
             // // 创建一个Cartographic对象表示经纬度坐标
@@ -1277,21 +1309,21 @@ export default {
          */
         flymovenew(uavid, lng, lat, altabs, yaw, pitch, roll) {
             var viewer = window.viewer
-            let nextPosition = Cesium.Cartesian3.fromDegrees(lng, lat, altabs);
+            const nextPosition = Cesium.Cartesian3.fromDegrees(lng, lat, altabs);
             /** 在这个地方是不是换uavid  uvaid 改变重新 添加   */
             if (!this.vehicleEntity || this.currentDisplayUavId != uavid) {
                 //      // 通过 uavid 获取对应的实体 移除
-                let entityId = 'onlineUav-' + this.currentDisplayUavId
+                const entityId = 'onlineUav-' + this.currentDisplayUavId
                 viewer.entities.removeById(entityId); // 已知实体的id为entityId
-                //     var oldVehicleEntity = window.viewer.entities.getById(entityId);    
+                //     var oldVehicleEntity = window.viewer.entities.getById(entityId);
 
                 this.currentDisplayUavId = uavid // 当前显示无人机
 
                 /**模型文件角度存在偏差 弧度 - 1.570796326 度数 93*/
-                let heading = yaw - 1.570796326;
+                const heading = yaw - 1.570796326;
                 /**设置模型初始朝向 */
                 // let headingValue = Cesium.Math.toRadians(heading); // 将角度值转换为弧度
-                let orientation = Cesium.Transforms.headingPitchRollQuaternion(
+                const orientation = Cesium.Transforms.headingPitchRollQuaternion(
                     nextPosition,
                     new Cesium.HeadingPitchRoll(heading, pitch, roll) //(headingValue, 0, 0) 模型的偏航角（heading）模型的俯仰角（pitch） 表示模型的横滚角（roll）
                 );
@@ -1302,18 +1334,18 @@ export default {
                     orientation: orientation, // 设置模型初始朝向
                     position: nextPosition,
                     model: {
-                        uri: "../../static/model/wrji.glb",
-                        scale: 0.55,
-                    },
+                        uri: '../../static/model/wrji.glb',
+                        scale: 0.55
+                    }
                 });
             } else {
                 // 使用动画平滑移动模型
                 //  获取当时这个点的位置 开始位置
-                let startPosition = this.vehicleEntity.position.getValue(
+                const startPosition = this.vehicleEntity.position.getValue(
                     viewer.clock.currentTime
                 );
                 /**初始化时获取当前位置的朝向 --前一帧 */
-                let startOrientation = this.vehicleEntity.orientation.getValue(
+                const startOrientation = this.vehicleEntity.orientation.getValue(
                     viewer.clock.currentTime
                 );
 
@@ -1332,7 +1364,7 @@ export default {
                 var duration = 300; // 移动动画的持续时间（秒）
                 // 实时更新this.vehicleEntity.position
                 this.vehicleEntity.position = new Cesium.CallbackProperty(
-                    function () {
+                    function() {
                         if (factor > duration) {
                             factor = 0;
                         }
@@ -1349,11 +1381,11 @@ export default {
                 );
                 /**动态更新朝向 实时更新 this.vehicleEntity.orientation */
                 this.vehicleEntity.orientation = new Cesium.CallbackProperty(
-                    function () {
+                    function() {
                         // 获取当前位置的朝向yaw值
-                        let heading = yaw - 1.570796326;
+                        const heading = yaw - 1.570796326;
                         // let headingValue = Cesium.Math.toRadians(heading);
-                        let orientation =
+                        const orientation =
                             Cesium.Transforms.headingPitchRollQuaternion(
                                 nextPosition,
                                 new Cesium.HeadingPitchRoll(heading, pitch, roll)
@@ -1371,7 +1403,6 @@ export default {
 
             // 地图设置视角的位置
             if (this.isLockView) {
-
                 window.viewer.trackedEntity = this.vehicleEntity;
                 this.vehicleEntity.viewFrom = new Cesium.Cartesian3(0, 0, 18);
             }
@@ -1381,11 +1412,10 @@ export default {
         /**设置是否锁定视口 */
         setViewport() {
             this.isLockView = !this.isLockView;
-            let viewer = window.viewer;
+            const viewer = window.viewer;
             if (!this.isLockView) {
                 window.viewer.trackedEntity = undefined;
             }
-
 
             /**视口朝向或无人机模型为视口 */
             const isOnline = this.vehicleEntity !== null;
@@ -1396,7 +1426,6 @@ export default {
                 this.vehicleEntity.viewFrom = new Cesium.Cartesian3(0, 0, 18);
             } else if (hasMapCenter && this.isLockView) {
                 console.log('设置中心点');
-
             } else {
 
             }
@@ -1405,7 +1434,7 @@ export default {
         // 解析Kml
         ReadKml() {
             var viewer = window.viewer
-            console.log("解析Kml");
+            console.log('解析Kml');
             // var promise = viewer.dataSources.add(
             //     // Cesium.KmlDataSource.load("../../static/kml/S03-NB03.kml", {
             //     //     camera: viewer.scene.camera,
@@ -1417,25 +1446,22 @@ export default {
             //     })
             // );
 
-
-
             // 加载kml数据
-            let kmlUrl = "http://127.0.0.1:9090/ceshi/kml/ces.kml";
-            let kmlDataPromise = Cesium.KmlDataSource.load(kmlUrl);
+            const kmlUrl = 'http://127.0.0.1:9090/ceshi/kml/ces.kml';
+            const kmlDataPromise = Cesium.KmlDataSource.load(kmlUrl);
             console.log('kmlDataPromise', kmlDataPromise);
-            kmlDataPromise.then(function (dataSource) {
+            kmlDataPromise.then(function(dataSource) {
                 viewer.dataSources.add(dataSource);
                 viewer.clock.shouldAnimate = false;
                 var rider = dataSource.entities.getById('tour');
 
-                viewer.flyTo(rider).then(function () {
+                viewer.flyTo(rider).then(function() {
                     viewer.trackedEntity = rider;
                     viewer.selectedEntity = viewer.trackedEntity;
                     viewer.clock.multiplier = 30;
                     viewer.clock.shouldAnimate = true;
                 });
                 console.log(dataSource, 'dataSource');
-
             });
             // var options = {
             //     camera: viewer.scene.camera,
@@ -1481,14 +1507,14 @@ export default {
         doPartition() {
             var viewer = window.viewer
 
-            let kmlUrl1 = "http://127.0.0.1:9090/ceshi/kml/1.kml";
-            let kmlUrl2 = "http://127.0.0.1:9090/ceshi/kml/2.kml";
-            let kmlUrl3 = "http://127.0.0.1:9090/ceshi/kml/3.kml";
-            let kmlUrl4 = "http://127.0.0.1:9090/ceshi/kml/4.kml";
-            let kmlUrl5 = "http://127.0.0.1:9090/ceshi/kml/5.kml";
-            let kmlUrl6 = "http://127.0.0.1:9090/ceshi/kml/6.kml";
-            let kmlUrl7 = "http://127.0.0.1:9090/ceshi/kml/7.kml";
-            let kmlUrl8 = "http://127.0.0.1:9090/ceshi/kml/8.kml";
+            const kmlUrl1 = 'http://127.0.0.1:9090/ceshi/kml/1.kml';
+            const kmlUrl2 = 'http://127.0.0.1:9090/ceshi/kml/2.kml';
+            const kmlUrl3 = 'http://127.0.0.1:9090/ceshi/kml/3.kml';
+            const kmlUrl4 = 'http://127.0.0.1:9090/ceshi/kml/4.kml';
+            const kmlUrl5 = 'http://127.0.0.1:9090/ceshi/kml/5.kml';
+            const kmlUrl6 = 'http://127.0.0.1:9090/ceshi/kml/6.kml';
+            const kmlUrl7 = 'http://127.0.0.1:9090/ceshi/kml/7.kml';
+            const kmlUrl8 = 'http://127.0.0.1:9090/ceshi/kml/8.kml';
 
             // const dataSourcePromise1 = Cesium.KmlDataSource.load(kmlUrl1, {
             //     camera: viewer.scene.camera,
@@ -1537,60 +1563,8 @@ export default {
 
         receivemsg(e) {
             console.log('getpositionsEvet0', e);
-        },
-    },
-    //生命周期 - 创建完成（可以访问当前this实例）
-    created() {
-    },
-    //生命周期 - 挂载完成（可以访问DOM元素）
-    mounted() {
-        document.addEventListener("sendmsg", this.receivemsg);
-        //
-        const cesiumElement = document.querySelector(".cesiumOutdiv");
-        // 创建 MutationObserver 实例 鼠标文字位置
-        var observer = new MutationObserver(
-            debounce((mutationsList, observer) => {
-                const rect = cesiumElement.getBoundingClientRect();
-                this.CursorTipDistance.distanceX = rect.left;
-                this.CursorTipDistance.distanceY = rect.top;
-                // 处理位置变化的逻辑
-                console.log(this.CursorTipDistance);
-            }, 300)
-        ); // 设置节流的延迟时间，例如 200 毫秒
-
-        function debounce(fu, delay) {
-            let timeoutId;
-            return (...arg) => {
-                clearTimeout(timeoutId);
-                timeoutId = setTimeout(() => fu(...arg), delay);
-            };
         }
-        // 开始观察目标元素的变化
-        observer.observe(cesiumElement, {
-            attributes: true,
-            childList: true,
-            subtree: false
-        });
-
-        this.CreateCesium();
-        this.addimageryLayers(this.MapProvider);
-
-        console.log('子组件');
-
-        // this.doPartition()
-
-
-    },
-    beforeCreate() { }, //生命周期 - 创建之前
-    beforeMount() { }, //生命周期 - 挂载之前
-    beforeUpdate() { }, //生命周期 - 更新之前
-    updated() { }, //生命周期 - 更新之后
-    beforeDestroy() {
-        this.clearAllPointAndLine()
-        // observer.disconnect();
-    }, //生命周期 - 销毁之前
-    destroyed() { }, //生命周期 - 销毁完成
-    activated() { } //如果页面有keep-alive缓存功能，这个函数会触发
+    } //如果页面有keep-alive缓存功能，这个函数会触发
 };
 </script>
 <style lang="scss" scoped>

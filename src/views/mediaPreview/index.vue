@@ -13,7 +13,7 @@
       您的浏览器不支持 video 标签。
     </video>
     <iframe
-      v-if="formats === &quot;pdf&quot;"
+      v-if="formats === 'pdf' || formats === 'web'"
       className="pdf-iframe"
       preload="metadata"
       title="预览文档"
@@ -41,7 +41,6 @@
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等!）
 //例如：import 《组件名称》 from '《组件路径》';
 // import { defaultOptions, renderAsync } from 'docx-preview'
-import axios from 'axios'
 export default {
     name: '',
     //import引入的组件需要注入到对象中才能使用
@@ -69,8 +68,8 @@ export default {
     //生命周期 - 挂载完成（可以访问DOM元素）
     mounted() {
         // 获取当前页面的 URL
-        // const url = new URL(window.location.href);
-        // console.log('Current URL:', url);
+        const url = new URL(window.location.href);
+        console.log('Current URL:', url);
         // const urlParams = new URLSearchParams(window.location.search);
         // console.log('Parameter Value:', urlParams);
         // // 获取指定参数的值
@@ -81,10 +80,8 @@ export default {
         // const id = parseInt(urlParams.get('id'), 10);
         const src = decodeURIComponent(urlParams.get('src'));
         const formats = decodeURIComponent(urlParams.get('formats'));
-        // const dataString = urlParams.get('data');
-        // const data = JSON.parse(decodeURIComponent(dataString));
-        // const myObject = { id, src, data };
-        // this.src = src;
+
+        console.log('formats', formats);
         this.formats = formats;
         this.src = src; // `https://view.officeapps.live.com/op/view.aspx?src=https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/solution/demo.docx`
         console.log('src', this.src);
@@ -140,6 +137,7 @@ export default {
         //     this.fileRef = res.data
         // },
         tifHttpRequest() {
+            // 'http://127.0.0.1:9090/efuav-ortho-img/pointcloud/kmzTasks/2/yingDeMap.tif'
             const xhr = new XMLHttpRequest();
             xhr.open('GET', this.src, true);
             xhr.responseType = 'arraybuffer';

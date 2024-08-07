@@ -1,59 +1,43 @@
 <template>
   <div id="bg">
+    <div id="title">智能无人机巡检系统</div>
     <div id="card">
-      <el-card class="box-card">
-        <div class="card-layout">
-          <div id="card-right">
-            <div class="right-top">
-              <span style="color: aliceblue; font-size: 26px;font-weight:bold">智能无人机巡检</span>&nbsp;
-              <span style="color: aliceblue; font-size: 20px" @click="uploadFiles({ fileType: 'orthoimg' , id : 0,reqUrl:'efapi/pointcloud/media/orthoimg/uploads' })">系统</span>
-            </div>
-            <div class="right-bouttom">
-              <div style="text-align:center">
-                <h2 @click="downimg">用户登陆</h2>
-              </div>
-              <div id="login-form">
-                <el-form ref="loginForm" :model="loginForm" label-width="100px" :rules="loginRules">
-                  <el-form-item prop="username">
-                    <el-input ref="username" v-model="loginForm.username" prefix-icon="el-icon-user" placeholder="请输入用户名" name="username" type="text" tabindex="1" auto-complete="on" @change="changeUsername" @keyup.enter.native="handelTab('password',$event)" />
-                  </el-form-item>
-                  <el-form-item prop="password" style="margin-bottom: 5px">
-                    <!-- ref<< @paste.native.capture.prevent="handlePaste" -->
-                    <el-input
-                      :key="passwordType"
-                      ref="password"
-                      v-model="loginForm.password"
-                      style="width: 300px"
-                      prefix-icon="el-icon-lock"
-                      :type="passwordType"
-                      placeholder="请输入密码"
-                      name="password"
-                      tabindex="2"
-                      auto-complete="off"
-                      @keyup.enter.native="beforeLogin()"
-                      @click.native="clearPwd()"
-                    />
-                  </el-form-item>
-                  <div style="margin-bottom: 25px;margin-top:20px;text-align:right">
-                    <el-checkbox v-model="isRememberMe">记住用户名与密码</el-checkbox>
-                  </div>
-                  <el-form-item>
-                    <el-button id="submitbutton" :loading="loading" type="primary" @click.native.prevent="beforeLogin()">登录</el-button>
-                  </el-form-item>
-                </el-form>
-              </div>
-            </div>
+      <div id="logo"><img src="../../assets/images/toplogo.png" alt="logo"></div>
+      <div id="userLogin"><span>用户登录</span></div>
+      <div id="login-form">
+        <el-form ref="loginForm" :model="loginForm" label-width="0px" :rules="loginRules">
+          <el-form-item prop="username">
+            <el-input ref="username" v-model="loginForm.username" prefix-icon="el-icon-user" placeholder="请输入用户名" name="username" type="text" tabindex="1" auto-complete="on" @change="changeUsername" @keyup.enter.native="handelTab('password',$event)" />
+          </el-form-item>
+          <el-form-item prop="password" style="margin-bottom: 5px">
+            <el-input
+              :key="passwordType"
+              ref="password"
+              v-model="loginForm.password"
+              prefix-icon="el-icon-lock"
+              :type="passwordType"
+              placeholder="请输入密码"
+              name="password"
+              tabindex="2"
+              auto-complete="off"
+              @keyup.enter.native="beforeLogin()"
+              @click.native="clearPwd()"
+            />
+          </el-form-item>
+          <div style="margin-bottom: 25px;margin-top:20px;text-align:right">
+            <el-checkbox v-model="isRememberMe">记住用户名与密码</el-checkbox>
           </div>
-        </div>
-      </el-card>
-    </div>
-    <div>
-      <div id="copy">
-        <a :underline="false" target="_blank" href="https://beian.miit.gov.cn/">
-          鄂ICP备xxxx5
-        </a>
-        v1.0 版权所有 © 2025
+          <el-form-item style="width: 65%;margin: auto;">
+            <el-button id="submitbutton" :loading="loading" type="primary" @click.native.prevent="beforeLogin()">登录</el-button>
+          </el-form-item>
+        </el-form>
       </div>
+    </div>
+    <div id="copy">
+      <a :underline="false" target="_blank" href="https://beian.miit.gov.cn/">
+        鄂ICP备xxxx5
+      </a>
+      v1.0 版权所有 © 2025
     </div>
   </div>
 </template>
@@ -61,10 +45,8 @@
 import { validUsername } from '@/utils/validate'
 import Cookies from 'js-cookie'
 import md5 from 'js-md5'
-// import * as animationData from '../../../public/hive_flying.json'
 import * as hiveFlyingData from '@/assets/lotties/hive_flying.json'
 import * as uavFlyingData from '@/assets/lotties/uav_flying.json'
-// import efdentify from '@/views/components/efidentify.vue'
 import currencyMinins from '@/utils/currencyMinins'
 var checkNameReg = (rule, value, callback) => { // 用户名限制
     if (!value) {
@@ -260,6 +242,7 @@ export default {
         }
     },
     methods: {
+
         downimg() {
             this.$store.dispatch('media/downimg').then(res => {
             }).catch(error => {
@@ -498,15 +481,13 @@ export default {
 </script>
 
   <!-- //css -->
-  <style scoped>
+  <style scoped lang='scss'>
 #bg {
   position: fixed;
   width: 100%;
   height: 100%;
   top: 0px;
   left: 0px;
-  /* background-image: url(https://img.zcool.cn/community/01b97655683aa40000012b205d0020.jpg@2o.jpg); */
-  /* background-image: url("../../assets/images/bgwater.jpg"); */
   background: url("../../assets/images/bggrassland.jpg") no-repeat center center
     fixed;
   -webkit-background-size: cover;
@@ -514,82 +495,43 @@ export default {
   -o-background-size: cover;
   background-size: cover;
   /* background-size: 100%; */
-}
-
-#logo {
-  z-index: 9999;
-  /* color: aliceblue; */
-  font-size: 25px;
-  font-weight: 800;
-  text-transform: uppercase;
-  position: absolute;
-  left: 15%;
-  width: 15%;
-  top: 20%;
-  /*top: 20%;*/
-}
-
-#card {
-  width: 60%;
-  /* height: 75%; */
-  bottom: 10%;
-  position: absolute;
-  left: 20%;
-}
-
-.card-layout {
   display: flex;
-  height: 650px;
+  align-items: center;
   justify-content: center;
-  align-content: center;
-}
-
-#card-left {
-  width: 60%;
-}
-
-#card-right {
-  display: flex;
-  justify-content: center;
-  align-content: center;
   flex-direction: column;
 }
-
-.right-top {
-  /* margin-top: 50px; */
-  /* mix-blend-mode: difference; */
-  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+#card {
+  width: 500px;
+  height: 480px;
+  background-color: rgba(255, 255, 255,0.8);
+  border-radius: 25px;
 }
-
-.right-bouttom {
-  background-color: rgb(255, 255, 255);
-  padding: 50px 40px 50px 40px;
-  margin-top: 20px;
-  border-radius: 10px;
+#title{
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: rgba( 255,255,255,1);
 }
-
+#logo{
+    display: flex;
+    img{
+    margin: auto;
+    margin-top: 20px;
+    filter: opacity(0.8);
+  }
+}
+#userLogin{
+    margin-top: 20px;
+    font-size: 42px;
+    font-weight: 500;
+    color: #4B4F53;
+    text-align: center;
+}
 #login-form {
-  position: relative;
-  right: 45px;
-}
+padding: 20px;
+margin:auto;
+width: 95%;
 
-.botton-first {
-  margin-top: 200px;
-}
-
-.botton {
-  margin: 10px;
-  width: 85%;
-}
-
-.el-card {
-  border-radius: 3%;
-  width: 100%;
-  /* width: 373px; */
-  /* height: 210px; */
-  /* background-color: rgba(0.1, 204, 255, 255); */
-  background-color: transparent;
-  border: 0px;
 }
 
 #form {
@@ -602,8 +544,6 @@ export default {
   position: absolute;
   bottom: 5%;
   left: 800px;
-  /* left: 0;
-    right: 0; */
 }
 
 #submitbutton {

@@ -67,26 +67,12 @@
                       <uavItem ref="uavItems" :uav-name="item.uavName" :uav-sn="item.uavId" :online="item.online" @dblclick.native="cameraSettingVisible = !cameraSettingVisible" @click.native="clickUavItem(item)" />
                     </el-row>
                   </el-scrollbar>
-                  <!-- <label class="label-text">播种无人机</label>
-                                    <el-scrollbar style="width:98%" wrap-style="overflow-x:hidden;flex:1">
-                                        <el-row v-for="(item,index) in seedingUavs" :key="index" :gutter="1" justify="flex" align="middle" style="margin:8px">
-                                            <uavItem ref="uavItems" :uavName="item.uavName" :uavSn="item.uavId" :online="item.online" @dblclick.native="cameraSettingVisible = !cameraSettingVisible" @click.native="clickUavItem(item)" />
-                                        </el-row>
-                                    </el-scrollbar> -->
-
                 </div>
                 <div v-else class="no_uav"><i class="el-icon-warning-outline">未绑定无人机</i></div>
               </div>
             </dv-border-box-7>
             <div class="main_right_parms_title" @click="createWebWorker()">航线任务</div>
             <dv-border-box-7 class="main_left_exception">
-              <!-- tasksRoutes -->
-              <!-- <div class="routes">
-                        <div class="route_item"  v-for="(item,index) in tasksRoutes" :key="index">
-                                <span>{{time(item.kmzUpdateTime)}}</span>
-                                <span>{{item.kmzName}}</span>
-                            </div>
-                     </div> -->
               <div class="main_left_routes_body">
                 <div class="statistics-top-box">
                   <el-row>
@@ -99,14 +85,11 @@
                     <el-col :span="4">
                       <div style="text-align: center;" :class="'cursorStyle' + (isActive == '2' ? 'active' :'') " @click="SelectTime(2)">本周</div>
                     </el-col>
-
                     <el-col :span="9">
                       <!-- <el-button disabled></el-button> -->
                       <i style="margin:0px 5px; float: right;" title="上传无人机" class="iconfont icon-icon_update cursorStyle" :class="{ disabled: maploading }" @click="maploading ? null : uploadKmzBefore()" />
-
                       <i style="margin:0px 5px; float: right;" title="解析航线" class="iconfont  icon-hangxianxinxi cursorStyle" :class="{ disabled: maploading }" @click="maploading ? null :readerKml()" />
                     </el-col>
-
                   </el-row>
                 </div>
                 <el-scrollbar v-if="!tasksLoading" class="scrollbar" style="width:98%;" wrap-style="overflow-x:hidden;flex:1;font-size:small;">

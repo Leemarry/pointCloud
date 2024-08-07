@@ -4,7 +4,7 @@
  * @Author: Eugene
  * @Date: 2023-11-13 10:49:26
  * @LastEditors: likai 2806699104@qq.com
- * @LastEditTime: 2024-08-02 08:50:24
+ * @LastEditTime: 2024-08-05 11:14:21
 -->
 <!DOCTYPE html>
 <html>
@@ -13,7 +13,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <link rel="icon" href="./favicon.ico">
 
     <!-- 自动将HTTP请求升级成安全的HTTPS请求 -->
     <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
@@ -32,10 +32,12 @@
     <!-- <link rel="stylesheet" href="./CesiumUnminified/Widgets/widgets.css">
     <script src="./CesiumUnminified/Cesium.js"></script> -->
     
-    <link href="https://cesium.com/downloads/cesiumjs/releases/1.98/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
-    <script src="https://cesium.com/downloads/cesiumjs/releases/1.98/Build/Cesium/Cesium.js"></script>
+    <!-- <link href="https://cesium.com/downloads/cesiumjs/releases/1.98/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.98/Build/Cesium/Cesium.js"></script> -->
+    <link rel="stylesheet" href="./cesium/Build/Cesium/Widgets/widgets.css">
+    <script src="./cesium/Build/Cesium/Cesium.js"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.4.8/mammoth.browser.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/mammoth@1.4.8/mammoth.browser.min.js"></script> -->
     <!-- 富文本编辑 没有注释 tinymce -->
     <!-- <script src="./tinymce/tinymce.min.js"></script> -->
     <!-- libs -->
@@ -55,6 +57,7 @@
     <script src="./UTIF/UTIF.js"></script>
     <script src="./UTIF/tiff.min.js"></script>
     <script src="./UTIF/jszip.min.js"></script>
+    <script src="./mammoth.browser.js"></script>
     <title>
         <%= webpackConfig.name %>
     </title>

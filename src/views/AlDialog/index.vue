@@ -86,7 +86,6 @@ export default {
 //@import url(); 引入公共css类
 
 .al-dialog {
-	display: none;
 	position: fixed;
 	left: 0;
 	top: 0;

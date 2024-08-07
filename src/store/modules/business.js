@@ -1,7 +1,7 @@
 /*
  * @Date: 2024-07-18 18:05:09
  * @LastEditors: likai 2806699104@qq.com
- * @FilePath: \pointCouldPages\src\store\modules\dangerPointManage.js
+ * @FilePath: \pointCouldPages\src\store\modules\business.js
  * @Description: Do not edit
  */
 
@@ -33,6 +33,16 @@ const actions = {
     getTowerList({ commit, state }, data) {
         return new Promise((resolve, reject) => {
             businessApi.getTowerList(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+
+    handTower({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            businessApi.handTower(data).then(response => {
                 resolve(response)
             }).catch(error => {
                 reject(error)

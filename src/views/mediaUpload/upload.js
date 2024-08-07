@@ -1,3 +1,9 @@
+/*
+ * @Date: 2024-07-30 13:18:59
+ * @LastEditors: likai 2806699104@qq.com
+ * @FilePath: \pointCouldPages\src\views\mediaUpload\upload.js
+ * @Description: Do not edit
+ */
 import { getToken } from '@/utils/auth' // get token from cookie
 export function uploadFile(file, type = '', createTime = new Date()) {
     var formData = new FormData();
@@ -27,13 +33,14 @@ export function uploadFiles(file, uploadFilesList, url) {
         formData.append('type', 'image');
         formData.append('createTime', new Date());
         var xhr = new XMLHttpRequest();
-
+        var index = uploadFilesList.findIndex(item => item === file);
         xhr.upload.addEventListener('progress', function(event) {
-            var index = uploadFilesList.findIndex(item => item === file);
             if (event.lengthComputable) {
                 var percentComplete = (event.loaded / event.total) * 100;
-                console.log('上传进度：', index, uploadFilesList, file, percentComplete + '%');
+                console.log('上传进度：', index, uploadFilesList, xhr, percentComplete + '%');
                 uploadFilesList[index].progress = percentComplete;
+                // 将xhr状态给对应文件ploadFilesList[index].status = xhr.readyState;
+                uploadFilesList[index].status = xhr.readyState;
             }
         });
         // 绑定状态改变的监听

@@ -1,7 +1,13 @@
+/*
+ * @Date: 2024-07-16 09:54:46
+ * @LastEditors: likai 2806699104@qq.com
+ * @FilePath: \pointCouldPages\src\permission.js
+ * @Description: Do not edit
+ */
 import router from './router'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
+import { getToken, removeToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
@@ -36,38 +42,23 @@ router.beforeEach(async(to, from, next) => {
         // 应该已经登录
         if (to.path === '/login') {
             next(); // 如果进登录界面，则直接进，不用重定向到主页
-            // next({ path: '/index' }) // 如果已登录，重定向到主页
+            removeToken()
             // NProgress.done()
         } else {
             console.log('数据全都正常，正常方向');
             next() // 数据全都正常，正常方向
-            // const hasGetUserInfo = store.getters.name
-            //     // console.log('当前登录用户信息：' + hasGetUserInfo)
-            // let accessRoutes = store.getters.permission_routes
-            // let isLogin = false // 是否已经登录
-            // let hasRoute = true // 是否有路由表
-            // if (hasGetUserInfo) {
-            //     isLogin = true
-            // }
-            // if (accessRoutes && accessRoutes.length > 0) {
-            //     hasRoute = true
-            // }
-            // if (isLogin === true && hasRoute === true && getRouter === true) {
-            //     next() // 数据全都正常，正常方向
-            // } else {
-            //     next(`/login?` + Date.now())
-            //     NProgress.done()
-            // }
         }
     } else {
         // 没有登录
         getRouter = null
         /* 没有 token */
         if (whiteList.indexOf(to.path) !== -1) {
+            console.log('当前页面：' + from.path + ', 准备去页面：' + to.path + '，没有登录，在白名单内跳转到登录页面');
             // 在免费登录白名单中，直接进入
             next()
         } else {
             // 没有访问权限的其他页面将重定向到登录页面。
+            console.log('当前页面：' + from.path + ', 准备去页面：' + to.path + '，没有登录，跳转到登录页面');
             next(`/login?` + Date.now())
             NProgress.done()
         }
@@ -88,4 +79,14 @@ router.afterEach(() => {
 //     next({
 //         ...to,
 //         replace: true
+//     })
+// }
+
+// function saveObjArr(name, data) { //localStorage 存储数组对象的方法
+//     localStorage.setItem(name, JSON.stringify(data))
+// }
+
+// function getObjArr(name) { //localStorage 获取数组对象的方法
+//     return JSON.parse(window.localStorage.getItem(name));
+// }
 

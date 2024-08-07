@@ -9,6 +9,9 @@ module.exports = {
     node: true,
     es6: true,
   },
+  globals: {
+    "Cesium": true // 这里添加变量名称不会报错
+  },
   extends: ['plugin:vue/recommended', 'eslint:recommended'],
 
   // add your custom rules here

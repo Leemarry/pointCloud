@@ -36,161 +36,160 @@ import Layout from '@/layout'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
-export const constantRoutes = [{
-    path: '/login',
-    component: () => import('@/views/login/index'),
-    hidden: true,
-    children: []
-},
-{
-    path: '/',
-    redirect: '/login',
-    hidden: true,
-    children: []
-},
-{
-    path: '/index',
-    component: () => import('@/views/main/index.vue'),
-    meta: { icon: 'main', title: '我的首页' },
-    name: 'index'
-},
-// {
-//     path: '/uploadpage',
-//     meta: { title: '上传窗口', icon: 'el-icon-setting' },
-//     name: 'uploadpage',
-//     component: () => import('@/views/mediaUpload/index.vue'),
-//     hidden: true
-// },
-// {
-//     path: '/preview',
-//     meta: { title: '预览文本', icon: 'el-icon-setting' },
-//     name: 'preview',
-//     component: () => import('@/views/mediaPreview/index.vue'),
-//     hidden: true
-// },
-// {
-//     path: '/previewPointcloud',
-//     meta: { title: '预览点云', icon: 'el-icon-setting' },
-//     name: 'previewPointcloud',
-//     component: () => import('@/views/mediaPreviewPointCloud/index.vue'),
-//     hidden: true
-// },
-{
-    path: '/routeManage',
-    component: Layout,
-    name: 'routeManage',
-    meta: { title: '航线管理', icon: 'el-icon-setting' },
-    // 重定向
-    redirect: '/kmzManage',
-    children: [
-        {
-            path: '/kmzManage',
-            name: 'kmzManage',
-            component: () => import('@/views/routeManage/kmzManage/index.vue'),
-            meta: { title: 'Kmz管理', icon: 'el-icon-picture' }
-        }
+export const constantRoutes = [
+    {
+        path: '/',
+        redirect: '/login',
+        hidden: true,
+        children: []
+    }, {
+        path: '/login',
+        component: () => import('@/views/login/index'),
+        hidden: true
+    },
+    {
+        path: '/index',
+        component: () => import('@/views/main/index.vue'),
+        meta: { icon: 'main', title: '我的首页' },
+        name: 'index'
+    },
+    {
+        path: '/uploadpage',
+        meta: { title: '上传窗口', icon: 'el-icon-setting' },
+        name: 'uploadpage',
+        component: () => import('@/views/mediaUpload/index.vue'),
+        hidden: true
+    },
+    {
+        path: '/preview',
+        meta: { title: '预览文本', icon: 'el-icon-setting' },
+        name: 'preview',
+        component: () => import('@/views/mediaPreview/index.vue'),
+        hidden: true
+    },
+    {
+        path: '/previewPointcloud',
+        meta: { title: '预览点云', icon: 'el-icon-setting' },
+        name: 'previewPointcloud',
+        component: () => import('@/views/mediaPreviewPointCloud/index.vue'),
+        hidden: true
+    },
+    {
+        path: '/routeManage',
+        component: Layout,
+        name: 'routeManage',
+        meta: { title: '航线管理', icon: 'el-icon-setting' },
+        // 重定向
+        redirect: '/kmzManage',
+        children: [
+            {
+                path: '/kmzManage',
+                name: 'kmzManage',
+                component: () => import('@/views/routeManage/kmzManage/index.vue'),
+                meta: { title: 'Kmz管理', icon: 'el-icon-picture' }
+            }
 
-    ]
-},
-{
-    path: '/serviceManage',
-    component: Layout,
-    name: 'serviceManage',
-    meta: { title: '服务管理', icon: 'el-icon-setting' },
-    // 重定向
-    redirect: '/point',
-    children: [
-        {
-            path: '/tower',
-            name: 'tower',
-            component: () => import('@/views/businessMange/towerManage/index.vue'),
-            meta: { title: '杆塔管理', icon: 'el-icon-picture' }
-        },
-        {
-            path: '/point',
-            name: 'point',
-            component: () => import('@/views/businessMange/dangerousPointManage/index.vue'),
-            meta: { title: '危险点管理', icon: 'el-icon-picture' }
-        }
+        ]
+    },
+    {
+        path: '/serviceManage',
+        component: Layout,
+        name: 'serviceManage',
+        meta: { title: '服务管理', icon: 'el-icon-setting' },
+        // 重定向
+        redirect: '/point',
+        children: [
+            {
+                path: '/tower',
+                name: 'tower',
+                component: () => import('@/views/businessMange/towerManage/index.vue'),
+                meta: { title: '杆塔管理', icon: 'el-icon-picture' }
+            },
+            {
+                path: '/point',
+                name: 'point',
+                component: () => import('@/views/businessMange/dangerousPointManage/index.vue'),
+                meta: { title: '危险点管理', icon: 'el-icon-picture' }
+            }
 
-    ]
-},
-//#region 媒体
-{
-    path: '/mediaManage',
-    component: Layout,
-    name: 'mediaManage',
-    meta: { title: '数据管理', icon: 'el-icon-setting' },
-    // 重定向
-    redirect: '/photoMedia',
-    children: [
-        {
-            path: '/photoMedia',
-            name: 'photoMedia',
-            component: () => import('@/views/mediaManage/photoMedia/index.vue'),
-            meta: { title: '图片媒体', icon: 'el-icon-picture' }
-        },
-        {
-            path: '/videoMeia',
-            name: 'videoMeia',
-            component: () =>
-                import('@/views/mediaManage/videoMedia/index.vue'),
-            meta: { title: '视频媒体', icon: 'el-icon-camera-solid' }
-        },
-        {
-            path: '/pointCloud',
-            name: 'pointCloud',
-            component: () =>
-                import('@/views/mediaManage/pointcloudMedia/index.vue'),
-            meta: { title: '点云数据', icon: 'el-icon-s-help' }
-        },
-        {
-            path: '/orthoImg',
-            name: 'orthoImg',
-            component: () =>
-                import('@/views/mediaManage/orthoImg/index.vue'),
-            meta: { title: '正射影像', icon: 'el-icon-picture' }
-        }
+        ]
+    },
+    //#region 媒体
+    {
+        path: '/mediaManage',
+        component: Layout,
+        name: 'mediaManage',
+        meta: { title: '数据管理', icon: 'el-icon-setting' },
+        // 重定向
+        redirect: '/photoMedia',
+        children: [
+            {
+                path: '/photoMedia',
+                name: 'photoMedia',
+                component: () => import('@/views/mediaManage/photoMedia/index.vue'),
+                meta: { title: '图片媒体', icon: 'el-icon-picture' }
+            },
+            {
+                path: '/videoMeia',
+                name: 'videoMeia',
+                component: () =>
+                    import('@/views/mediaManage/videoMedia/index.vue'),
+                meta: { title: '视频媒体', icon: 'el-icon-camera-solid' }
+            },
+            {
+                path: '/pointCloud',
+                name: 'pointCloud',
+                component: () =>
+                    import('@/views/mediaManage/pointcloudMedia/index.vue'),
+                meta: { title: '点云数据', icon: 'el-icon-s-help' }
+            },
+            {
+                path: '/orthoImg',
+                name: 'orthoImg',
+                component: () =>
+                    import('@/views/mediaManage/orthoImg/index.vue'),
+                meta: { title: '正射影像', icon: 'el-icon-picture' }
+            }
 
-    ]
-},
-{
-    path: '/reportManage',
-    component: Layout,
-    name: 'reportManage',
-    meta: { title: '报告管理', icon: 'el-icon-setting' },
-    // 重定向
-    redirect: '/analysisReport',
-    children: [
-        {
-            path: '/analysisReport',
-            name: 'analysisReport',
-            component: () =>
-                import('@/views/reportManage/analysisReport/index.vue'),
-            meta: { title: '分析报告', icon: 'uav_manage' }
-        }
+        ]
+    },
+    {
+        path: '/reportManage',
+        component: Layout,
+        name: 'reportManage',
+        meta: { title: '报告管理', icon: 'el-icon-setting' },
+        // 重定向
+        redirect: '/analysisReport',
+        children: [
+            {
+                path: '/analysisReport',
+                name: 'analysisReport',
+                component: () =>
+                    import('@/views/reportManage/analysisReport/index.vue'),
+                meta: { title: '分析报告', icon: 'uav_manage' }
+            }
 
-    ]
-},
-//#endregion
-
-// 404 page must be placed at the end !!!
-{ path: '*', redirect: '/404', hidden: true }
+        ]
+    },
+    // //#endregion
+    // // 404 page must be placed at the end !!!
+    { path: '*', redirect: '/404', hidden: true },
+    // 通配符路由，用于处理未匹配到的路由
+    { path: '/404', component: () => import('@/views/404.vue') }
 ]
-
 const createRouter = () => new Router({
     // mode: 'history', // require service support
-    scrollBehavior: () => ({ y: 0 }),
-    mode: 'hash', //'hash',
-    routes: constantRoutes
+    // scrollBehavior: () => ({ y: 0 }),
+    routes: constantRoutes,
+    mode: 'history' //'hash',
 })
 
 const router = createRouter()
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
-    const newRouter = createRouter()
-    router.matcher = newRouter.matcher // reset router
+    // const newRouter = createRouter()
+    // router.matcher = newRouter.matcher // reset router
 }
 
 export default router

@@ -18,7 +18,7 @@
       </el-form>
       <div>
         <el-button type="primary" @click="queryList1">查询</el-button>
-        <el-button type="primary" @click="uploadFiles({ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/upload' })">上传</el-button>
+        <el-button type="primary" @click="uploadFiles({ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploads2' })">上传</el-button>
       </div>
     </div>
     <div class="media-container">
@@ -35,7 +35,7 @@
         <el-table-column prop="mark" label="标注名" width="120" />
         <el-table-column prop="amendType" label="类型" />
         <el-table-column prop="amendSize" label="大小">
-          <template  slot-scope="scope">
+          <template slot-scope="scope">
             <span>{{ filtersType(scope.row.amendSize) }}</span>
           </template>
         </el-table-column>
@@ -43,6 +43,7 @@
         <el-table-column fixed="right" label="操作" width="100">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="previewPointCloud(scope.row)">查看</el-button>
+            <el-button type="text" size="small" @click="previewWebCloud(scope.row)">web查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -121,6 +122,23 @@ export default {
                 this.windows[windowName].focus();
             }
         },
+        previewWebCloud(row) {
+            // webUrl
+            // const windowName = 'pointCloudPreview-' + row.id;
+            // if (!this.windows[windowName] || this.windows[windowName].closed) {
+            //     const queryString = `?id=${row.id}&src=${encodeURIComponent(row.webUrl)}&data=${encodeURIComponent(JSON.stringify(row))}`;
+            //     const url = '/preview' + queryString;
+            //     const existingWindow = window.open(url, windowName);
+            //     console.log('this.windows', window.tableData);
+            //     console.log('this.windows', existingWindow);
+            //     existingWindow.tableData = this.tableData;
+            //     this.windows[windowName] = existingWindow;
+            // } else {
+            //     this.windows[windowName].focus();
+            // }
+            this.beforeView(row.id, row.webUrl, 'web', row.mark)
+        },
+
         //vue打开新窗口并且实现传参--目的
         openpage(item) {
             console.log('   console.log(this.$router.options.routes)', this.$router.options.routes)

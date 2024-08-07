@@ -42,10 +42,10 @@
         <el-form-item label="描述" prop="des">
           <el-input v-model="ruleForm.des" type="textarea" style="width: 200px;" />
         </el-form-item>
-        <el-form-item>
+        <div style="margin-left: 5px;">
           <el-button type="primary" @click="submitForm('ruleForm')">确认修改</el-button>
           <el-button @click="resetForm('ruleForm')">重置</el-button>
-        </el-form-item>
+        </div>
       </el-form>
     </el-drawer>
   </div>
@@ -136,7 +136,7 @@ export default {
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    alert('submit!');
+                    this.$emit('hand:tower', this.ruleForm);
                 } else {
                     console.log('error submit!!');
                     return false;

@@ -4,6 +4,7 @@
 import AlImagePreview from '@/views/AlImagePreview/index.vue'
 import currencyMinins from '@/utils/currencyMinins'
 import TowerDrawer from './TowerdDetails/index.vue'
+import AlDialog from '@/views/AlDialog/index.vue'
 // import ElImageViewer from 'element-ui/packages/image/src/image-viewer'
 export default {
     name: 'Tower',
@@ -11,19 +12,22 @@ export default {
     //import引入的组件需要注入到对象中才能使用
     components: {
         AlImagePreview,
-        TowerDrawer
-        // ElImageViewer
+        TowerDrawer,
+        AlDialog
     },
     data() {
     //这里存放数据
         return {
+            title: '手动新增',
+            reqData: { operation: 'hand', id: 0, reqUrl: '/business/hand/addOrupdateTower' },
             fileList: [],
             imgViewerVisible: false,
             imgList: [],
             previewVisible: false,
             drawerVisible: false,
             towerInfo: {
-            }
+            },
+            dialogVisible: false
         };
     },
     //让组件接收外部传来的数据
@@ -42,12 +46,23 @@ export default {
                 })
                 .catch(_ => {});
         },
-        onSubmit() {
-
+        operationType(title, obj) {
+            this.title = title;
+            this.reqData = obj;
+        },
+        addTowers(data) {
+            console.log('data', data);
+            const { id, operation } = data;
+            if (operation === 'hand') {
+                this.addTower();
+            } else if (operation === 'batch') {
+                this.dialogVisible = true;
+                // this.updateTower({ ...this.towerInfo, id });
+            }
         },
         addTower() {
             // this.towerInfo 清空
-            this.towerInfo = { ...this.towerInfo, mark: '' };
+            this.towerInfo = { ...this.towerInfo, mark: '', id: null };
             this.drawerVisible = true;
         },
         updateTower(row) {
@@ -75,6 +90,46 @@ export default {
                 this.showToast(err, 'error');
             } finally {
                 this.mixinsLoading = false;
+            }
+        },
+        async  handTower(towerInfo) {
+            // 是否存在id 存在为修改 否则为新增
+            try {
+                const res = await this.$store.dispatch('business/handTower', { data: towerInfo, url: this.reqData.reqUrl })
+                const { code, message } = res;
+                if (code === 1) {
+                    this.showToast(message, 'success');
+                    this.queryTowerlist();
+                } else {
+                    this.showToast(message, 'error');
+                }
+            } catch (err) {
+                this.showToast(err, 'error');
+            } finally {
+                this.mixinsLoading = false;
+                this.drawerVisible = false;
+            }
+        },
+        async submitUpload() {
+            // reqUrl:'/business/batch/batchInsertTower'
+            try {
+                const file = this.fileList[0] || null;
+                const formData = new FormData()
+                formData.append('file', file.raw)
+                const res = await this.$store.dispatch('business/handTower', { data: formData, url: this.reqData.reqUrl })
+                const { code, message } = res;
+                if (code === 1) {
+                    this.showToast(message, 'success');
+                    this.queryTowerlist();
+                } else {
+                    this.showToast(message, 'error');
+                }
+            } catch (err) {
+                this.showToast(err, 'error');
+            } finally {
+                this.dialogVisible = false;
+                this.mixinsLoading = false;
+                this.fileList = [];
             }
         },
 
@@ -116,20 +171,7 @@ export default {
             document.removeEventListener('touchmove', m, true);
         },
         //#endregion
-        // #region ---------------------------------------------------  分页 ---------------------------------------------------
-        //每页条数改变时触发 选择一页显示多少行
-        handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
-            this.currentPage = 1;
-            this.pageSize = val;
-        },
-        //当前页改变时触发 跳转其他页
-        handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
-            this.currentPage = val;
-        },
 
-        // #endregion
         // #region ---------------------------------------------------------------- 上传 ----------------------------------------------------------------------
         handleRemove(file, fileList) {
             this.fileList = []
@@ -140,17 +182,18 @@ export default {
         changeFile(file, fileList) {
             this.fileList = [];
             let fileName = file.name;
-            const size = file.size;
             fileName = fileName.substring(fileName.lastIndexOf('.'))
-            console.log('fileName', fileName);
-
-            const isKmz = fileName === '.zip'; // ||'.kml'
-            const isLt2M = file.size / 1024 / 1024 < 50;
+            // 格式
+            const isKmz = (fileName === '.xlsx' || fileName === '.xls');
+            const isLt2M = file.size / 1024 / 1024 < 20;
             if (!isKmz) {
-                this.showToast('上传航线文件只能是 zip 格式!');
+                console.log('fileName', fileName);
+                this.$message.warning('上传文件大小不能超过 20MB!');
+                return false;
             }
             if (!isLt2M) {
-                this.showToast('上传航线文件不能超过 50MB!');
+                this.$message.warning('上传航线文件不能超过 50MB!');
+                return false;
             }
             if (isKmz && isLt2M) {
                 this.fileList.push(file);
@@ -161,27 +204,6 @@ export default {
         },
         beforeRemove(file, fileList) {
             return this.$confirm(`确定移除 ${file.name}？`);
-        },
-        fileSubmit() {
-            this.btnloading = true
-            console.log('fileSubmit', this.fileList[0]);
-            const file = this.fileList[0] || null;
-            const handleDate = (new Date()).getTime(); // 439c-1711335601702-53646
-            const handleUuid = this.generateId(handleDate);
-            const formData = new FormData()
-            formData.append('handleUuid', handleUuid) // 额外参数
-            formData.append('file', file.raw)
-            formData.append('handleDate', handleDate)
-
-            this.$store.dispatch('uavs/uploadFile', formData).then(res => {
-                //   console.log('res', res);
-                this.fileList = [];
-                //   this.showMessage('上传成功', 'success')
-            }).catch(err => {
-                this.showMessage(err, 'error')
-            }).finally(() => {
-                this.btnloading = false
-            })
         }
         // #endregion
 

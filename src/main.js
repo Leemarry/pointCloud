@@ -53,6 +53,7 @@ Vue.use(VueTinymce) // 安装vue的tinymce组件
 import '@/assets/css/iconfont.css';
 import '@/assets/css/icon/iconfont.css'
 import '@/assets/icons/iconfont.css'
+import '@/assets/css/tower/iconfont.css'
 Vue.prototype.$tag = 0
 
 // import localForage from 'localforage';

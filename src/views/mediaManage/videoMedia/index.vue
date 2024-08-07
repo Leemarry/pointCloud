@@ -48,7 +48,7 @@
         <el-table-column prop="path" label="地址" />
         <el-table-column fixed="right" label="操作" width="100">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="openVideoTag(scope.row)">查看</el-button>
+            <el-button type="text" size="small" @click="beforeView(scope.row.id,scope.row.path,scope.row.formats)">查看</el-button>
             <el-button type="text" size="small" @click="downloadVideo(scope.row)">下载</el-button>
           </template>
         </el-table-column>

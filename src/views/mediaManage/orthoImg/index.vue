@@ -42,7 +42,7 @@
         <el-table-column prop="path" label="地址" />
         <el-table-column fixed="right" label="操作" width="100">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="beforeView(scope.row)">查看</el-button>
+            <el-button type="text" size="small" @click="beforeView(scope.row.id,scope.row.path,scope.row.formats)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -102,26 +102,7 @@ export default {
         // #region ------------------------------------------------------------- 查询 ----------------------------------------------------
         // #endregion
 
-        // #region ---------------------------------------------------------- 打开新标签页 ----------------------------------------------------
-        /**查看 */
-        beforeView(row) {
-            console.log('row', row);
-            const path = row.scalePath
-            const id = row.id
-            const formats = row.formats
-            const windowName = 'windowName-' + row.mark;
-            if (!this.windows[windowName] || this.windows[windowName].closed) {
-                // 创建新窗口
-                const existingWindow = window.open('', windowName);
-                const queryString = `?id=${id}&src=${encodeURIComponent(path)}&formats=${encodeURIComponent(formats)}`;
-                existingWindow.location.href = '/preview' + queryString;
-                this.windows[windowName] = existingWindow;
-                // // 为新窗口添加 message 事件监听器
-                // existingWindow.addEventListener('message', handleMessage);
-            } else {
-                this.windows[windowName].focus();
-            }
-        },
+        // #region ---------------------------------------------------------- 打开新标签页 ---------------------------------------------------
         openpage(item) {
             console.log('   console.log(this.$router.options.routes)', this.$router.options.routes)
             window.open(this.$router.resolve({ path: '/uploadpage?ip=' + item.fileType }).href, '_blank')
