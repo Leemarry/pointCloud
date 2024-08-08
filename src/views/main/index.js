@@ -3,25 +3,19 @@ import videoPlayer from '../components/videoPlayer.vue'
 import parmItem from '../components/parmItem.vue'
 import realDatetime from '../components/realDatetime.vue'
 import uavItem from '../components/uavItem.vue'
-import pvmap from '../components/pvmap.vue'
 import CesiumMap from '../components/Cesium/CesiumMap.vue'
-import op from '../components/Cesium/drowcesium.vue'
 import cameraSettingsPopup from '../components/cameraSettingsPopup.vue'
 import { Attitude, Heading } from 'vue-flight-indicators';
 import { removeToken } from '@/utils/auth';
 
-import { getDefaultObj, getDefaultData, switchNode, time, getTimeRange, getTimeRangeByKey, timeRangeMap, sortDataByPrefix } from '@/utils/currency'
-
-import { resetRouter } from '@/router';
+import { getDefaultObj, getDefaultData, switchNode, getTimeRangeByKey, timeRangeMap, sortDataByPrefix } from '@/utils/currency'
 import scrollbar from '@/views/components/scrollbar/scrollbar'
 import {
     parseTime,
     filtersType
 } from '@/utils/index';
 import { _debounce, _throttle } from '@/utils/throttle'
-
 import store from '@/store';
-
 import request from '@/utils/request'
 import TRTC from 'trtc-js-sdk';
 import VideoModule from '@/views/components/VideoModule/VideoModule'
@@ -31,14 +25,12 @@ export default {
     mixins: [currencyMinins], //
     components: {
         CesiumMap,
-        pvmap,
         uavItem,
         parmItem,
         realDatetime,
         videoPlayer,
         Attitude,
         Heading,
-        op,
         cameraSettingsPopup,
         VideoModule,
         scrollbar

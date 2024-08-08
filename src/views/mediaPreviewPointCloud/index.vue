@@ -2,7 +2,7 @@
 <template>
   <div class="cesiumOutdiv cesiumCon">
     <div id="cesiumContainer" />
-    <CesiumTool v-if="viewer" v-bind="$attrs" class="SurveyingTools" :viewer="viewer" v-on="$listeners" />
+    <!-- <CesiumTool v-if="viewer" v-bind="$attrs" class="SurveyingTools" :viewer="viewer" v-on="$listeners" /> -->
     <!-- 绘画 -->
     <CesiumDraw
       v-if="viewer"
@@ -30,7 +30,7 @@ let imagelayer;
 export default {
     name: 'CesiumMap',
     //import引入的组件需要注入到对象中才能使用
-    components: {CesiumDraw ,CesiumTool},
+    components: { CesiumDraw, CesiumTool },
     //让组件接收外部传来的数据
     props: {
         /**是否飞行移动 */
@@ -1586,6 +1586,5 @@ export default {
     margin-right: 5px;
     background-color: rgba(0,138,255, 0.5);
 }
-
 
   </style>

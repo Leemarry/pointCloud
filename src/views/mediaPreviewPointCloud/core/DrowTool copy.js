@@ -1,11 +1,6 @@
 import * as turf from '@turf/turf';
-import markerManager from './MarkerManager'
-import {
-    CesiumPoint,
-    CesiumPolyline,
-    CesiumPolygon,
-    CesiumLabel
-} from './Graphic'
+import MarkerManager from './MarkerManager'
+import { CesiumPoint, CesiumPolyline, CesiumPolygon, CesiumLabel } from './graphic'
 import utils from './utils'
 import {
     CVT, getPolygonArea
@@ -20,7 +15,7 @@ const RIGHT_CLICK = Cesium.ScreenSpaceEventType.RIGHT_CLICK;
 const MOUSE_MOVE = Cesium.ScreenSpaceEventType.MOUSE_MOVE;
 const MOUSE_DOWN = Cesium.ScreenSpaceEventType.LEFT_DOWN;
 const MOUSE_UP = Cesium.ScreenSpaceEventType.LEFT_UP;
-class GraphicManager {
+class DrowTool {
     /**
    * 鼠标交互绘制线和多边形
    * @param {Viewer}} viewer Cesium Viewer
@@ -30,7 +25,7 @@ class GraphicManager {
         if (viewer instanceof Cesium.Viewer === false) {
             throw new Error('viewer不是一个有效的Cesium Viewer')
         }
-        this.markermanager = new markerManager(viewer)
+        this.markermanager = new MarkerManager(viewer)
         /**
      * 定义颜色
      */
@@ -1480,8 +1475,6 @@ class GraphicManager {
         document.dispatchEvent(evt);
     }
 }
-export default GraphicManager
-
 const toolbox = [{
     title: '标注',
     type: 'MARKER',
@@ -1502,3 +1495,4 @@ const toolbox = [{
 export {
     toolbox
 }
+export default DrowTool

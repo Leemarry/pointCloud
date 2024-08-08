@@ -1,10 +1,16 @@
+/*
+ * @Date: 2024-07-16 09:54:48
+ * @LastEditors: likai 2806699104@qq.com
+ * @FilePath: \pointCouldPages\src\views\mediaPreviewPointCloud\core\MarkerManager.js
+ * @Description: Do not edit
+ */
 import {
     CesiumBillboard,
     CesiumLabel,
     CesiumModel
-} from './graphic';
+} from '../core/Graphic';
 import utils from './utils';
-import GraphicType from './GraphicType';
+import GraphicType from '../core/GraphicType';
 import $ from 'jquery';
 const cvt = utils.CVT;
 const LEFT_CLICK = Cesium.ScreenSpaceEventType.LEFT_CLICK;

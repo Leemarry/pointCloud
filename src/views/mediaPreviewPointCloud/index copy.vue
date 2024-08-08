@@ -1,7 +1,7 @@
 <!--
  * @Date: 2024-07-17 10:27:55
  * @LastEditors: likai 2806699104@qq.com
- * @FilePath: \pointCouldPages\src\views\mediaPreviewPointCloud\index.vue
+ * @FilePath: \pointCouldPages\src\views\mediaPreviewPointCloud\index copy.vue
  * @Description: Do not edit
 -->
 <!-- 预览点云-->
@@ -27,11 +27,11 @@
 // import $ from 'jquery';
 // import { checkComponent, checkViewer, getPolygonArea } from '@/views/core/utils';
 // import { mapGetters } from 'vuex';
-import measureViewer from './core/measurePanel.vue';
+// import measureViewer from './core/measurePanel.vue';
 export default {
     name: '',
     //import引入的组件需要注入到对象中才能使用
-    components: { measureViewer },
+    components: {  },
     //让组件接收外部传来的数据
     props: {
     },

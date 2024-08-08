@@ -41,12 +41,12 @@
           </li>
           <!-- routeManagerVisible @click="sendupload()" -->
           <!-- <li>
-              <i class="cesiumDrawFont iconlayer icon-class"
-                :class="{ 'selected-graphic': layerManagerVisible }" title="图层管理"
-                @click="doFlyCommands()"></i>
-              <span :class="{ 'selected-graphic': layerManagerVisible }"
-                @click="doFlyCommands()">执行</span>
-            </li> -->
+            <i class="cesiumDrawFont iconlayer icon-class"
+              :class="{ 'selected-graphic': layerManagerVisible }" title="图层管理"
+              @click="doFlyCommands()"></i>
+            <span :class="{ 'selected-graphic': layerManagerVisible }"
+              @click="doFlyCommands()">执行</span>
+          </li> -->
 
         </ul>
       </el-main>
@@ -112,46 +112,38 @@
     </div>
     <MarkerViewer ref="markerManager" :attachment="attachment" :extend-image="extendMarkerImage" @deleteEvent="deleteMarker" @editEvent="editMarker" @addEvent="addMarker" @updateEvent="updateMarker" />
     <layerManager
-      v-show="layerManagerVisible"
       ref="layerManager"
-      :tools="tools"
-      class="layer-manager-class"
       @changeUnifiedHeight="changeUnifiedHeightEvent"
-      :class="{ 'edit-layer-manager-class': editMode }"
       @locate="locateGraphic"
       @edit="editGraphic"
       @delete="deleteGraphic"
       @rename="renameGraphic"
       @select="selectGraphic"
-      @clear="clearGraphic"
+      :tools="tools"
+@clear="clearGraphic" v-show="layerManagerVisible"
       @close="closeLayerManager"
+      class="layer-manager-class"
       @import="importGraphic"
       @export="exportGraphic"
-      @drowroute="drowrouteGraphic"
-      @moniFly="moniflyGraphic"
+      :class="{ 'edit-layer-manager-class': editMode }"
+@drowroute="drowrouteGraphic" @moniFly="moniflyGraphic"
     />
-    <routeManager v-show="routeManagerVisible" ref="routeManager" v-bind="$attrs" class="layer-manager-class" :class="{ 'edit-layer-manager-class': editMode }" :routes="routes" @send:toggleRouteManager="toggleRouteManager" @send:edit="doEdit" v-on="$listeners" />
     <input v-show="false" id="graphicuploadhandler" type="file" accept=".geojson, .shp" @change="importfp">
   </div>
 </template>
 <script>
-import * as turf from '@turf/turf';
-import GraphicManager from '../../core/GraphicManager';
+import GraphicManager from '../core/GraphicManager';
 import MarkerViewer from './markerViewer.vue';
-import { CesiumPolygon } from '../../core/Graphic';
+import { CesiumPolygon } from '../core/Graphic';
 import layerManager from './layerManager';
-import GraphicType from '../../core/GraphicType';
+import GraphicType from '../core/GraphicType';
 import { open } from 'shapefile';
-import { moveDiv } from '../../core/utils';
 import $ from 'jquery';
-import { checkComponent, checkViewer, getPolygonArea } from '../../core/utils';
+import { checkComponent, checkViewer, getPolygonArea } from '../core/utils';
 import { mapGetters } from 'vuex';
 /**航线列表管理 */
-import routeManager from './cesiumRouteList.vue';
 let graphicManager;
 const console = window.console;
-// var polyArr = []; // 面数据
-var jdArrs = []; // 交点集合
 export default {
     name: 'CesiumDraw',
     data() {
@@ -425,33 +417,33 @@ export default {
     },
     mounted() {
         window.jq = $;
-        const self = this;
-        this.$nextTick(() => {
-            moveDiv('drawtoolPanel', 'drawtoolHead');
-            $('#drawtoolPanel .el-color-picker__icon').addClass(
-                'cesiumDrawFont iconcolor'
-            );
-        });
+        // const self = this;
+        // this.$nextTick(() => {
+        //     moveDiv('drawtoolPanel', 'drawtoolHead');
+        //     $('#drawtoolPanel .el-color-picker__icon').addClass(
+        //         'cesiumDrawFont iconcolor'
+        //     );
+        // });
         if (this.viewer instanceof Cesium.Viewer) {
             this.init(this.viewer);
         } else if (window.viewer instanceof Cesium.Viewer) {
             this.init(window.viewer);
         }
-        this.$nextTick(() => {
-            self.syncColor('markerColor', self.markerColor);
-            self.syncColor('lineColor', self.lineColor);
-            self.syncColor('polygonColor', self.polygonColor);
-            self.syncColor('outlineColor', self.outlineColor);
-            self.syncColor('modelColor', self.modelColor);
-        });
+        // this.$nextTick(() => {
+        //     self.syncColor('markerColor', self.markerColor);
+        //     self.syncColor('lineColor', self.lineColor);
+        //     self.syncColor('polygonColor', self.polygonColor);
+        //     self.syncColor('outlineColor', self.outlineColor);
+        //     self.syncColor('modelColor', self.modelColor);
+        // });
     },
     beforeDestroy() {
         this.destroyEventListener()
     }, //生命周期 - 销毁之前
     methods: {
         /**
-           * 初始：
-           */
+         * 初始：
+         */
         init(viewer) {
             const pointItems = document.querySelectorAll('.cursor-tip-class');
 
@@ -461,7 +453,7 @@ export default {
             }
             const self = this;
             this._depthTestAgainstTerrain =
-                  viewer.scene.globe.depthTestAgainstTerrain;
+                viewer.scene.globe.depthTestAgainstTerrain;
             this.$refs.markerManager.init(viewer); //传递子组件
             graphicManager = new GraphicManager(viewer);
             this.selectedModel = this.extendMarkerModel.length
@@ -475,16 +467,16 @@ export default {
             document.addEventListener('addmarker', this.addmarker);
             document.addEventListener('addEvent', this.addEvent);
             /**
-               * 停止编辑
-               */
+             * 停止编辑
+             */
             document.addEventListener('stopEdit', this.stopEdit);
             /**
-               * 多边形绘制结束-
-               */
+             * 多边形绘制结束-
+             */
             document.addEventListener('positionsMsg', this.positionsMsg);
             /**
-               * 开始编辑
-               */
+             * 开始编辑
+             */
             document.addEventListener('startEdit', this.startEdit);
             document.addEventListener('destroyEvent', this.destroyEvent);
             document.addEventListener('deleteEvent', this.deleteEvent);
@@ -493,7 +485,7 @@ export default {
             const self = this;
             if (
                 graphicManager.has(e.detail.mid) ||
-                  self.$refs.markerManager.has(e.detail.mid)
+                self.$refs.markerManager.has(e.detail.mid)
             ) {
                 self.$refs.markerManager.createLabelAndaddMarker(
                     e.detail.positions,
@@ -506,7 +498,7 @@ export default {
             const self = this;
             if (
                 graphicManager.has(e.detail.mid) ||
-                  self.$refs.markerManager.has(e.detail.mid)
+                self.$refs.markerManager.has(e.detail.mid)
             ) {
                 var mid = e.detail.mid;
                 var positions = e.detail.positions;
@@ -549,7 +541,7 @@ export default {
             const self = this;
             if (
                 graphicManager.has(e.detail.mid) ||
-                  self.$refs.markerManager.has(e.detail.mid)
+                self.$refs.markerManager.has(e.detail.mid)
             ) {
                 self.$refs.markerManager.droplikeid(
                     e.detail.positions,
@@ -562,7 +554,7 @@ export default {
             const self = this;
             if (
                 graphicManager.has(e.detail.mid) ||
-                  self.$refs.markerManager.has(e.detail.mid)
+                self.$refs.markerManager.has(e.detail.mid)
             ) {
                 self.pushLayerManaer(
                     e.detail.mtype,
@@ -576,7 +568,7 @@ export default {
             // 插入数据
             if (
                 graphicManager.has(e.detail.mid) ||
-                  self.$refs.markerManager.has(e.detail.mid)
+                self.$refs.markerManager.has(e.detail.mid)
             ) {
                 console.log('结束positions', e.detail.positions);
 
@@ -591,7 +583,7 @@ export default {
             self.menuSelected = {};
             self.editMode = false;
             self.cesiumViewer.scene.globe.depthTestAgainstTerrain =
-              self._depthTestAgainstTerrain;
+            self._depthTestAgainstTerrain;
         },
         startEdit(e) {
             const self = this;
@@ -608,11 +600,11 @@ export default {
             const self = this;
             if (
                 self.$refs.layerManager &&
-                  typeof self.$refs.layerManager.drop === 'function'
+                typeof self.$refs.layerManager.drop === 'function'
             ) {
                 self.$refs.layerManager.drop({ id: e.detail?.mid });
                 self.cesiumViewer.scene.globe.depthTestAgainstTerrain =
-                      self._depthTestAgainstTerrain;
+                    self._depthTestAgainstTerrain;
             } else {
                 console.log('没有加载上');
             }
@@ -623,7 +615,7 @@ export default {
             self.editMode = false;
             self.$refs.layerManager.drop({ id: e.detail.mid });
             self.cesiumViewer.scene.globe.depthTestAgainstTerrain =
-                  self._depthTestAgainstTerrain;
+                self._depthTestAgainstTerrain;
         },
         positionsMsg(e) {
             // var area=  graphicManager.calculatePolygonArea(e.detail.positions)
@@ -665,9 +657,9 @@ export default {
             }
         },
         /**
-           *  @param 触发 this.$refs.layerManager
-           * this.$refs.layerManager.insertLayer(type, id, name);
-           */
+         *  @param 触发 this.$refs.layerManager
+         * this.$refs.layerManager.insertLayer(type, id, name);
+         */
         pushLayerManaer(type, id, name) {
             checkComponent(this);
             this.$refs.layerManager.insertLayer(type, id, name);
@@ -701,8 +693,8 @@ export default {
             this.$refs.markerManager.setModel({ uri: item.url });
         },
         /**
-           * 设置当前要素的样式
-           */
+         * 设置当前要素的样式
+         */
         setControlByEvent(e) {
             checkComponent(this);
             const viewer = this._viewer;
@@ -738,11 +730,11 @@ export default {
                     this.lineStyle = 'solid';
                 }
                 this.lineColor = `rgba(${plmaterial.getValue(viewer.clock.currentTime).color.red *
-                      255
+                    255
                 },${plmaterial.getValue(viewer.clock.currentTime).color.green *
-                      255
+                    255
                 },${plmaterial.getValue(viewer.clock.currentTime).color.blue *
-                      255
+                    255
                 },${plmaterial.getValue(viewer.clock.currentTime).color.alpha
                 })`;
             }
@@ -884,15 +876,15 @@ export default {
             this.$emit('locateEvent', id);
         },
         /**
-           *  编辑
-           * @param {id} id
-           * 成功：执行 graphicManager.edit
-           */
+         *  编辑
+         * @param {id} id
+         * 成功：执行 graphicManager.edit
+         */
         editGraphic(id) {
             checkComponent(this);
             /**
-               * 删除多边形航线
-               */
+             * 删除多边形航线
+             */
             graphicManager.removeEntityLikeName(this._viewer, id + 'uav-tmp');
             if (graphicManager.manager.has(id)) {
                 const manager = graphicManager.manager.get(id);
@@ -950,11 +942,11 @@ export default {
             // this.$refs.layerManager.deleteNode(id)
         },
         /**
-           * @name:
-           * @msg: 规划线 label
-           * @param {*} id
-           * @return {*}
-           */
+         * @name:
+         * @msg: 规划线 label
+         * @param {*} id
+         * @return {*}
+         */
         deletelineGraphic(id) {
             // checkComponent(this)
             if (graphicManager.manager.has(id + '-uav-tmp-line')) {
@@ -977,12 +969,12 @@ export default {
             }
         },
         /**
-           * @name: 父组件重命名
-           * @msg: 子组件传递父组件
-           * @param {*} id
-           * @param {*} name
-           * @return {*}
-           */
+         * @name: 父组件重命名
+         * @msg: 子组件传递父组件
+         * @param {*} id
+         * @param {*} name
+         * @return {*}
+         */
         renameGraphic(id, name) {
             // console.log('组件传递信息mid与newName',id,name);
             const index = this.routes.findIndex((item) => {
@@ -1009,16 +1001,16 @@ export default {
             this.$emit('renameEvent', id, oname);
         },
         /**
-           * @name:
-           * @msg: 父组件绘制航线
-           * @param {*} id  多边形面积
-           * @param {*} positions 点数组
-           * @param {*} hfDistance   间据（航之间间距）
-           * @param {*} headingDistance  航向间距
-           * @param {*} unifiedHeight  高度
-           * @param {*} text  名称
-           * @return {*}
-           */
+         * @name:
+         * @msg: 父组件绘制航线
+         * @param {*} id  多边形面积
+         * @param {*} positions 点数组
+         * @param {*} hfDistance   间据（航之间间距）
+         * @param {*} headingDistance  航向间距
+         * @param {*} unifiedHeight  高度
+         * @param {*} text  名称
+         * @return {*}
+         */
         drowrouteGraphic(id, positions, hfDistance, headingDistance, unifiedHeight, text) {
             checkComponent(this);
             this.deletelineGraphic(id);
@@ -1030,9 +1022,9 @@ export default {
             graphicManager.beforeBeginCalc(id, positions, parameters, [longitude, latitude]);
 
             /**
-               *
-               * 判断的数量 是否存在
-               */
+             *
+             * 判断的数量 是否存在
+             */
             this.$emit('drowrouteEvent', id, positions);
         },
         // #region -------------------------------------------------------------界面交互 --------------------------
@@ -1116,7 +1108,7 @@ export default {
                     if (this.editMode) {
                         graphicManager.heightReference = this.graphicHeight;
                         graphicManager.material =
-                              Cesium.Color.fromCssColorString(this.lineColor);
+                            Cesium.Color.fromCssColorString(this.lineColor);
                         var entities = viewer.entities.values;
                         console.log(entities);
                         graphicManager.createPolyline(this.CursorTipDistance); //this.CursorTipDistance
@@ -1138,7 +1130,7 @@ export default {
                         option.outlineWidth = parseInt(this.outlineWidth);
                         // option.color = Cesium.Color.fromCssColorString(this.polygonColor);
                         graphicManager.material =
-                              Cesium.Color.fromCssColorString(this.polygonColor);
+                            Cesium.Color.fromCssColorString(this.polygonColor);
                         graphicManager.style = option;
                         var entities = viewer.entities.values;
                         graphicManager.createPolygon(this.CursorTipDistance); //this.CursorTipDistance
@@ -1177,19 +1169,19 @@ export default {
                     break;
                 case 'dash':
                     graphicManager.material =
-                          new Cesium.PolylineDashMaterialProperty({
-                              color: color
-                          });
+                        new Cesium.PolylineDashMaterialProperty({
+                            color: color
+                        });
                     break;
                 case 'glow':
                     graphicManager.material =
-                          new Cesium.PolylineGlowMaterialProperty({
-                              color: color
-                          });
+                        new Cesium.PolylineGlowMaterialProperty({
+                            color: color
+                        });
                     break;
                 case 'arrow':
                     graphicManager.material =
-                          new Cesium.PolylineArrowMaterialProperty(color);
+                        new Cesium.PolylineArrowMaterialProperty(color);
                     break;
             }
         }
@@ -1197,362 +1189,362 @@ export default {
 };
 </script>
 
-  <style lang="scss" scoped>
-  @import "../../../styles/default.scss";
-  // @import url(.././assets/css/theme/${theme}.scss); 引入公共css类
-  #drawtoolPanel {
-      position: fixed;
-      width: 400px;
-      top: 10px;
-      right: 10px;
-      height: 85px;
-      right: 7px;
-      border-radius: $b-radius;
-      /* border: 1px solid #01c5fd;
-    box-shadow: 0 0 5px rgba(1, 197, 253, 0.75); */
-      z-index: 10;
-      border-radius: $b-radius;
-      -moz-user-select: none;
-      -khtml-user-select: none;
-      user-select: none;
-      font-size: $font-size;
-  }
+<style lang="scss" scoped>
+@import "../../../styles/default.scss";
+// @import url(.././assets/css/theme/${theme}.scss); 引入公共css类
+#drawtoolPanel {
+    position: fixed;
+    width: 400px;
+    top: 10px;
+    right: 10px;
+    height: 85px;
+    right: 7px;
+    border-radius: $b-radius;
+    /* border: 1px solid #01c5fd;
+  box-shadow: 0 0 5px rgba(1, 197, 253, 0.75); */
+    z-index: 10;
+    border-radius: $b-radius;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    user-select: none;
+    font-size: $font-size;
+}
 
-  .layer-manager-class {
-      width: 400px;
-      position: absolute;
-      top: 90px;
-  }
+.layer-manager-class {
+    width: 400px;
+    position: absolute;
+    top: 90px;
+}
 
-  .edit-layer-manager-class {
-      top: 140px;
-  }
+.edit-layer-manager-class {
+    top: 140px;
+}
 
-  .graphic-edit {
-      width: 100%;
-      height: 52px;
-      line-height: 52px;
-      position: absolute;
-      background: $bg-color;
-      color: $color;
-  }
+.graphic-edit {
+    width: 100%;
+    height: 52px;
+    line-height: 52px;
+    position: absolute;
+    background: $bg-color;
+    color: $color;
+}
 
-  #clostbtn:after {
-      content: "\E6DB";
-  }
+#clostbtn:after {
+    content: "\E6DB";
+}
 
-  .el-container {
-      width: 400px;
-      height: 85px;
-      color: $color;
-      background: $bg-color;
-      /* border: 1px solid #01c5fd;
-    box-shadow: 0 0 5px rgba(1, 197, 253, 0.75); */
-      z-index: 10;
-  }
+.el-container {
+    width: 400px;
+    height: 85px;
+    color: $color;
+    background: $bg-color;
+    /* border: 1px solid #01c5fd;
+  box-shadow: 0 0 5px rgba(1, 197, 253, 0.75); */
+    z-index: 10;
+}
 
-  .el-header {
-      height: $title-height !important;
-      line-height: $title-height !important;
-      border-bottom: 1px solid $devision-color;
-      padding: $padding;
-      border-radius: $b-radius;
+.el-header {
+    height: $title-height !important;
+    line-height: $title-height !important;
+    border-bottom: 1px solid $devision-color;
+    padding: $padding;
+    border-radius: $b-radius;
 
-      span {
-          margin: $item-margin;
-          color: $color;
-      }
-  }
+    span {
+        margin: $item-margin;
+        color: $color;
+    }
+}
 
-  .icon-class {
-      color: $color;
-  }
+.icon-class {
+    color: $color;
+}
 
-  .selected-graphic {
-      color: $selected-color !important;
-  }
+.selected-graphic {
+    color: $selected-color !important;
+}
 
-  .graphic-draw-main {
-      height: 52px;
-      padding: $padding;
-      // line-height: 60%;
-      vertical-align: top;
-      color: $color;
-      border-radius: $b-radius;
+.graphic-draw-main {
+    height: 52px;
+    padding: $padding;
+    // line-height: 60%;
+    vertical-align: top;
+    color: $color;
+    border-radius: $b-radius;
 
-      ul {
-          cursor: default;
-          border-radius: $b-radius;
-          padding: 0;
-          overflow: hidden;
-          // border-bottom: 1px solid $devision-color;
-          height: 43px;
-          margin: 0;
+    ul {
+        cursor: default;
+        border-radius: $b-radius;
+        padding: 0;
+        overflow: hidden;
+        // border-bottom: 1px solid $devision-color;
+        height: 43px;
+        margin: 0;
 
-          // margin-top: 0 0 5px 0;
-          li {
-              cursor: pointer;
-              float: left;
-              padding: 0 0 0;
-              width: 62px;
-              height: 100%;
-              box-sizing: border-box;
-              list-style: none;
+        // margin-top: 0 0 5px 0;
+        li {
+            cursor: pointer;
+            float: left;
+            padding: 0 0 0;
+            width: 62px;
+            height: 100%;
+            box-sizing: border-box;
+            list-style: none;
 
-              &:hover {
-                  i {
-                      color: $hover-color;
-                  }
+            &:hover {
+                i {
+                    color: $hover-color;
+                }
 
-                  span {
-                      color: $hover-color;
-                  }
-              }
+                span {
+                    color: $hover-color;
+                }
+            }
 
-              i {
-                  display: block;
-                  height: 16px;
-                  width: 16px;
-                  background-size: contain;
-                  // vertical-align: middle;
-                  margin: 0 auto;
-                  margin-top: 8px;
-              }
+            i {
+                display: block;
+                height: 16px;
+                width: 16px;
+                background-size: contain;
+                // vertical-align: middle;
+                margin: 0 auto;
+                margin-top: 8px;
+            }
 
-              span {
-                  -webkit-user-select: none;
-                  -moz-user-select: none;
-                  -ms-user-select: none;
-                  user-select: none;
-                  display: block;
-                  text-align: center;
-                  color: $color;
-                  line-height: 22px;
-              }
-          }
-      }
-  }
+            span {
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                display: block;
+                text-align: center;
+                color: $color;
+                line-height: 22px;
+            }
+        }
+    }
+}
 
-  .el-main img {
-      display: inline-block;
-  }
-  :deep(.el-input) {
-      height: 28px;
-  }
-  .edit-class {
-      height: 52px;
-      line-height: 52px;
-      vertical-align: top;
-      padding: 0 5px;
-      border-top: 1px solid $devision-color;
-      display: flex;
-      align-items: center;
+.el-main img {
+    display: inline-block;
+}
+:deep(.el-input) {
+    height: 28px;
+}
+.edit-class {
+    height: 52px;
+    line-height: 52px;
+    vertical-align: top;
+    padding: 0 5px;
+    border-top: 1px solid $devision-color;
+    display: flex;
+    align-items: center;
 
-      :deep(.el-color-picker--small) {
-          height: 28px;
-          width: 28px;
-      }
+    :deep(.el-color-picker--small) {
+        height: 28px;
+        width: 28px;
+    }
 
-      :deep(.el-color-picker__color) {
-          border: none;
-          border-radius: $b-radius;
-          display: inline;
-      }
+    :deep(.el-color-picker__color) {
+        border: none;
+        border-radius: $b-radius;
+        display: inline;
+    }
 
-      :deep(.el-color-picker__trigger) {
-          height: 28px;
-          width: 28px;
-          padding: 0px;
-          border: 1px solid $color;
-          display: block;
-      }
+    :deep(.el-color-picker__trigger) {
+        height: 28px;
+        width: 28px;
+        padding: 0px;
+        border: 1px solid $color;
+        display: block;
+    }
 
-      :deep(.el-color-picker__color-inner) {
-          background-color: $bg-color !important;
-          border-radius: $b-radius;
-      }
-      :deep(.el-input__wrapper) {
-          background-color: $bg-color;
-          border: 1px solid $color;
-          color: $color;
-      }
+    :deep(.el-color-picker__color-inner) {
+        background-color: $bg-color !important;
+        border-radius: $b-radius;
+    }
+    :deep(.el-input__wrapper) {
+        background-color: $bg-color;
+        border: 1px solid $color;
+        color: $color;
+    }
 
-      :deep(.el-color-picker__icon) {
-          line-height: 28px;
-      }
+    :deep(.el-color-picker__icon) {
+        line-height: 28px;
+    }
 
-      span {
-          margin: $item-margin;
-      }
+    span {
+        margin: $item-margin;
+    }
 
-      .el-select {
-          vertical-align: top;
-      }
+    .el-select {
+        vertical-align: top;
+    }
 
-      .el-color-picker {
-          vertical-align: top;
-          margin: 12px 5px;
-      }
-  }
+    .el-color-picker {
+        vertical-align: top;
+        margin: 12px 5px;
+    }
+}
 
-  .marker-edit-class {
-      .el-select {
-          width: 80px;
-          margin: $item-margin;
-      }
+.marker-edit-class {
+    .el-select {
+        width: 80px;
+        margin: $item-margin;
+    }
 
-      img {
-          width: 24px;
-          height: 24px;
-          // margin-left: 10px;
-      }
-  }
+    img {
+        width: 24px;
+        height: 24px;
+        // margin-left: 10px;
+    }
+}
 
-  .polyline-edit-class {
-      .width-selector {
-          width: 70px;
-          margin: $item-margin;
-      }
+.polyline-edit-class {
+    .width-selector {
+        width: 70px;
+        margin: $item-margin;
+    }
 
-      .style-selector {
-          width: 80px;
-          // left:60px;
-          margin: $item-margin;
-      }
+    .style-selector {
+        width: 80px;
+        // left:60px;
+        margin: $item-margin;
+    }
 
-      .type-selector {
-          width: 140px;
-          // left:120px;
-          margin: $item-margin;
-      }
-  }
+    .type-selector {
+        width: 140px;
+        // left:120px;
+        margin: $item-margin;
+    }
+}
 
-  .polygon-edit-class {
-      .width-selector {
-          width: 70px;
-          margin: $item-margin;
-      }
+.polygon-edit-class {
+    .width-selector {
+        width: 70px;
+        margin: $item-margin;
+    }
 
-      .type-selector {
-          width: 140px;
-          // left:60px;
-          margin: $item-margin;
-      }
+    .type-selector {
+        width: 140px;
+        // left:60px;
+        margin: $item-margin;
+    }
 
-      .outline-selected {
-          color: #ffffff;
-      }
+    .outline-selected {
+        color: #ffffff;
+    }
 
-      .border-btn {
-          border: 1px solid $color;
-          width: 28px;
-          height: 28px;
-          display: inline-block;
-          vertical-align: top;
-          line-height: 28px;
-          text-align: center;
-          border-radius: $b-radius;
-          box-sizing: border-box;
-          -webkit-box-sizing: border-box;
-          margin: 12px 5px;
-      }
-  }
+    .border-btn {
+        border: 1px solid $color;
+        width: 28px;
+        height: 28px;
+        display: inline-block;
+        vertical-align: top;
+        line-height: 28px;
+        text-align: center;
+        border-radius: $b-radius;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        margin: 12px 5px;
+    }
+}
 
-  .label-edit-class {
-      span {
-          margin: $item-margin;
-      }
+.label-edit-class {
+    span {
+        margin: $item-margin;
+    }
 
-      .font-selector {
-          width: 120px;
-          margin: $item-margin;
-      }
+    .font-selector {
+        width: 120px;
+        margin: $item-margin;
+    }
 
-      .size-selector {
-          width: 80px;
-          margin: $item-margin;
-      }
+    .size-selector {
+        width: 80px;
+        margin: $item-margin;
+    }
 
-      img {
-          width: 24px;
-          height: 24px;
-          margin: $item-margin;
-      }
-  }
+    img {
+        width: 24px;
+        height: 24px;
+        margin: $item-margin;
+    }
+}
 
-  .model-edit-class {
-      span {
-          margin: $item-margin;
-      }
+.model-edit-class {
+    span {
+        margin: $item-margin;
+    }
 
-      .model-selector-trigger {
-          border: 1px solid $color;
-          width: 28px;
-          height: 28px;
-          display: inline-block;
-          vertical-align: top;
-          line-height: 28px;
-          text-align: center;
-          border-radius: $b-radius;
-          box-sizing: border-box;
-          -webkit-box-sizing: border-box;
-          margin: 12px 5px;
-      }
+    .model-selector-trigger {
+        border: 1px solid $color;
+        width: 28px;
+        height: 28px;
+        display: inline-block;
+        vertical-align: top;
+        line-height: 28px;
+        text-align: center;
+        border-radius: $b-radius;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        margin: 12px 5px;
+    }
 
-      .el-select {
-          width: 100px;
-          margin: $item-margin;
-      }
+    .el-select {
+        width: 100px;
+        margin: $item-margin;
+    }
 
-      .el-button {
-          height: 28px;
-          line-height: 28px;
-      }
+    .el-button {
+        height: 28px;
+        line-height: 28px;
+    }
 
-      .el-slider {
-          display: inline-block;
-          margin: 0 15px;
-          width: 100px;
+    .el-slider {
+        display: inline-block;
+        margin: 0 15px;
+        width: 100px;
 
-          :deep(.el-slider__runway) {
-              margin-bottom: 0px;
-          }
-      }
-  }
+        :deep(.el-slider__runway) {
+            margin-bottom: 0px;
+        }
+    }
+}
 
-  .el-main .el-radio {
-      display: inline-block;
-      margin: 5px;
-  }
-  </style>
-  <style lang='scss'>
-  .model-select-panel {
-      display: block;
-      width: 340px;
-      height: 210px;
+.el-main .el-radio {
+    display: inline-block;
+    margin: 5px;
+}
+</style>
+<style lang='scss'>
+.model-select-panel {
+    display: block;
+    width: 340px;
+    height: 210px;
 
-      img {
-          width: 32px;
-          height: 32px;
-          margin: 5px;
-      }
-  }
+    img {
+        width: 32px;
+        height: 32px;
+        margin: 5px;
+    }
+}
 
-  .el-popover {
-      display: inline-table;
-  }
+.el-popover {
+    display: inline-table;
+}
 
-  //new
-  ::v-deep .routelist {
-      width: 100%;
-      .el-badge__content.is-fixed {
-          top: 10px;
-          font-size: 10px;
-      }
-      .el-badge__content {
-          line-height: 13px;
-          height: 15px;
-          font-size: 10px;
-      }
-  }
-  </style>
+//new
+::v-deep .routelist {
+    width: 100%;
+    .el-badge__content.is-fixed {
+        top: 10px;
+        font-size: 10px;
+    }
+    .el-badge__content {
+        line-height: 13px;
+        height: 15px;
+        font-size: 10px;
+    }
+}
+</style>

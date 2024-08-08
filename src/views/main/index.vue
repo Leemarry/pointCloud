@@ -117,8 +117,6 @@
           </div>
           <!-- rgba(0, 0, 0, ${this.newOpacity}) -->
           <div ref="mainMiddle" v-loading="maploading" element-loading-spinner="el-icon-loading" :element-loading-text="loadingText" :element-loading-background="this.loadingBackground" class="mainMiddle height-calc zindex include_cesium_blocks" :style="{ height: divHeight + 'px' }">
-            <!-- <pvmap ref="videoViews" @send="acpectsend" :divHeight="divHeight" :uavSn="defaultUavSn" :selectSn="selectSn" :uavs="uavs" :mapUrl="mapUrl" style="width:100%; height:100%">
-                        </pvmap>  -->
             <!-- 组件 videoViews -->
             <!-- <op></op> -->
             <!-- <div v-show="true" class="ToLockTheViewport">

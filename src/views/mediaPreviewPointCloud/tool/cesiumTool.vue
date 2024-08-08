@@ -1,12 +1,16 @@
 <!--  -->
 <template>
 
-  <div class="CesiumTool">
-    <div v-for="item of toolbox" :key="item.type" :title="item.title" class="tool-item" @click="openBox(item.title)">
-      <i class="iconfont icon-a-shenhegaizhang" :title="'标记'" style="color: aliceblue;" />
+  <div class="cesium-tool-container">
+    <div class="CesiumTool">
+      <div v-for="item of toolbox" :key="item.type" :title="item.title" class="tool-item" @click="openBox(item.title)">
+        <i class="iconfont icon-a-shenhegaizhang" :title="'标记'" style="color: aliceblue;" />
+      </div>
+    </div>
+    <div class="tool-box" type="MARKER" >
+        <div @click=''>创建</div> <div>清楚</div>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -14,9 +18,9 @@
 //例如：import 《组件名称》 from '《组件路径》';
 import $ from 'jquery';
 import { checkViewer, checkComponent } from '../core/utils';
-import { toolbox } from '../core/DrowTool';
-// import GraphicManager from '../core/GraphicManager';
-import GraphicManager from '@/views/core/GraphicManager';
+import { toolbox } from '../core/drowTool';
+import GraphicManager from '../core/GraphicManager';
+// import GraphicManager from '@/views/core/GraphicManager';
 // eslint-disable-next-line no-unused-vars
 var graphicManager;
 export default {
@@ -33,7 +37,10 @@ export default {
     data() {
         //这里存放数据
         return {
-            toolbox
+            toolbox,
+            selectedModel: undefined,
+            extendMarkerModel: [],
+            currentMenu: null,
         };
     },
     //监听属性 类似于data概念
@@ -99,11 +106,13 @@ export default {
 </script>
 <style lang='scss' scoped>
 //@import url(); 引入公共css类
-
+.cesium-tool-container{
+    position: relative;
+}
 .CesiumTool{
-    padding: 20px 5px;
+    padding: 5px 20px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-self: center;
 }
 .tool-item{
@@ -114,9 +123,14 @@ export default {
 
 }
 .tool-box{
-  position: absolute;
-  bottom: 5px;
-  left: 5px;
+//   position: absolute;
+//   bottom: 5px;
+//   left: 5px;
   background-color: rgba(0,138,255, 0.5);
 }
+.tool-box[type="MARKER"]{
+    width: 200px;
+    height: 20px;
+}
+
 </style>

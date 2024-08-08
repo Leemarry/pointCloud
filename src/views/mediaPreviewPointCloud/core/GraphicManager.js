@@ -1,18 +1,22 @@
 import * as turf from '@turf/turf';
 import MarkerManager from './MarkerManager'
-// import {
-//     CesiumPoint,
-//     CesiumPolyline,
-//     CesiumPolygon,
-//     CesiumLabel
-// } from './Graphic'
-import { CesiumPoint, CesiumPolyline, CesiumPolygon, CesiumLabel } from './graphic'
+import {
+    CesiumPoint,
+    CesiumPolyline,
+    CesiumPolygon,
+    CesiumLabel
+} from './Graphic'
 import utils from './utils'
 import {
     CVT, getPolygonArea
 } from './utils'
 import GraphicType from './GraphicType'
-import { saveAs } from 'file-saver'
+import {
+    saveAs
+} from 'file-saver'
+import {
+    map
+} from 'jquery';
 const console = window.console;
 const LEFT_CLICK = Cesium.ScreenSpaceEventType.LEFT_CLICK;
 const RIGHT_CLICK = Cesium.ScreenSpaceEventType.RIGHT_CLICK;

@@ -44,6 +44,7 @@
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="previewPointCloud(scope.row)">查看</el-button>
             <el-button type="text" size="small" @click="previewWebCloud(scope.row)">web查看</el-button>
+            <el-button type="text" size="small" @click="openfull(scope.row)">web查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -102,6 +103,22 @@ export default {
     activated() { },
     //方法集合
     methods: {
+        openfull(row) {
+            // row.id, row.webUrl, 'web', row.mark
+            const { id, webUrl, formats, mark } = row;
+            const windowName = 'windowName-' + formats + mark;
+            if (!this.windows[windowName] || this.windows[windowName].closed) {
+                // 创建新窗口
+                const existingWindow = window.open('', windowName);
+                const queryString = `?id=${id}&src=${encodeURIComponent(webUrl)}&formats=${encodeURIComponent(formats)}`;
+                existingWindow.location.href = '/full' + queryString;
+                this.windows[windowName] = existingWindow;
+                // // 为新窗口添加 message 事件监听器
+                // existingWindow.addEventListener('message', handleMessage);
+            } else {
+                this.windows[windowName].focus();
+            }
+        },
 
         // #region ------------------------------------------------------------- 查询 ----------------------------------------------------
         // #endregion

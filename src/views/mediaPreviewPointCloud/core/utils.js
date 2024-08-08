@@ -390,7 +390,6 @@ function checkViewer(viewer) {
 
 //vue3 直接使用 component._viewer
 function checkComponent(component, object) {
-    console.log(component,object);
     // console.log(component._props.viewer);
     if (component && component._viewer instanceof Cesium.Viewer === false) {
         throw new CesiumDrawError('组件尚未初始化' + component._uid)

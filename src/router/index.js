@@ -68,6 +68,13 @@ export const constantRoutes = [
         hidden: true
     },
     {
+        path: '/full',
+        meta: { title: '测试全屏', icon: 'el-icon-setting' },
+        name: 'full',
+        component: () => import('@/views/mediaPreview/full.vue'),
+        hidden: true
+    },
+    {
         path: '/previewPointcloud',
         meta: { title: '预览点云', icon: 'el-icon-setting' },
         name: 'previewPointcloud',
