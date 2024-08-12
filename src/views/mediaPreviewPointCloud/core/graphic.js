@@ -172,7 +172,7 @@ class CesiumBillboard extends BaseGraphic {
     }
     create() {
         this.graphic = this.viewer.entities.add(this.options);
-        console.log('创建标记',  this.graphic);
+        console.log('创建标记1', this.graphic);
     }
     remove() {
         if (this.viewer) {
