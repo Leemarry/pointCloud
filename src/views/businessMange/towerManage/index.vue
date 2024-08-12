@@ -37,7 +37,20 @@
             <span size="medium">{{ parseTime(scope.row.createTime ) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="杆塔标注" width="150">
+        <el-table-column prop="mark">
+          <template slot="header">
+            <span>杆塔号</span>
+            <!-- <el-tag size="medium">{{ `竣工杆号` }}</el-tag> -->
+          </template>
+          <template slot-scope="scope">
+            <el-tag size="medium">{{ scope.row.name }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="name">
+          <template slot="header">
+            <span>竣工杆号</span>
+            <!-- <el-tag size="medium">{{ `竣工杆号` }}</el-tag> -->
+          </template>
           <template slot-scope="scope">
             <el-tag size="medium">{{ scope.row.name }}</el-tag>
           </template>
@@ -47,7 +60,17 @@
             <span>{{ `${scope.row.lon},${scope.row.lat},${scope.row.alt}` }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="des" label="描述">
+        <el-table-column prop="span" label="档距m">
+          <template slot-scope="scope">
+            <span>{{ `${scope.row.span? scope.row.span :'未标注'}` }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="terrain" label="地形">
+          <template slot-scope="scope">
+            <span>{{ `${scope.row.terrain? scope.row.terrain :'未标注'}` }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="des" label="备注">
           <template slot-scope="scope">
             <el-popover trigger="hover" placement="top">
               <h3>其他：</h3>
@@ -70,12 +93,12 @@
             <el-button type="text" size="small" @click="updateTower(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
-        <el-table-column type="expand">
-          <!-- <template slot="header" slot-scope="scope">
+        <!-- <template slot="header" slot-scope="scope">
             <el-button type="text" size="mini">展开</el-button>
           </template> -->
-          <!-- 根据规划的巡检航线可实现对杆塔部位采集可见光图片，
+        <!-- 根据规划的巡检航线可实现对杆塔部位采集可见光图片，
             拍摄部位应包括塔全貌、塔头、塔身、杆号牌、塔基、导线端挂点、绝缘子整串、横担端挂点、地线、跳线、小号侧通道和大号侧通道 -->
+        <!-- <el-table-column type="expand">
           <template slot-scope="props">
             <div class="tower-details">
               <div style="flex: 1;">
@@ -138,7 +161,7 @@
               </div>
             </div>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
     </div>
     <div class="media-footer">

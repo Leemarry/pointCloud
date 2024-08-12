@@ -1,6 +1,5 @@
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等!）
 //例如：import 《组件名称》 from '《组件路径》';
-import { title } from '@/settings';
 import currencyMinins from '@/utils/currencyMinins'
 export default {
     name: 'Reports',
@@ -34,20 +33,6 @@ export default {
             const iten = this.reportOptions.find(item => item.value === val);
             this.reqUrl = iten.url;
         },
-        /**无刷新查看 */
-        // handleClick(row) {
-        //     const windowName = "windowName-" + row.fileName;
-        //     if(!this.windows[windowName] || this.windows[windowName].closed){
-        //         // console.log('创建新窗口');
-        //        const  existingWindow = window.open(row.fileUrl, windowName);
-        //        this.windows[windowName] = existingWindow;
-        //     }else{
-        //         // console.log('窗口已存在');
-        //         this.windows[windowName].focus(); // 窗口已经打开，则聚焦
-        //     }
-        //     console.log('this.windows',this.windows);
-
-        // },
 
         uploadReport(title, data) {
             this.title = title;

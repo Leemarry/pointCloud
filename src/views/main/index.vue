@@ -118,7 +118,6 @@
           <!-- rgba(0, 0, 0, ${this.newOpacity}) -->
           <div ref="mainMiddle" v-loading="maploading" element-loading-spinner="el-icon-loading" :element-loading-text="loadingText" :element-loading-background="this.loadingBackground" class="mainMiddle height-calc zindex include_cesium_blocks" :style="{ height: divHeight + 'px' }">
             <!-- 组件 videoViews -->
-            <!-- <op></op> -->
             <!-- <div v-show="true" class="ToLockTheViewport">
                             <div class="margin-b">
                                 <div class="paddbut">

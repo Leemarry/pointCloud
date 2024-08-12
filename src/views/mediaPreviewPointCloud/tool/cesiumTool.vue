@@ -3,12 +3,17 @@
 
   <div class="cesium-tool-container">
     <div class="CesiumTool">
-      <div v-for="item of toolbox" :key="item.type" :title="item.title" class="tool-item" @click="openBox(item.title)">
-        <i class="iconfont icon-a-shenhegaizhang" :title="'标记'" style="color: aliceblue;" />
+      <div v-for="item of toolbox" :key="item.type" :title="item.title" class="tool-item" @click="openBox(item.type)">
+        <i class="iconfont" :class="item.icon" :title="item.title" style="color: aliceblue;" />
       </div>
     </div>
-    <div class="tool-box" type="MARKER" >
-        <div @click=''>创建</div> <div>清楚</div>
+    <div class="tool-box">
+      <div v-if="currentMenu === 'MARKER'" class="box-item" type="MARKER">
+        <div @click="createMark">创建</div> <div>清除</div>
+      </div>
+      <div v-if="currentMenu === 'TILESET'" class="box-item" type="MARKER">
+        <div>创建</div> <div>清除</div>
+      </div>
     </div>
   </div>
 </template>
@@ -18,11 +23,14 @@
 //例如：import 《组件名称》 from '《组件路径》';
 import $ from 'jquery';
 import { checkViewer, checkComponent } from '../core/utils';
-import { toolbox } from '../core/drowTool';
-import GraphicManager from '../core/GraphicManager';
+// import { toolbox } from '../core/drowTool';
+import GraphicManager, { toolbox } from '../core/GraphicManager';
+import MarkerManager from '../core/MarkerManager';
 // import GraphicManager from '@/views/core/GraphicManager';
 // eslint-disable-next-line no-unused-vars
 var graphicManager;
+// eslint-disable-next-line no-unused-vars
+var markerManager;
 export default {
     name: 'CesiumTool',
     //import引入的组件需要注入到对象中才能使用
@@ -40,7 +48,7 @@ export default {
             toolbox,
             selectedModel: undefined,
             extendMarkerModel: [],
-            currentMenu: null,
+            currentMenu: null
         };
     },
     //监听属性 类似于data概念
@@ -76,7 +84,6 @@ export default {
             if (this._viewer) {
                 return;
             }
-            const self = this;
             this._depthTestAgainstTerrain =
                 viewer.scene.globe.depthTestAgainstTerrain;
             // this.$refs.markerManager.init(viewer); //传递子组件
@@ -96,9 +103,14 @@ export default {
             document.addEventListener('destroyEvent', this.destroyEvent);
             document.addEventListener('deleteEvent', this.deleteEvent);
         },
-        openBox(menu) {
-            console.log(menu);
+        openBox(type) {
+            this.currentMenu = type;
             checkComponent(this);
+        },
+
+        createMark() {
+            markerManager = new MarkerManager(this.viewer)
+            markerManager.pick('marker');
         }
 
     } //如果页面有keep-alive缓存功能，这个函数会触发

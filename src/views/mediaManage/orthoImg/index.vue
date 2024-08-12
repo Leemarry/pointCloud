@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-  <div class="media">
+  <div v-loading="mixinsLoading" element-loading-background="rgba(0, 0, 0, 0.3)" class="media">
     <div class="media-top">
       <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline">
         <el-form-item label="正射标注" prop="mark">

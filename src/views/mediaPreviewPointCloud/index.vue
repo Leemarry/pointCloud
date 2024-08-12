@@ -6,10 +6,11 @@
     <!-- 绘画 -->
     <CesiumDraw
       v-if="viewer"
-      v-show="visible"
       v-bind="$attrs"
       :cursor-tip-distance="CursorTipDistance"
       :viewer="viewer"
+      :tilesetsrc="src"
+      :urioptions="urioptions"
       v-on="$listeners"
       @sendclearLinesAndstore="clearLinesAndStore"
       @senddoFlyCommands="senddoFlyCommandsEvent"
@@ -22,11 +23,17 @@
 <script>
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
 //例如：import 《组件名称》 from '《组件路径》';
-import CesiumDraw from '@/views/components/Cesium/cesiumDrawViewer.vue';
+import CesiumDraw from './tool/cesiumDrawViewer.vue';
 import CesiumTool from './tool/cesiumTool.vue';
+import TilesetManager from './core/TilesetManager'
+import ImageryManager from './core/ImageryManager'
 import { mapGetters } from 'vuex';
 import { calculateSquareCoordinates } from '@/views/core/Geo'
 let imagelayer;
+// eslint-disable-next-line no-unused-vars
+var tilesetManager;
+// eslint-disable-next-line no-unused-vars
+var imageryManager;
 export default {
     name: 'CesiumMap',
     //import引入的组件需要注入到对象中才能使用
@@ -37,10 +44,6 @@ export default {
         isflymove: {
             type: Boolean,
             default: false
-        },
-        visible: {
-            type: Boolean,
-            default: true
         },
         // 2D/3D ，值改变后则改变地图为2d或3d
         MapType: {
@@ -68,6 +71,8 @@ export default {
     data() {
         //这里存放数据
         return {
+            urioptions: [],
+            src: null,
             areaText: null,
             isLockView: true,
             /**心跳数据 */
@@ -118,57 +123,37 @@ export default {
     },
     //监控data中的数据变化
     watch: {
-        // MapProvider(newVal, oldVal) {
-        //     this.addimageryLayers(newVal);
-        // },
-        // geoCoordinates: {
-        //     handler(newVal, oldVal) {
-        //         if (!newVal) {
-        //             console.log('geosCoordinates is null');
-        //         } else {
-        //             console.log('geosCoordinates:', newVal);
-        //         }
-        //     },
-        //     immediate: true // 立即执行一次
-        // }
     },
     //生命周期 - 创建完成（可以访问当前this实例）
     created() {
     },
     //生命周期 - 挂载完成（可以访问DOM元素）
     mounted() {
-        // document.addEventListener('sendmsg', this.receivemsg);
-        // //
-        // const cesiumElement = document.querySelector('.cesiumOutdiv');
-        // // 创建 MutationObserver 实例 鼠标文字位置
-        // var observer = new MutationObserver(
-        //     debounce((mutationsList, observer) => {
-        //         const rect = cesiumElement.getBoundingClientRect();
-        //         this.CursorTipDistance.distanceX = rect.left;
-        //         this.CursorTipDistance.distanceY = rect.top;
-        //         // 处理位置变化的逻辑
-        //         console.log(this.CursorTipDistance);
-        //     }, 300)
-        // ); // 设置节流的延迟时间，例如 200 毫秒
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = parseInt(urlParams.get('id'), 10); // 假设 id 是整数
+        const src = decodeURIComponent(urlParams.get('src'));
+        const dataString = urlParams.get('data');
+        const data = JSON.parse(decodeURIComponent(dataString));
+        // const data = decodeURIComponent(urlParams.get('data'));
+        const myObject = { id, src, data };
+        console.log(myObject, urlParams); // 输出: { id: 1, name: 'Example', data: 'Some data' }
+        this.src = src;
+        this.urioptions = [{
+            value: src,
+            label: 'Tileset点云'
+        }]
 
-        // function debounce(fu, delay) {
-        //     let timeoutId;
-        //     return (...arg) => {
-        //         clearTimeout(timeoutId);
-        //         timeoutId = setTimeout(() => fu(...arg), delay);
-        //     };
-        // }
-        // // 开始观察目标元素的变化
-        // observer.observe(cesiumElement, {
-        //     attributes: true,
-        //     childList: true,
-        //     subtree: false
-        // });
-
+        const pointItems = document.querySelectorAll('.cursor-tip-class');
+        if (pointItems.length) {
+            console.log('pointItems', pointItems);
+            // pointItems.forEach((item) => {
+            //     item.remove();
+            // });
+            pointItems.forEach(item => {
+                item.parentNode.removeChild(item);
+            });
+        }
         this.CreateCesium();
-        this.addimageryLayers(this.MapProvider);
-
-        console.log('子组件');
     },
     beforeCreate() { }, //生命周期 - 创建之前
     beforeMount() { }, //生命周期 - 挂载之前
@@ -279,67 +264,21 @@ export default {
                 infoBox: false, //是否显示点击要素之后显示的信息
                 // requestRenderMode: true, //启用请求渲染模式
                 scene3DOnly: false, //每个几何实例将只能以3D渲染以节省GPU内存
-                sceneMode: 3 //初始场景模式 1 2D模式 2 2D循环模式 3 3D模式  Cesium.SceneMode
-                // fullscreenElement: document.body, //全屏时渲染的HTML元素 暂时没发现用处
-                // 天地图地形
-                // terrainProvider: new Cesium.CesiumTerrainProvider({
-                //     url: "http://data.mars3d.cn/terrain",
-                //     show:false,
+                sceneMode: 3, //初始场景模式 1 2D模式 2 2D循环模式 3 3D模式  Cesium.SceneMode
+                terrainProvider: Cesium.createWorldTerrain()
+                //添加本地瓦片地图
+                // imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
+                //     url: 'https://elevation3d.arcgis.com/arcgis/rest/services/World_Imagery/MapServer'
                 // })
             });
 
             window.viewer.cesiumWidget.creditContainer.style.display = 'none'; // 去除logo
             window.viewer.scene.globe.depthTestAgainstTerrain = true; //解决地形遮挡entity问题
-            // var imageryProvider = new Cesium.WebMapServiceImageryProvider({
-            //       // 这里是你的 geoserver服务点击查看图层的 url
-            //       url: '/geoserver/work/wms?',
-            //       // 这里是自定义的图层名称
-            //       layers: 'work:yingDeMap',
-            //       parameters: {
-            //           // service: 'WMS',
-            //           format: 'image/png',
-            //           transparent: true,
-            //           // style : 'raster',
-            //       },
-            //   });
-            //   // 图层添加
-            //   viewer.imageryLayers.addImageryProvider(imageryProvider);
-            // viewer.scene.camera.flyTo({
-            //     destination: Cesium.Cartesian3.fromDegrees(
-            //         112.2667,
-            //         31.01892,
-            //         1000
-            //     ),
-            // });
-            // // 是否支持图像渲染像素化处理
-            // if (Cesium.FeatureDetection.supportsImageRenderingPixelated()) {
-            //     window.viewer.resolutionScale = window.devicePixelRatio
-            // }
-
-            // // 开启抗锯齿
+            // 开启抗锯齿
             // window.viewer.scene.postProcessStages.fxaa.enabled = true;
-
             this.viewer = window.viewer;
-
-            // this.reloadLoadProgress(); //加载进度
-
-            // var helper = new Cesium.EventHelper();
-            // helper.add(
-            //     this.viewer.scene.globe.tileLoadProgressEvent,
-            //     function (e) {
-            //         console.log("每次加载地图服务矢量切片都会进入这个回调", e);
-            //         if (e == 0) {
-            //             console.log("矢量切片加载完成时的回调");
-            //             // that.loading = false; //关闭加载动画
-            //             // 懒加载
-
-            //         }
-            //     }
-            // );
-
-            //         viewer.scene.globe.tilesLoaded.addEventListener(() => {
-            //             console.log("cesium加载上了");
-            //   });
+            // this.addtileset()
+            //        // this.addimageryLayers(this.MapProvider);
         },
         reloadLoadProgress(viewer = window.viewer) {
             var helper = new Cesium.EventHelper();
@@ -352,6 +291,19 @@ export default {
                     console.log('每次加载地图服务矢量切片都会进入这个回调', e);
                 }
             });
+        },
+        addtileset(src) {
+            // tilesetManager = new TilesetManager(this.viewer);
+            // tilesetManager.addTileset('http://127.0.0.1:9090/efuavmodel/pointCloud/kunmingPv/tileset.json')
+            imageryManager = new ImageryManager(this.viewer);
+            imageryManager.addImagery({ url: 'http://127.0.0.1:9090/efuavmodel/2d/result/{z}/{x}/{y}.png' }, {
+                longitude: 112.27139701848677,
+                latitude: 31.026628725595643,
+                height: 1000
+            })
+        },
+        addimagery() {
+
         },
         /**添加影像--默认tiandi 天地图 */
         addimageryLayers(MapProvider = 'tiandi') {

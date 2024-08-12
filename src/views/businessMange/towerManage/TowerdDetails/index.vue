@@ -15,18 +15,24 @@
       size="20%"
     >
       <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="130px" class="demo-ruleForm">
-        <el-form-item label="名称" prop="name">
+        <el-form-item label="竣工杆号" prop="name">
           <el-input v-model="ruleForm.name" style="width: 200px;" />
         </el-form-item>
-        <el-form-item label="标注" prop="mark">
+        <el-form-item label="杆塔标注号" prop="mark">
           <el-input v-model="ruleForm.mark" style="width: 200px;" :disabled="tower.mark!=''" />
         </el-form-item>
-        <!-- <el-form-item label="活动区域" prop="region">
-          <el-select v-model="ruleForm.region" placeholder="请选择活动区域">
-            <el-option label="区域一" value="shanghai" />
-            <el-option label="区域二" value="beijing" />
-          </el-select>
-        </el-form-item> -->
+        <el-form-item label="杆塔经度" prop="mark">
+          <el-input v-model="ruleForm.lon" style="width: 200px;" />
+        </el-form-item>
+        <el-form-item label="杆塔纬度" prop="mark">
+          <el-input v-model="ruleForm.lat" style="width: 200px;" />
+        </el-form-item>
+        <el-form-item label="杆塔高度" prop="mark">
+          <el-input v-model="ruleForm.alt" style="width: 200px;" />
+        </el-form-item>
+        <el-form-item label="杆塔海拔" prop="mark">
+          <el-input v-model="ruleForm.absalt" style="width: 200px;" />
+        </el-form-item>
         <el-form-item label="导地线弧垂" prop="verticalLineArc">
           <el-input v-model="ruleForm.verticalLineArc" style="width: 200px;" />
         </el-form-item>
@@ -39,7 +45,7 @@
         <el-form-item label="耐张塔转角度数" prop="towerRotationAngle">
           <el-input v-model="ruleForm.towerRotationAngle" style="width: 200px;" />
         </el-form-item>
-        <el-form-item label="描述" prop="des">
+        <el-form-item label="备注" prop="des">
           <el-input v-model="ruleForm.des" type="textarea" style="width: 200px;" />
         </el-form-item>
         <div style="margin-left: 5px;">
@@ -78,7 +84,7 @@ export default {
             },
             rules: {
                 name: [
-                    { required: true, message: '请输入名称', trigger: 'blur' },
+                    { required: true, message: '请输入竣工杆号名称', trigger: 'blur' },
                     { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' }
                 ],
                 mark: [

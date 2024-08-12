@@ -6,6 +6,48 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5387895",
+      "name": "删除_o",
+      "font_class": "shanchu_o",
+      "unicode": "eb83",
+      "unicode_decimal": 60291
+    },
+    {
+      "icon_id": "5388069",
+      "name": "眼睛_显示_o",
+      "font_class": "yanjing_xianshi_o",
+      "unicode": "ebcc",
+      "unicode_decimal": 60364
+    },
+    {
+      "icon_id": "5388071",
+      "name": "眼睛_隐藏_o",
+      "font_class": "yanjing_yincang_o",
+      "unicode": "ebcd",
+      "unicode_decimal": 60365
+    },
+    {
+      "icon_id": "1813190",
+      "name": "image-图像",
+      "font_class": "image",
+      "unicode": "e61a",
+      "unicode_decimal": 58906
+    },
+    {
+      "icon_id": "4719203",
+      "name": "添加影像",
+      "font_class": "tianjiayingxiang",
+      "unicode": "e7cd",
+      "unicode_decimal": 59341
+    },
+    {
+      "icon_id": "5896813",
+      "name": "地图-星",
+      "font_class": "ditu-xing",
+      "unicode": "ec43",
+      "unicode_decimal": 60483
+    },
+    {
       "icon_id": "8817473",
       "name": "设置",
       "font_class": "shezhi",

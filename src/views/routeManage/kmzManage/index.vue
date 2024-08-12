@@ -27,7 +27,6 @@
           </div>
         </el-card>
       </template>
-
       <div class="upload-content">
         <!-- :on-change="changeFile" :before-upload="beforeAvatarUpload"  :show-file-list="false" :limit="1"  -->
         <div class="upload-header">
@@ -136,7 +135,8 @@ export default {
         openVideoTag(item) {
             const url = item.kmzPath;
             this.fetchAndExtractZipContent(url).then(res => {
-                this.points = parseXML(res);
+                console.log('parseXML(res)', parseXML(res));
+                this.points = parseXML(res).points;
             }, rej => {
                 this.showMessage('获取kmz文件失败', 'error')
             }
@@ -171,9 +171,19 @@ export default {
         },
 
         async downloadVideo(item) {
-            this.getMethod(item.url).then((blob) => {
+            // const response = await fetch(item.kmzPath, {
+            //     responseType: 'blob'
+            // });
+            // if (response.status !== 200) {
+            //     return this.showMessage('下载kmz文件失败', 'error')
+            // }
+            // const blob = await response.blob();
+            // console.log('response', response,blob);
+            this.getMethod(item.kmzPath).then((blob) => {
                 this.downloadFile(blob)
-            })
+            }).catch((error) => {
+                console.error('下载kmz文件失败', error);
+            });
         },
         downloadFile(blob, fileName = `${Date.now()}.kmz`) {
             // 创建a 标签
@@ -190,7 +200,6 @@ export default {
         },
 
         async getMethod(url, data = {}) {
-            console.log('getMethod');
             const res = await fetch(url, {
                 method: 'GET', // *GET, POST, PUT, DELETE, etc.
                 mode: 'cors', // no-cors, *cors, same-origin

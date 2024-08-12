@@ -6,7 +6,7 @@
 -->
 <!--  -->
 <template>
-  <div style="height: 100vh; width: 100wh; display: flex;">
+  <div style="height: 100vh; width: 100wh; display: flex; flex-direction: column;">
     <div ref="container" />
     <video v-if="formats === &quot;video&quot;" oncontextmenu="return false" controls controlslist="nodownload">
       <source :src="src" type="video/mp4">
@@ -21,9 +21,12 @@
       width="100%"
       height="100%"
     />
-    <div v-if="formats === &quot;docx&quot; || formats === &quot;doc&quot;" id="preview" />
-    <div id="progressBar" /> <!-- 添加进度条容器 -->
+    <div id="progressBar" style="height: 2px; background-color: burlywood;" /> <!-- 添加进度条容器 -->
     <p id="statusMessage" /> <!-- 添加状态消息显示区域 -->
+    <div
+      v-if="formats === &quot;docx&quot; || formats === &quot;doc&quot;"
+      id="preview"
+    />
     <div v-if="formats === 'tif' || formats === 'tiff'" class="tif">
       <img id="img" src="">
     </div>
@@ -54,7 +57,9 @@ export default {
         return {
             src: '',
             fileRef: '',
-            formats: ''
+            formats: '',
+            doxcLoading: false,
+            progress: 0
         };
     },
     //监听属性 类似于data概念
@@ -169,6 +174,7 @@ export default {
             xhr.send();
         },
         httpRequest() {
+            this.doxcLoading = true
             // 发起文件下载请求
             const xhr = new XMLHttpRequest();
             xhr.open('GET', this.src, true);
@@ -178,7 +184,9 @@ export default {
             xhr.onprogress = function(event) {
                 if (event.lengthComputable) {
                     const percentComplete = (event.loaded / event.total) * 100;
+                    console.log('下载进度: ' + percentComplete + '%');
                     document.getElementById('progressBar').style.width = `${percentComplete}%`; // 更新进度条宽度
+
                 }
             };
 

@@ -52,16 +52,16 @@
     </div>
     <div v-if="markMode === 'label'" v-show="visible" id="createLabelPanel" :style="{ left: winPos.x + 'px', top: winPos.y + 'px' }">
       <el-input ref="nameinput" v-model="markName" @keypress.enter="update" />
-      <el-button size="small" style="margin-left: 20px;" @click="update">确定</el-button>
+      <el-button size="small" style="margin-left: 20px;" @click="update">确定444</el-button>
     </div>
     <input v-show="false" id="uploadhandler" type="file" accept=".json" @change="importMarks">
   </div>
 </template>
 
 <script>
-import MarkerManager from '../../core/MarkerManager';
-import utils from '../../core/utils';
-import { checkComponent, checkViewer } from '../../core/utils';
+import MarkerManager from '../core/MarkerManager';
+import utils from '../core/utils';
+import { checkComponent, checkViewer } from '../core/utils';
 export default {
     name: 'CesiumMarkerViewer',
     components: {},
@@ -138,6 +138,7 @@ export default {
             self.$emit('editEvent', type);
         });
         window.addEventListener('marker-add', (e) => {
+            console.log('marker-add');
             self.winPos = self.markerManager.panelPosition();
             self.visible = true;
             self.$emit('addEvent', e.detail.id, e.detail.name, e.detail.type); // 封装
@@ -207,10 +208,9 @@ export default {
         },
         createModel(cartesian) {
             if (this.markerManager) {
-                return this.markerManager.createLabel(cartesian);
+                return this.markerManager.createModel(cartesian);
             }
         },
-
         removeEventListener() {
             if (this.markerManager) {
                 return this.markerManager.removeEventListener();

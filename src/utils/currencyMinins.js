@@ -147,7 +147,9 @@ export default {
                 const res = await this.$store.dispatch('media/queryList1', reqData)
                 const { code, message, data } = res;
                 if (code === 1) {
-                    this.tableData = data;
+                    this.tableData = data.map(item => {
+                        return { ...item, downLoadProgress: 0, copy: false }
+                    })
                 } else {
                     this.$message.error(message);
                 }
@@ -314,6 +316,9 @@ export default {
         beforeView(id, path, formats, mark) {
             const windowName = 'windowName-' + formats + mark;
             if (!this.windows[windowName] || this.windows[windowName].closed) {
+                if (this.windows[windowName]) {
+                    delete this.windows[windowName];
+                }
                 // 创建新窗口
                 const existingWindow = window.open('', windowName);
                 const queryString = `?id=${id}&src=${encodeURIComponent(path)}&formats=${encodeURIComponent(formats)}`;

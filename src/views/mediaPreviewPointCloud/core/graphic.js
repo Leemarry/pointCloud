@@ -113,7 +113,6 @@ class CesiumBillboard extends BaseGraphic {
    */
     constructor(viewer, options, labelOption = CesiumBillboard.defaultLabelStyle) {
         super(viewer);
-        console.log(options);
         this.viewer = viewer;
         this._type = 'MARKER';
         this.mtype = GraphicType.MARKER;
@@ -173,6 +172,7 @@ class CesiumBillboard extends BaseGraphic {
     }
     create() {
         this.graphic = this.viewer.entities.add(this.options);
+        console.log('创建标记',  this.graphic);
     }
     remove() {
         if (this.viewer) {
@@ -1121,6 +1121,17 @@ class CesiumModel extends BaseGraphic {
             position: this.position,
             model: options
         }
+        this.options = {
+            name: '示例模型',
+            position: Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, 300000.0), // 模型的位置
+            model: {
+                uri: 'http://127.0.0.1:9090/efuavmodel/wrji.glb', // 模型的 URI
+                scale: 1.0, // 模型的缩放比例
+                minimumPixelSize: 128, // 模型在屏幕上显示时的最小像素大小
+                maximumScale: 20000 // 模型的最大缩放比例
+            }
+        }
+        console.log(this.options, 'create');
         this.create()
     }
     create() {

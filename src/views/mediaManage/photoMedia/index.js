@@ -4,6 +4,8 @@ import AlDialog from '@/views/AlDialog/index.vue'
 import AlImagePreview from '@/views/AlImagePreview/index.vue'
 import currencyMinins from '@/utils/currencyMinins'
 import ElImageViewer from 'element-ui/packages/image/src/image-viewer'
+import axios from 'axios'
+import * as mediaApi from '@/api/media';
 export default {
     name: 'PhotoManager',
     mixins: [currencyMinins],
@@ -53,8 +55,35 @@ export default {
         openUploadDialog() {
             this.dialogVisible = true;
         },
+        async downimgbyAxios(row, name = Date.now()) {
+            const url = row.path;
+            if (!url) {
+                this.showToast('请选择图片路径异常');
+                return false;
+            }
+            // 获取链接的图片名 为最后一个/
+            const nameArr = url.split('/');
+            name = nameArr[nameArr.length - 1]
+            const self = this
+            const data = {
+                self: row,
+                url
+            }
+            const response = await mediaApi.miniodownload(data)
+            var url2 = URL.createObjectURL(response);
+            var link = document.createElement('a');
+            link.href = url2;
+            // eslint-disable-next-line quotes
+            link.download = name || "DJI_20231223122702_0008_D.JPG";
+            document.body.appendChild(link);
+            link.click();
+            URL.revokeObjectURL(url);
+            // 删除 a 标签
+            document.body.removeChild(link);
+        },
 
-        downimg(row , name = Date.now()) {
+        downimg(row, name = Date.now()) {
+            console.log('downimg');
             const url = row.path;
             if (!url) {
                 this.showToast('请选择图片');
@@ -66,10 +95,8 @@ export default {
             // 使用 XMLHttpRequest 发起 GET 请求
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
-
             // eslint-disable-next-line quotes
             xhr.responseType = "blob"; // 设置响应类型为 blob
-
             xhr.onload = function() {
                 if (this.status === 200) {
                     // 将 blob 数据赋值给变量 a

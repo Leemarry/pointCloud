@@ -14,9 +14,6 @@ import GraphicType from './GraphicType'
 import {
     saveAs
 } from 'file-saver'
-import {
-    map
-} from 'jquery';
 const console = window.console;
 const LEFT_CLICK = Cesium.ScreenSpaceEventType.LEFT_CLICK;
 const RIGHT_CLICK = Cesium.ScreenSpaceEventType.RIGHT_CLICK;
@@ -1484,3 +1481,29 @@ class GraphicManager {
     }
 }
 export default GraphicManager
+
+const toolbox = [{
+    title: '标注',
+    type: 'MARKER',
+    icon: 'icon-a-shenhegaizhang'
+}, {
+    title: '测量工具',
+    type: 'Measurement',
+    icon: 'icon-a-shenhegaizhang'
+}, {
+    title: '热控标记',
+    type: 'polygon',
+    icon: 'icon-a-shenhegaizhang'
+}, {
+    title: '模型管理',
+    type: 'MODEl',
+    icon: 'icon-a-shenhegaizhang'
+},
+{
+    title: '图源影像',
+    type: 'TILESET',
+    icon: 'icon-ditu-xing'
+}]
+export {
+    toolbox
+}

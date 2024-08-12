@@ -96,10 +96,12 @@ export default {
             // 是否存在id 存在为修改 否则为新增
             try {
                 const res = await this.$store.dispatch('business/handTower', { data: towerInfo, url: this.reqData.reqUrl })
-                const { code, message } = res;
+                const { code, message, data } = res;
                 if (code === 1) {
+                    const temp = this.formatTowerData([data])
+                    // temp 与 tableData 合并 并放入头部
+                    this.tableData = [...temp, ...this.tableData]
                     this.showToast(message, 'success');
-                    this.queryTowerlist();
                 } else {
                     this.showToast(message, 'error');
                 }
@@ -140,7 +142,7 @@ export default {
             return towerData.map(item => {
                 let url = '';
                 let urlList = [];
-                if (item.photos.length > 0) {
+                if (item.photos && item.photos.length > 0) {
                     url = item.photos[0].path
                     //并且将path放入到urllist
                     urlList = item.photos.map(item => item.path)

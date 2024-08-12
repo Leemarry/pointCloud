@@ -273,7 +273,7 @@ const viewCenter = (
 };
 const saveCurViewerImage = (viewer, filename) => {
     viewer.render();
-    if (!filename || filename == '') {
+    if (!filename || filename === '') {
         filename = new Date().toLocaleString() + '.png';
     }
     const ext = filename.split('.')[1];
@@ -315,8 +315,21 @@ const errroCatch = function(e, callback) {
         callback(e.message);
     }
 };
+// const clearAllTipDom = (domSrt) => {
+//     const ele = document.querySelectorAll('.cursor-tip-class')
+//     if (ele.length) {
+//         //删除仅保留一个
+//         ele[ele.length - 1].parentNode.removeChild(ele[ele.length - 1]);
+//         // ele.forEach(item => {
+//         //     item.parentNode.removeChild(item);
+//         // });
+//     }
+// };
+
 class CursorTip {
     constructor(text, id, viewer) {
+        // 查询所有cursor-tip-class 删除
+        this._domStr = 'cursor-tip-class';
         const tooltip = document.createElement('div');
         tooltip.id = id || 'cursor-tip';
         tooltip.className = 'cursor-tip-class';
@@ -325,17 +338,17 @@ class CursorTip {
         this.ele = tooltip;
         this._visible = true;
         /**默认位置 */
-        this._distanceX = 357; //
+        this._distanceX = 0; //
         /**默认位置 */
-        this._distanceY = 127; // 鼠标位置
+        this._distanceY = 0; // 鼠标位置
 
-        const self = this;
-        if (viewer instanceof Cesium.Viewer) {
-            viewer.screenSpaceEventHandler.setInputAction(e => {
-                // console.log('ppppppp');
-                self.updatePosition(e.endPosition);
-            }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-        }
+        // const self = this;
+        // if (viewer instanceof Cesium.Viewer) {
+        //     viewer.screenSpaceEventHandler.setInputAction(e => {
+        //         console.log('ppppppp');
+        //         self.updatePosition(e.endPosition);
+        //     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+        // }
     }
     /**
    * 鼠标文字定位移动

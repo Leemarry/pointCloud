@@ -32,6 +32,14 @@ export function queryPhotolist(formdata) {
         // })
     })
 }
+export function updatePointCloud(data) {
+    return request({
+        url: '/media/updatePointCloud',
+        method: 'post',
+        data: data,
+        timeout: 30000 // 设置超时时间为30秒
+    })
+}
 export function queryList1(data) {
     const { url, formdata } = data
     return request({
@@ -55,5 +63,22 @@ export function downimg(formdata) {
         //     cancel && cancel() //这里的source为使用接口的页面设置的，需要取消请求的时候直接调用在这里已被赋值为函数的source就行了
         //     cancel = c
         // })
+    })
+}
+
+export function miniodownload(data) {
+    const { url, self } = data
+    return request({
+        url,
+        method: 'get',
+        responseType: 'blob', // 设置响应类型为blob
+        timeout: 30000, // 设置超时时间为30秒
+        onDownloadProgress: (progressEvent) => {
+            if (progressEvent.lengthComputable) {
+                // console.log(Math.round(progressEvent.loaded * 100 / progressEvent.total) + '%')
+                self.downLoadProgress = Math.round(progressEvent.loaded * 100 / progressEvent.total)
+                // console.log(progressEvent,self)
+            }
+        }
     })
 }

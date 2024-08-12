@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-  <div class="media">
+  <div v-loading="mixinsLoading" element-loading-background="rgba(0, 0, 0, 0.3)" class="media">
     <div class="media-top">
       <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline">
         <el-form-item label="点云标注描述" prop="mark">
@@ -18,7 +18,16 @@
       </el-form>
       <div>
         <el-button type="primary" @click="queryList1">查询</el-button>
-        <el-button type="primary" @click="uploadFiles({ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploads2' })">上传</el-button>
+        <!-- <el-button type="primary" @click="uploadFiles({ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploads2' })">上传</el-button> -->
+        <el-dropdown split-button type="primary" style="margin-left: 5px;" @click="uploadFiles({ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploads2' })">
+          {{ title }}
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item @click.native="operationType('上传',{ operation: 'hand' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploads2' })">上传</el-dropdown-item>
+            <!-- <el-dropdown-item>批量导入</el-dropdown-item> -->
+            <!-- <el-dropdown-item @click.native="operationType('手动新增',{ operation: 'hand' , id : 0, reqUrl:'/business/hand/addOrupdateTower' })">手动新增</el-dropdown-item>
+            <el-dropdown-item @click.native="operationType('批量导入',{ operation: 'batch' , id : 1, reqUrl:'/business/batch/batchInsertTower' })">批量导入</el-dropdown-item> -->
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
     </div>
     <div class="media-container">
@@ -33,18 +42,34 @@
           </template>
         </el-table-column>
         <el-table-column prop="mark" label="标注名" width="120" />
-        <el-table-column prop="amendType" label="类型" />
-        <el-table-column prop="amendSize" label="大小">
+        <el-table-column prop="amendType" label="类型" width="80" />
+        <el-table-column prop="amendSize" label="大小" width="80">
           <template slot-scope="scope">
             <span>{{ filtersType(scope.row.amendSize) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="amendCloudUrl" label="地址" />
-        <el-table-column fixed="right" label="操作" width="100">
+        <el-table-column prop="amendCloudUrl" label="地址">
+          <template slot-scope="scope">
+            <el-tag
+              :type="'info'"
+              effect="plain"
+              :hit="true"
+              style="cursor: pointer;"
+              @click="copy(scope.row.amendCloudUrl,scope.row.id)"
+            >
+              {{ scope.row.amendCloudUrl }}
+              <i v-if="scope.row.copy " class="el-icon-finished" />
+              <i v-else class="el-icon-document" />
+              <!-- <i :class="scope.row.active ? 'el-icon-finished' : 'el-icon-document'" /> -->
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" width="150">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="previewPointCloud(scope.row)">查看</el-button>
             <el-button type="text" size="small" @click="previewWebCloud(scope.row)">web查看</el-button>
-            <el-button type="text" size="small" @click="openfull(scope.row)">web查看</el-button>
+            <el-button type="text" size="small" @click="openupadte(scope.row)">编辑</el-button>
+            <!-- <el-button type="text" size="small" @click="openfull(scope.row)">web查看</el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -61,6 +86,20 @@
         @current-change="handleCurrentChange"
       />
     </div>
+    <el-dialog title="引用链接更改" :visible.sync="Urldialog" width="30%">
+      <el-form :model="form">
+        <el-form-item label="html链接" :label-width="'80px'">
+          <el-input v-model="form.webUrl" size="small" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="json链接" :label-width="'80px'">
+          <el-input v-model="form.amendCloudUrl" size="small" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="Urldialog = false">取 消</el-button>
+        <el-button type="primary" @click="submitUpdate()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -76,6 +115,14 @@ export default {
     data() {
     //这里存放数据
         return {
+            Urldialog: false,
+            form: {
+                id: '',
+                webUrl: '',
+                amendCloudUrl: ''
+            },
+            title: '上传',
+            reqData: {},
             reqUrl: '/media/cloud/querylist',
             //分页
             currentPage: 1,
@@ -87,13 +134,9 @@ export default {
     //监控data中的数据变化
     watch: {},
     //生命周期 - 创建完成（可以访问当前this实例）
-    created() {
-
-    },
+    created() {},
     //生命周期 - 挂载完成（可以访问DOM元素）
-    mounted() {
-
-    },
+    mounted() {},
     beforeCreate() { }, //生命周期 - 创建之前
     beforeMount() { }, //生命周期 - 挂载之前
     beforeUpdate() { }, //生命周期 - 更新之前
@@ -103,21 +146,104 @@ export default {
     activated() { },
     //方法集合
     methods: {
+        openupadte(row) {
+            this.Urldialog = true;
+            this.form = {
+                id: row.id,
+                webUrl: row.webUrl,
+                amendCloudUrl: row.amendCloudUrl
+            }
+        },
+        async  submitUpdate() {
+            const id = this.form.id
+            // tableData
+            // const item = { ... this.tableData.find(item => item.id === id) }
+            const index = this.tableData.findIndex(item => item.id === id)
+            const item = { ... this.tableData[index] }
+            item.webUrl = this.form.webUrl
+            item.amendCloudUrl = this.form.amendCloudUrl
+            try {
+                const res = await this.$store.dispatch('media/updatePointCloud', item)
+                const { code, data, message } = res
+                if (code === 1) {
+                    this.$message({
+                        message: '修改成功',
+                        type: 'success'
+                    })
+
+                    this.tableData.splice(index, 1, data)
+                } else {
+                    this.$message.error(message);
+                }
+            } catch (err) {
+                console.log(err)
+            } finally {
+                this.Urldialog = false
+            }
+        },
+        operationType(title, obj) {
+            this.title = title;
+            this.reqData = obj;
+        },
         openfull(row) {
-            // row.id, row.webUrl, 'web', row.mark
+        // row.id, row.webUrl, 'web', row.mark
             const { id, webUrl, formats, mark } = row;
             const windowName = 'windowName-' + formats + mark;
             if (!this.windows[windowName] || this.windows[windowName].closed) {
-                // 创建新窗口
+            // 创建新窗口
                 const existingWindow = window.open('', windowName);
                 const queryString = `?id=${id}&src=${encodeURIComponent(webUrl)}&formats=${encodeURIComponent(formats)}`;
                 existingWindow.location.href = '/full' + queryString;
                 this.windows[windowName] = existingWindow;
-                // // 为新窗口添加 message 事件监听器
-                // existingWindow.addEventListener('message', handleMessage);
+            // // 为新窗口添加 message 事件监听器
+            // existingWindow.addEventListener('message', handleMessage);
             } else {
                 this.windows[windowName].focus();
             }
+        },
+        copy(textToCopy, id) {
+            console.log(textToCopy);
+            const self = this;
+            if (!navigator.clipboard) {
+                console.error('Clipboard API not supported');
+                // 如通过创建一个临时的 <textarea> 元素，将其设置为只读并设置为选中状态，然后使用 document.execCommand('copy')
+                this.copyTextToClipboard(textToCopy)
+                const index = self.tableData.findIndex(item => item.id === id);
+                if (index >= 0) {
+                    self.tableData[index].copy = true;
+                }
+                return;
+            }
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const index = self.tableData.findIndex(item => item.id === id);
+                console.log('文本已复制到剪贴板', index);
+                if (index >= 0) {
+                // self.tableData[index].copy = true;
+                    this.$set(this.tableData[index], 'copy', true);
+                }
+            }).catch(function(err) {
+                console.error('复制失败: ', err);
+            });
+        },
+        copyTextToClipboard(text) {
+        // 创建一个临时的textarea元素
+            const textarea = document.createElement('textarea');
+            // 设置textarea的值为要复制的文本
+            textarea.value = text;
+            // 将textarea添加到文档中（这一步是可选的，但有时候可以帮助某些浏览器）
+            document.body.appendChild(textarea);
+            // 选中textarea中的所有文本
+            textarea.select();
+            try {
+            // 尝试执行复制命令
+                const successful = document.execCommand('copy');
+                const msg = successful ? '成功复制' : '复制失败';
+                console.log(msg);
+            } catch (err) {
+                console.error('复制失败:', err);
+            }
+            // 移除textarea元素
+            document.body.removeChild(textarea);
         },
 
         // #region ------------------------------------------------------------- 查询 ----------------------------------------------------
@@ -140,19 +266,19 @@ export default {
             }
         },
         previewWebCloud(row) {
-            // webUrl
-            // const windowName = 'pointCloudPreview-' + row.id;
-            // if (!this.windows[windowName] || this.windows[windowName].closed) {
-            //     const queryString = `?id=${row.id}&src=${encodeURIComponent(row.webUrl)}&data=${encodeURIComponent(JSON.stringify(row))}`;
-            //     const url = '/preview' + queryString;
-            //     const existingWindow = window.open(url, windowName);
-            //     console.log('this.windows', window.tableData);
-            //     console.log('this.windows', existingWindow);
-            //     existingWindow.tableData = this.tableData;
-            //     this.windows[windowName] = existingWindow;
-            // } else {
-            //     this.windows[windowName].focus();
-            // }
+        // webUrl
+        // const windowName = 'pointCloudPreview-' + row.id;
+        // if (!this.windows[windowName] || this.windows[windowName].closed) {
+        //     const queryString = `?id=${row.id}&src=${encodeURIComponent(row.webUrl)}&data=${encodeURIComponent(JSON.stringify(row))}`;
+        //     const url = '/preview' + queryString;
+        //     const existingWindow = window.open(url, windowName);
+        //     console.log('this.windows', window.tableData);
+        //     console.log('this.windows', existingWindow);
+        //     existingWindow.tableData = this.tableData;
+        //     this.windows[windowName] = existingWindow;
+        // } else {
+        //     this.windows[windowName].focus();
+        // }
             this.beforeView(row.id, row.webUrl, 'web', row.mark)
         },
 

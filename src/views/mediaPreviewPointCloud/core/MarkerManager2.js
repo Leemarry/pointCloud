@@ -1,7 +1,7 @@
 /*
  * @Date: 2024-08-07 18:57:01
  * @LastEditors: likai 2806699104@qq.com
- * @FilePath: \pointCouldPages\src\views\mediaPreviewPointCloud\core\MarkerManager.js
+ * @FilePath: \pointCouldPages\src\views\mediaPreviewPointCloud\core\MarkerManager2.js
  * @Description: Do not edit
  */
 /*
@@ -10,7 +10,7 @@
  * @FilePath: \pointCouldPages\src\views\mediaPreviewPointCloud\core\MarkerManager.js
  * @Description: Do not edit
  */
-import {CesiumBillboard,CesiumLabel,CesiumModel} from './Graphic';
+import { CesiumBillboard, CesiumLabel, CesiumModel } from './Graphic';
 import utils from './utils';
 import GraphicType from './GraphicType';
 import $ from 'jquery';
@@ -90,7 +90,7 @@ export default class MarkerManager {
                     return;
                 }
                 ele.style.left = pos.x - 5 + 'px';
-                ele.style.top = pos.y  + 'px';
+                ele.style.top = pos.y + 'px';
 
                 const curPos = self.popWinPosition;
                 //标记转到地球背面隐藏气泡
@@ -132,7 +132,7 @@ export default class MarkerManager {
     pick(type = 'marker', mode = 'single') {
         this.markMode = type;
         const viewer = this._viewer;
-        this.cursorTip.visible = true; // 如果是模型 怎么弄
+        this.cursorTip.visible = true;
         const handler = this.pickHandler //事件
         const self = this;
         const id = this.generateId();
@@ -172,7 +172,7 @@ export default class MarkerManager {
                     handler.removeInputAction(LEFT_CLICK);
                     handler.removeInputAction(RIGHT_CLICK);
                 }
-                const evt = new CustomEvent('marker-add', {
+                const evt = new CustomEvent('marker-add2', {
                     detail: {
                         id: marker.mid,
                         name: marker.mname || '未命名',
@@ -240,7 +240,6 @@ export default class MarkerManager {
             },
             mp
         );
-        console.log('创建标记', marker);
         return marker;
     }
     /**
@@ -513,10 +512,6 @@ export default class MarkerManager {
         })
         window.dispatchEvent(evt)
     }
-    // addMarker(marker) {
-    //   this.manager.set(marker.mid, marker)
-
-    // }
     addMarker(id, marker) {
         const manager = this.manager
         manager.set(id, marker);
@@ -649,3 +644,16 @@ export default class MarkerManager {
         );
     }
 }
+
+// function sendCustomEvent() {
+//     const evt = new CustomEvent('marker-add', {
+//         detail: {
+//             id: marker.mid,
+//             name: marker.mname || '未命名',
+//             description: marker.description,
+//             type: marker.mtype,
+//             position: cvt.toDegrees(cartesian, self._viewer)
+//         }
+//     })
+//     window.dispatchEvent(evt)
+// }

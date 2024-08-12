@@ -30,6 +30,15 @@ const actions = {
             })
         })
     },
+    updatePointCloud({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            mediaApi.updatePointCloud(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
 
     queryList1({ commit, state }, data) {
         return new Promise((resolve, reject) => {
@@ -49,6 +58,15 @@ const actions = {
             })
         })
     },
+    miniodownload({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            mediaApi.miniodownload(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    }
 
 }
 

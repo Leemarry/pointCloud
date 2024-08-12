@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-  <div class="media">
+  <div v-loading="mixinsLoading" element-loading-background="rgba(0, 0, 0, 0.3)" class="media">
     <div class="media-top">
       <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline">
         <el-form-item label="杆塔/图片描述" prop="mark">
@@ -56,7 +56,8 @@
         <el-table-column fixed="right" label="操作" width="100">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="beforeView(scope.row)">查看</el-button>
-            <el-button type="text" size="small" @click="downimg(scope.row)">下载</el-button>
+            <el-button v-if="!scope.row.downLoadProgress" type="text" size="small" @click="downimgbyAxios(scope.row)">下载</el-button>
+            <el-button v-else type="text" size="small">{{ scope.row.downLoadProgress >= 99 ? '已下载':`${Number(scope.row.downLoadProgress).toFixed(1)}下载中。。`  }}</el-button>
           </template>
         </el-table-column>
       </el-table>
