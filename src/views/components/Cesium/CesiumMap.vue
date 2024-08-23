@@ -169,7 +169,7 @@ export default {
         });
 
         this.CreateCesium();
-        this.addimageryLayers(this.MapProvider);
+        // this.addimageryLayers(this.MapProvider);
 
         console.log('子组件');
     },
@@ -282,13 +282,24 @@ export default {
                 infoBox: false, //是否显示点击要素之后显示的信息
                 // requestRenderMode: true, //启用请求渲染模式
                 scene3DOnly: false, //每个几何实例将只能以3D渲染以节省GPU内存
-                sceneMode: 3 //初始场景模式 1 2D模式 2 2D循环模式 3 3D模式  Cesium.SceneMode
+                sceneMode: 3, //初始场景模式 1 2D模式 2 2D循环模式 3 3D模式  Cesium.SceneMode
                 // fullscreenElement: document.body, //全屏时渲染的HTML元素 暂时没发现用处
                 // 天地图地形
                 // terrainProvider: new Cesium.CesiumTerrainProvider({
                 //     url: "http://data.mars3d.cn/terrain",
                 //     show:false,
                 // })
+                imageryProvider: new Cesium.UrlTemplateImageryProvider({
+                    // Satellite
+                    url: 'http://127.0.0.1:9090/efuav-image/hubeijux/Satellite/{z}/{x}/{y}.png', // ok 不能删
+                    //   url: 'http://127.0.0.1:9090/efuav-ortho-img/900/900/map/{z}/{x}/{y}.png'  // 黄冈
+                    // url: 'http://127.0.0.1:456/static/satellite/{z}/{x}/{y}.jpg', // 456 http://localhost:456/static/satellite
+                    // url: 'http://127.0.0.1:9090/efuav-image/csch/tiles/{z}/{x}/{y}.jpg' // cs
+
+                    minimumLevel: 3,
+                    maximumLevel: 18
+                    // tilingScheme: new AmapMercatorTilingScheme(), //坐标矫正
+                })
             });
 
             window.viewer.cesiumWidget.creditContainer.style.display = 'none'; // 去除logo
@@ -1571,8 +1582,8 @@ export default {
 //@import url(); 引入公共css类
 .cesiumOutdiv {
     // 引用注意外侧
-    width: 100% !important;
-    height: 100% !important;
+    height:calc(100% - 6px) !important;
+    width: calc(100%)!important; 
     position: relative;
 }
 

@@ -88,7 +88,7 @@
         </el-select>
         <el-color-picker id="labelColor" v-model="markerColor" title="颜色" show-alpha size="small" />
       </div>
-      <div v-show="menuSelected['MODEL']" class="model-edit-class edit-class">
+      <!-- <div v-show="menuSelected['MODEL']" class="model-edit-class edit-class">
         <el-popover id="model-select" v-model="modelSelectPanelvisible" placement="bottom" width="160">
           <div class="model-select-panel">
             <img v-for="item in extendMarkerModel" :key="item.id" :title="item.name" :src="modelThumb(item)" :onerror="defaultImage" @click="selectModel(item)">
@@ -102,7 +102,7 @@
         </el-select>
         <el-color-picker id="modelColor" v-model="modelColor" title="颜色" show-alpha size="small" />
         <el-slider v-show="modelMode === 'Mix'" v-model="modelMixed" title="混合度" :min="0" :max="1" :step="0.1" :show-tooltip="true" />
-      </div>
+      </div> -->
       <div v-show="menuSelected['TILESET']" class="model-edit-class edit-class">
         <el-popover id="model-select" v-model="tilesetSelectPanelvisible" placement="bottom" width="160">
           <div class="model-select-panel">
@@ -123,12 +123,12 @@
         <!-- <i class="cesiumDrawFont iconmodel model-selector-trigger" title="选择模型" /> -->
         <!-- <i class="cesiumDrawFont iconfont icon-image" title="选择模型" /> -->
         <i class="cesiumDrawFont iconfont icon-tianjiayingxiang" title="TWM影像" @click="addTilesetOrImagery" />
-        <el-select v-model="modelMode" size="small" title="链接" default-first-option placeholder="请选择">
+        <!-- <el-select v-model="modelMode" size="small" title="链接" default-first-option placeholder="请选择">
           <el-option v-for="item in modelModeList" :key="item.value" :label="item.name" :value="item.value" />
         </el-select>
         <el-select v-model="modelMode" size="small" title="模式" default-first-option placeholder="请选择">
           <el-option v-for="item in modelModeList" :key="item.value" :label="item.name" :value="item.value" />
-        </el-select>
+        </el-select> -->
       </div>
     </div>
     <MarkerViewer
@@ -175,11 +175,6 @@
           </el-col>
         </el-row>
         <el-form-item :label="'影像链接'" :label-width="'80px'" prop="url">
-          <!-- <el-input v-model="tilesetForm.url" placeholder="请输入内容" class="input-with-select"  list="typelist">
-            <el-select slot="prepend" v-model="tilesetForm.mtype" placeholder="请选择" style="width: 100px;">
-              <el-option v-for="(value, key) in typeList" :key="key" :label="value" :value="key" />
-            </el-select>
-          </el-input> -->
           <el-row :gutter="0">
             <el-col :span="6">
               <el-select v-model="tilesetForm.mtype" placeholder="请选择" style="width: 100px;">
@@ -598,6 +593,7 @@ export default {
     //生命周期 - 创建完成（可以访问当前this实例）
     created() {
         // console.log("parent", this.$attrs, this.$listeners);
+        this.initializeTilesetForm();
     },
     mounted() {
         window.jq = $;
@@ -1373,11 +1369,6 @@ export default {
             this.dialogTilesetVisible = true
         },
         submitAdd(formName) {
-            // this.extendTileseImageryList  如果 name 与 url  在extendTileseImageryList对象数组重复 提示
-            // if (this.extendTileseImageryList.find(item => (item.url === this.tilesetForm.url || item.name === this.tilesetForm.name))) {
-            //     this.$message.error('该url已存在')
-            //     return false;
-            // }
             const { url, longitude, latitude, height, name, mtype } = this.tilesetForm
             this.$refs[formName].validate((valid) => {
                 if (valid) {
@@ -1387,7 +1378,8 @@ export default {
                     // });
                     // this.cesiumViewer.scene.primitives.add(tileset);
                     // this.cesiumViewer.zoomTo(tileset);
-                    console.log('tileset', url, name, mtype);
+
+                    // console.log('tileset', url, name, mtype);
                     imageryManager.addImagery({ url, name, mtype }, {
                         longitude,
                         latitude,
@@ -1432,6 +1424,10 @@ export default {
                 imageryManager.focus(mid)
             }
         },
+        removeAll() {
+            checkComponent(this);
+            imageryManager.removeAll()
+        },
         selectImage(type) {
             this.tilesetForm.type = type
             if (type === 'terrainProvider') {
@@ -1460,6 +1456,14 @@ export default {
                 this.$refs.markerManager.drop(id);
             }
             this.$emit('deleteEvent', id);
+        },
+        initializeTilesetForm() {
+            // 假设 urioptions 中至少有一个对象，并且每个对象都有 longitude 和 latitude 属性
+            if (this.urioptions.length > 0 && this.urioptions[0].longitude && this.urioptions[0].latitude) {
+                this.tilesetForm.longitude = this.urioptions[0].longitude;
+                this.tilesetForm.latitude = this.urioptions[0].latitude;
+            }
+            // 如果 urioptions 可能为空或没有有效的经纬度，你可能需要添加额外的错误处理或默认值设置
         }
     }
 };

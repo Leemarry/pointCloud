@@ -76,20 +76,12 @@
 }
 
 .main {
-  flex: 1 0 auto;
+  flex: 1;
   display: flex;
   display: -webkit-flex;
   /* Safari */
   flex-direction: row;
-}
-
-.foot {
-  flex: 0 0 auto;
-  color: #fff;
-  display: flex;
-  display: -webkit-flex;
-  /* Safari */
-  flex-direction: row;
+  overflow: hidden;
 }
 
 .mainleft {
@@ -192,10 +184,7 @@
   }
 }
 
-.main_left_uav {
-  height: 200px;
-  padding: 5px;
-}
+
 
 .main_left_uav_body {
   display: flex;
@@ -336,11 +325,14 @@
   
   }
 }
+.main_left_uav {
+ flex: 1;
+  padding: 5px;
+}
 
 .main_left_exception {
-  flex: 1;
   padding: 5px;
-  // height: 180px;
+  height: 220px;
 }
 
 .main_left_ptz_ctrl_body {
@@ -413,20 +405,6 @@
   padding: 5px;
 }
 
-.main_right_parms_body {
-  display: flex;
-  height: 100%;
-  display: -webkit-flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-content: space-around;
-  align-items: center;
-
-  .parmItem {
-    width: 49%;
-    height: 24%;
-  }
-}
 
 .main_right_gps_title {
   height: auto;
@@ -590,15 +568,8 @@
   }
 }
 
-// 后期
 
-::v-deep .el-input__inner {
-  background-color: transparent !important;
-  border-color: #555555;
-  box-shadow: 1px 1px 5px 1px RGB(128, 255, 255, 0.1) inset;
-  height: 30px;
-  width: 255px;
-}
+
 
 .careBgtop {
   display: flex;
@@ -926,55 +897,6 @@ canvas {
 
   }
 
-  .icon-list {
-    position: absolute;
-    bottom: 2px;
-    right: 5px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-
-    // max-height: 90px;
-    .el-button:hover,
-    .el-button:focus {
-      background-color: rgb(172 176 181 / 30%);
-      border: 1px solid rgb(21 21 21 / 65%);
-      color: #3de7c9;
-    }
-
-    .not_commonly_used-icon {
-      max-height: 30px;
-      transition: max-height .3s;
-      overflow: hidden;
-      transition: all .5s;
-      @include flexLayout(column, flex-start, end);
-
-      .custom-button {
-        opacity: 0;
-        transition: opacity .3s;
-      }
-
-      &:hover,
-      &:focus {
-        max-height: 200px;
-
-        .custom-button {
-          opacity: 1;
-        }
-
-        .top-icon {
-          display: none;
-        }
-
-        // .top-icon i {
-        //   transform: rotate(180deg);
-        // }
-
-      }
-    }
-  }
-
   .drawButton {
     position: absolute;
     top: 8px;
@@ -1000,5 +922,42 @@ canvas {
 
 .label-text {
   color: rgb(97, 97, 95);
+  font-size: 14px;
+}
+
+::v-deep .el-input__inner {
+  background-color: transparent !important;
+  border-color: #555555;
+  box-shadow: 1px 1px 5px 1px RGB(128, 255, 255, 0.1) inset;
+  height: 30px;
+  width: 255px;
+  .el-input__icon ,.el-range__icon , .el-icon-time {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .el-range-input{
+    background-color: #212121;
+  }
+}
+
+// 后期  el-date-editor
+::v-deep .el-date-editor  .el-input__inner {
+  background-color: transparent !important;
+  border-color: #555555;
+  box-shadow: 1px 1px 5px 1px RGB(128, 255, 255, 0.1) inset;
+  height: 30px;
+  width: 135px;
+  font-size: 12px;
+
+}
+::v-deep .image-slot{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: rgb(224, 224, 224);
+  color: #909399;
   font-size: 14px;
 }

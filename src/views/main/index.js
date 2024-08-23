@@ -2,30 +2,28 @@ import { mapGetters } from 'vuex'
 import videoPlayer from '../components/videoPlayer.vue'
 import parmItem from '../components/parmItem.vue'
 import realDatetime from '../components/realDatetime.vue'
-import uavItem from '../components/uavItem.vue'
+import TowerItem from '../components/towerItem.vue'
 import CesiumMap from '../components/Cesium/CesiumMap.vue'
 import cameraSettingsPopup from '../components/cameraSettingsPopup.vue'
 import { Attitude, Heading } from 'vue-flight-indicators';
 import { removeToken } from '@/utils/auth';
-
-import { getDefaultObj, getDefaultData, switchNode, getTimeRangeByKey, timeRangeMap, sortDataByPrefix } from '@/utils/currency'
+import { getDefaultObj, getDefaultData, switchNode, getTimeRangeByKey } from '@/utils/currency'
 import scrollbar from '@/views/components/scrollbar/scrollbar'
 import {
     parseTime,
     filtersType
 } from '@/utils/index';
 import { _debounce, _throttle } from '@/utils/throttle'
-import store from '@/store';
 import request from '@/utils/request'
-import TRTC from 'trtc-js-sdk';
 import VideoModule from '@/views/components/VideoModule/VideoModule'
 import currencyMinins from '@/utils/currencyMinins'
+import mainMinis from './mainMinis'
 export default {
     name: 'index',
-    mixins: [currencyMinins], //
+    mixins: [currencyMinins, mainMinis], //
     components: {
         CesiumMap,
-        uavItem,
+        TowerItem,
         parmItem,
         realDatetime,
         videoPlayer,
@@ -51,37 +49,8 @@ export default {
             tasksName: '重命名',
             tasksLoading: false,
             sendText: '收到请回答-来自爷爷',
-
             choiseTime: [new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), new Date(Date.now())],
-            pickerOptions: {
-                shortcuts: [{
-                    text: '最近一周',
-                    onClick(picker) {
-                        const end = new Date();
-                        const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                        picker.$emit('pick', [start, end]);
-                    }
-                }, {
-                    text: '最近一个月',
-                    onClick(picker) {
-                        const end = new Date();
-                        const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                        picker.$emit('pick', [start, end]);
-                    }
-                }, {
-                    text: '最近三个月',
-                    onClick(picker) {
-                        const end = new Date();
-                        const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-                        picker.$emit('pick', [start, end]);
-                    }
-                }]
-            },
             file: null,
-
             CesiumDrawVisible: false,
             /**相机弹窗参数 */
             cameraSettingVisible: false,
@@ -236,32 +205,27 @@ export default {
             // 时间
             pickerOptions: {
                 shortcuts: [{
-                    text: '最近一周',
+                    text: '本月',
+                    onClick(picker) {
+                        picker.$emit('pick', [new Date(), new Date()]);
+                    }
+                }, {
+                    text: '今年至今',
                     onClick(picker) {
                         const end = new Date();
-                        const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                        const start = new Date(new Date().getFullYear(), 0);
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
-                    text: '最近一个月',
+                    text: '最近六个月',
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                        picker.$emit('pick', [start, end]);
-                    }
-                }, {
-                    text: '最近三个月',
-                    onClick(picker) {
-                        const end = new Date();
-                        const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                        start.setMonth(start.getMonth() - 6);
                         picker.$emit('pick', [start, end]);
                     }
                 }]
             },
-            value1: '',
             value2: ''
 
         }
@@ -327,8 +291,8 @@ export default {
         this.$bus.$on('send:editRoute', this.doEdit)
     },
     mounted() {
-        window.addEventListener('resize', this.handleResize);
-        this.handleResize()
+        // window.addEventListener('resize', this.handleResize);
+        // this.handleResize()
         this.init();
         // this.startDataCheckTimer(); // 在组件被挂载后启动检查数据定时器
         const CesiumMap = this.$refs.CesiumMap;
@@ -347,9 +311,9 @@ export default {
         this.$bus.$on('send:editRoute')
         // this.closeWebSocket();
         // 在组件销毁前清除定时器
-        clearInterval(this.dataCheckTimer);
+        // clearInterval(this.dataCheckTimer);
         // clearInterval(this.timeoutCheckTimer);
-        window.removeEventListener('resize', this.handleResize);
+        // window.removeEventListener('resize', this.handleResize);
     },
     onDestroy() {
     // this.closeWebSocket();
@@ -404,8 +368,8 @@ export default {
         //#endregion
         async init() {
             this.logo = null;
-            this.queryAllUavs()
-            this.SelectTime(this.isActive)
+            // this.queryAllUavs()
+            // this.SelectTime(this.isActive) // 出现航线h怄气改
             // this.ChoiseTimeEvent()
         },
         // #region --------------------------------------------------------- 后台交互 发送http请求---------------------------------------------------------
@@ -554,10 +518,10 @@ export default {
                 const videoViews = this.$refs.videoViews;
                 for (var i = 0; i < this.uavs.length; i++) {
                     const uav = this.uavs[i];
-                    if (uav.uavId == this.defaultUavSn) {
+                    if (uav.uavId === this.defaultUavSn) {
                         videoViews.setChecked((uav.uavId === this.defaultUavSn));
                         videoViews.changeUav(uav.uavId, uav.uavName, uav.playUrl1, uav.streamType);
-                        if (uav.online == true) {
+                        if (uav.online === true) {
                             videoViews.play();
                         }
                         break;
@@ -622,43 +586,43 @@ export default {
         convertMeterToFrendly(meter) {
             return this.$toolUtil.convertMeterToFrendly(meter);
         },
-        //是否可以转数字
-        checkIsNaN(num) {
-            if (!isNaN(num)) {
-                var num2 = parseInt(num); // 123
-                switch (num2) {
-                    case 0:
-                        return '增稳模式'
-                        break;
-                    case 3:
-                        return '任务模式'
-                        break;
-                    case 5:
-                        return '悬停模式'
-                        break;
-                    case 4:
-                        return '指点模式'
-                        break;
-                    case 6:
-                        return '返航模式'
-                        break;
-                    case 9:
-                        return '降落模式'
-                        break;
-                    case 16:
-                        return '位置锁定'
-                        break;
-                    case 2:
-                        return '定高模式'
-                        break;
-                    default:
-                        return 'GPS姿态模式'
-                        break;
-                }
-            } else {
-                return num
-            }
-        },
+        // //是否可以转数字
+        // checkIsNaN(num) {
+        //     if (!isNaN(num)) {
+        //         var num2 = parseInt(num); // 123
+        //         switch (num2) {
+        //             case 0:
+        //                 return '增稳模式'
+        //                 break;
+        //             case 3:
+        //                 return '任务模式'
+        //                 break;
+        //             case 5:
+        //                 return '悬停模式'
+        //                 break;
+        //             case 4:
+        //                 return '指点模式'
+        //                 break;
+        //             case 6:
+        //                 return '返航模式'
+        //                 break;
+        //             case 9:
+        //                 return '降落模式'
+        //                 break;
+        //             case 16:
+        //                 return '位置锁定'
+        //                 break;
+        //             case 2:
+        //                 return '定高模式'
+        //                 break;
+        //             default:
+        //                 return 'GPS姿态模式'
+        //                 break;
+        //         }
+        //     } else {
+        //         return num
+        //     }
+        // },
         async showKmz() {
             this.isDialogKmz = true;
             this.kmzFileList = [];
@@ -1191,430 +1155,8 @@ export default {
             } finally {
                 this.maploading = false
             }
-        },
-        /**停止任务 */
-        async stopMission(command) {
-            try {
-                const RequestBody = {
-                    hiveId: '',
-                    timeout: 10,
-                    command: command, // 1003一键起飞未实现  1004 //  1007
-                    tag: 2,
-                    uavId: this.defaultUavSn,
-                    parm1: 0,
-                    parm2: 0,
-                    parm3: 0,
-                    parm4: 0
-                };
-                this.doMapLoading()
-                await this.$store.dispatch('uavs/stopMission', RequestBody).then((response) => {
-                    const {
-                        code,
-                        message
-                    } = response;
-                    if (code === 1) {
-                        this.showMessage(message + '执行', 'success');
-                    } else {
-                        this.showMessage(message, 'warning');
-                    }
-                })
-                    .catch((error) => {
-                        this.showMessage(error, 'error');
-                    });
-            } catch (error) {
-                this.showMessage(error, 'error');
-            } finally {
-                this.maploading = false
-            }
-        },
-        /**恢复任务 */
-        async resumeMission(command) {
-            try {
-                const RequestBody = {
-                    hiveId: '',
-                    timeout: 10,
-                    command: command,
-                    tag: 2,
-                    uavId: this.defaultUavSn,
-                    parm1: 0,
-                    parm2: 0,
-                    parm3: 0,
-                    parm4: 0
-                };
-                await this.$store.dispatch('uavs/resumeMission', RequestBody).then((response) => {
-                    const { code, message, data } = response;
-                    if (code === 1) {
-                        this.showMessage(message + '执行', 'success');
-                    } else {
-                        this.showMessage(message, 'warning');
-                    }
-                })
-                    .catch((error) => {
-                        this.showMessage(error, 'error');
-                    });
-            } catch (error) {
-                this.showMessage(error, 'error');
-            } finally {
-                this.maploading = false
-            }
-        },
-        /**起飞无人机指令 1100 */
-        async takeoff(command) {
-            try {
-                const RequestBody = {
-                    hiveId: '',
-                    timeout: 10,
-                    command: command, // 1003一键起飞未实现  1004 //  1007
-                    tag: 2,
-                    uavId: this.defaultUavSn,
-                    parm1: 0,
-                    parm2: 0,
-                    parm3: 0,
-                    parm4: 0
-                };
-                this.doMapLoading()
-                await this.$store.dispatch('uavs/takeoff', RequestBody).then((response) => {
-                    const { code, message } = response;
-                    if (code === 1) {
-                        this.showMessage(message + '执行', 'success');
-                    } else {
-                        this.showMessage(message, 'warning');
-                    }
-                })
-                    .catch((error) => {
-                        this.showMessage(error, 'error');
-                    });
-            } catch (error) {
-                this.showMessage(error, 'error');
-            } finally {
-                this.maploading = false;
-            }
-        },
-        /**降落 */
-        async land(command) {
-            try {
-                const RequestBody = {
-                    hiveId: '',
-                    timeout: 10,
-                    command: command, // 1003一键起飞未实现  1004 //  1007
-                    tag: 2,
-                    uavId: this.defaultUavSn,
-                    parm1: 0,
-                    parm2: 0,
-                    parm3: 0,
-                    parm4: 0
-                };
-                this.doMapLoading()
-                await this.$store.dispatch('uavs/takeoff', RequestBody).then((response) => {
-                    const { code, message, data } = response;
-                    if (code === 1) {
-                        this.showMessage(message + '执行', 'success');
-                    } else {
-                        this.showMessage(message, 'warning');
-                    }
-                }).catch((error) => {
-                    this.showMessage(error, 'error');
-                });
-            } catch (error) {
-                this.showMessage(error, 'error');
-            } finally {
-                this.maploading = false;
-            }
-        },
-        /**返航 1102 无人机为相应 */
-        async rtl(command) {
-            try {
-                const RequestBody = {
-                    hiveId: '',
-                    timeout: 10,
-                    command: command, // 1003一键起飞未实现  1004 //  1007
-                    tag: 2,
-                    uavId: this.defaultUavSn,
-                    parm1: 0,
-                    parm2: 0,
-                    parm3: 0,
-                    parm4: 0
-                };
-                this.doMapLoading()
-                await this.$store.dispatch('uavs/rtl', RequestBody).then((response) => {
-                    const { code, message } = response;
-                    if (code === 1) {
-                        this.showMessage(message + '执行', 'success');
-                    } else {
-                        this.showMessage(message, 'warning');
-                    }
-                })
-                    .catch((error) => {
-                        this.showMessage(error, 'error');
-                    });
-            } catch (error) {
-                this.showMessage(error, 'error');
-            } finally {
-                this.maploading = false
-            }
-        },
-
-        // #endregion
-
-        // #region --------------------------------------------------------- websocket ---------------------------------------------------------
-        onopenWebSocket() {
-            const data = { id: '101', token: store.getters.token }
-            this.$store.dispatch('ws/onopenWebSocket', data)
-        },
-        disconnectWebSocket() {
-            console.log('退出ws断开连接');
-            this.$store.dispatch('ws/disconnectWebSocket') // ws断开连接
-        },
-
-        // 初始化weosocket
-        async initWebSocket() {
-            // console.log('initWebSocket 1')
-            if (store.getters.token) {
-                if (this.webSocket !== null) {
-                    this.webSocket.destroy()
-                    this.webSocket = null
-                }
-                // const URL = (location.protocol === "https:" ? "wss" : "ws") + '://' + location.host + '/websocketapi/' + this.userId + '/' + this.name
-                // const URL = (location.protocol === "https:" ? "wss" : "ws") + '://' + location.host + '/websocketapi/' + store.getters.token
-                const URL = (location.protocol === 'https:' ? 'wss' : 'ws') + '://' + location.host + '/websocketapi/' + store.getters.token
-                // const URL = (location.protocol === "https:" ? "wss" : "ws") + '://192.168.10.110:8080/websocketapi/' + store.getters.token
-                // console.log('连接地址：' + URL)
-                this.webSocket = new WebSocket(URL)
-                // console.log('initWebSocket 2')
-                this.webSocket.onmessage = this.websocketonmessage
-                this.webSocket.onopen = this.websocketonopen
-                this.webSocket.onerror = this.websocketonerror
-                this.webSocket.onclose = this.websocketclose
-            }
-        },
-        async initWebSocket2() {
-            // console.log('initWebSocket 1')
-            if (this.userId && this.name) {
-                if (this.userId !== '' && this.name !== '') {
-                    if (this.webSocket !== null) {
-                        try {
-                            this.webSocket.destroy()
-                        } catch (error) { }
-                        this.webSocket = null
-                    }
-                    const URL = (location.protocol === 'https:' ? 'wss' : 'ws') + '://' + location.host + '/websocketapi/' + this.userId + '/' + this.name
-
-                    // const URL = (location.protocol === "https:" ? "wss" : "ws") + '://' + location.host + '/websocketapi/' + this.userId + '/' + this.name
-                    // console.log('连接地址：' + URL)
-                    this.webSocket = new WebSocket(URL)
-                    // console.log('initWebSocket 2')
-                    // 监听socket连接
-                    this.webSocket.onopen = this.websocketonopen
-                    // 监听socket消息
-                    this.webSocket.onmessage = this.websocketonmessage
-                    // 监听socket错误信息
-                    this.webSocket.onerror = this.websocketonerror
-                    // 销毁监听
-                    this.webSocket.onclose = this.websocketclose
-                }
-            }
-        },
-        // 连接建立之后执行send方法发送数据
-        websocketonopen() {
-            console.log('连接服务器成功。')
-            // console.log('websocketonopen')
-            const actions = {
-                'msg': '我来了，同志们！'
-            }
-            this.websocketsend(JSON.stringify(actions))
-            // console.log(JSON.stringify(actions));
-        },
-        // 连接建立失败重连
-        websocketonerror(e) {
-            console.error('websocketonerror：', e)
-            this.showMessage('服务器连接丢失，5秒后重新连接！')
-            if (this.timeoutReConnectWs != null) {
-                clearTimeout(this.timeoutReConnectWs);
-                this.timeoutReConnectWs = null;
-            }
-            //  计时器
-            this.timeoutReConnectWs = setTimeout(() => {
-                this.initWebSocket()
-            }, 10000)
-        },
-        // 数据发送
-        websocketsend(data) {
-            try {
-                // console.log('发送WebSocket数据：' + data)
-                if (this.webSocket != null) {
-                    // this.webSocket.send({data: data})
-                    this.webSocket.send(data)
-                    // console.warn('云台控制：' + data)
-                }
-            } catch (error) {
-                console.error('websocket: ' + error)
-            }
-        },
-        // 关闭
-        websocketclose(e) {
-            console.log('断开服务器连接：', e)
-        },
-        closeWebSocket() {
-            // alert('销毁前')
-            if (this.webSocket !== null) {
-                console.log('断开与服务器的连接！')
-                try {
-                    this.webSocket.destroy()
-                } catch (error) { }
-                this.webSocket = null
-            }
-        },
-        // 数据接收
-        websocketonmessage(e) {
-            this.receivedData = true; // 收到了数据
-            // console.log('接收websocket数据' + e.data)
-            const edata = e.data
-            console.log(edata);
-            let index = -1 // 当前无人机在数组中的索引
-            let isNowUav = false // 是不是默认无人机
-            const isNowHive = false // 是不是默认
-
-            const resultUtil = JSON.parse(e.data)
-            const {
-                messageId, // 没有用到
-                code, // 1
-                deviceID = resultUtil.data.uavId, // 没有用到 用默认data值
-                message, // " "
-                data // data -- 数据
-            } = resultUtil
-
-            let needForceUpdate = false
-            if (this.uavs && this.uavs.length > 0) {
-                index = this.uavs.findIndex(uav => uav.uavId === deviceID);
-                if (index >= 0) {
-                    this.uavs[index].heartbeatData = data
-                    this.uavs[index].receiveDataTime = Date.now(); // 设置数据接收的时间
-                    this.uavs[index].online = true;
-                }
-            }
-            var defaultData = null
-            // 是不是默认
-            if (this.defaultUavSn === deviceID) {
-                defaultData = data
-                isNowUav = true
-            }
-
-            switch (messageId) {
-                case 2200: // 大疆无人机心跳包
-                    if (isNowUav) {
-                        needForceUpdate = true;
-                        this.refreshUavHeart(defaultData);
-                    } else {
-                        const op = null
-                        this.refreshUavHeart(op);
-                    }
-                    break;
-                case 2000: // 大疆无人机心跳包
-                    if (isNowUav) {
-                        needForceUpdate = true;
-                        this.refreshUavHeart(defaultData);
-                    } else {
-                        const op = null
-                        this.refreshUavHeart(op);
-                    }
-                    break;
-                case 10010: // 10010 图片
-                    console.log(defaultData);
-                    break;
-                case 2250: // 大疆服务后台心跳包
-                    break;
-                case 2251:
-                    break;
-                case 2300: // 机巢心跳包
-                    if (isNowHive) {
-                        needForceUpdate = true;
-                        this.refreshHiveHeart(data);
-                    }
-                    break;
-            }
-        },
-        startDataCheckTimer() {
-            this.dataCheckTimer = setInterval(() => {
-                if (!this.receivedData) {
-                    // console.log('3秒内未收到数据,执行清空'); // 如果3秒内未收到数据，则输出提示信息
-                }
-                this.receivedData = false; // 重置receivedData标记
-            }, 3000);
-
-            function debounce(fu, delay) {
-                let timeoutId;
-                return (...arg) => {
-                    clearTimeout(timeoutId);
-                    timeoutId = setTimeout(() => fu(...arg), delay);
-                };
-            }
-        },
-        startTimeoutCheckTimer() {
-            this.timeoutCheckTimer = setInterval(() => {
-                if (!this.receivedData) {
-                    console.log('超时提示：3秒内未再次收到数据'); // 如果3秒内再次未收到数据，则输出提示信息
-                }
-            }, 3000);
-        },
-        refreshUavHeart(data) {
-            this.testData = new Date().getTime();
-            if (data == null) {
-                this.uavHeartbeatNow.alt = 0;
-                this.uavHeartbeatNow.areMotorsOn = 0;
-                this.uavHeartbeatNow.aremd = 0;
-                this.uavHeartbeatNow.batteryValue = 0;
-                this.uavHeartbeatNow.dataDate = 0;
-                this.uavHeartbeatNow.flightModeText = '-';
-                this.uavHeartbeatNow.linkAirUpload = 0;
-                this.uavHeartbeatNow.linkAirDownload = 0;
-                this.uavHeartbeatNow.batteryPert = 0;
-                this.uavHeartbeatNow.gpsStatusText = '';
-                this.uavHeartbeatNow.satecount = 0;
-                this.uavHeartbeatNow.altabs = 0;
-                this.uavHeartbeatNow.lng = 0;
-                this.uavHeartbeatNow.lat = 0;
-                this.uavHeartbeatNow.xySpeed = 0;
-                this.uavHeartbeatNow.zSpeed = 0;
-                this.uavHeartbeatNow.roll = 0;
-                this.uavHeartbeatNow.pitch = 0;
-                this.uavHeartbeatNow.yaw = 0;
-                this.uavHeartbeatNow.flightTimeInSeconds = 0;
-                // this.$set(this.uavHeartbeatNow, 'dataDate', Date.now());
-            } else {
-                this.uavHeartbeatNow.alt = data.alt;
-                this.uavHeartbeatNow.altabs = data.altabs;
-                this.uavHeartbeatNow.areMotorsOn = data.areMotorsOn;
-                this.uavHeartbeatNow.aremd = data.aremd;
-                this.uavHeartbeatNow.batteryValue = data.batteryValue;
-                this.uavHeartbeatNow.dataDate = data.dataDate;
-                this.uavHeartbeatNow.flightModeText = data.flightModeText;
-                this.uavHeartbeatNow.linkAirUpload = data.linkAirUpload;
-                this.uavHeartbeatNow.linkAirDownload = data.linkAirDownload;
-                this.uavHeartbeatNow.batteryPert = data.batteryPert;
-                this.uavHeartbeatNow.gpsStatusText = data.gpsStatusText;
-                this.uavHeartbeatNow.satecount = data.satecount;
-                this.uavHeartbeatNow.lng = data.lng;
-                this.uavHeartbeatNow.lat = data.lat;
-                this.uavHeartbeatNow.xySpeed = data.xySpeed;
-                this.uavHeartbeatNow.zSpeed = data.zSpeed;
-                this.uavHeartbeatNow.roll = data.roll;
-                this.uavHeartbeatNow.pitch = data.pitch;
-                this.uavHeartbeatNow.yaw = data.yaw.toFixed(2);
-                this.uavHeartbeatNow.flightTimeInSeconds = this.$dateUtil.convertSecondToTime(data.flightTimeInSeconds);
-
-                // this.$set(this.uavHeartbeatNow, 'yaw', data.yaw.toFixed(2));
-                // this.$set(this.uavHeartbeatNow, 'dataDate', data.dataDate);
-            }
-            this.key_div_uav_parm++;
-
-            /**CesiumMap */
-            const CesiumMap = this.$refs.CesiumMap;
-            if (CesiumMap) {
-                if (this.uavHeartbeatNow.lat !== 0 && this.uavHeartbeatNow.lng !== 0) {
-                    CesiumMap.GetHeartbeatNow(this.uavHeartbeatNow);
-                }
-            }
         }
+
         // #endregion
 
     }

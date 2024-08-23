@@ -16,10 +16,45 @@ export function getDangerPointList(formdata) {
     })
 }
 //#regin ta
+export function getTowerAllList(formdata) {
+    return request({
+        url: '/business/tower/queryAlllist',
+        method: 'post',
+        data: formdata
+    })
+}
 
 export function getTowerList(formdata) {
     return request({
         url: '/business/tower/querylist',
+        method: 'post',
+        data: formdata
+        // cancelToken: new CancelToken(cancelFn => {
+        //     cancel && cancel()
+        //     cancel = cancelFn
+        // })
+    })
+}
+
+export function delectTower(data) {
+    return request({
+        url: '/business/tower/delect',
+        method: 'post',
+        data: data
+    })
+}
+
+export function delectTowerLine(data) {
+    return request({
+        url: '/business/line/delect',
+        method: 'post',
+        data: data
+    })
+}
+
+export function getTowerLineList(formdata) {
+    return request({
+        url: '/business/line/querylist',
         method: 'post',
         data: formdata
         // cancelToken: new CancelToken(cancelFn => {
@@ -42,6 +77,17 @@ export function handTower(reqData) {
         //     cancel && cancel()
         //     cancel = cancelFn
         // })
+    })
+}
+export function handTowerLine(reqData) {
+    const { data, url } = reqData
+    return request({
+        url,
+        method: 'post',
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
 }
 //#endregion

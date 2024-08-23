@@ -3,7 +3,7 @@
   <div v-loading="mixinsLoading" element-loading-background="rgba(0, 0, 0, 0.3)" class="media">
     <div class="media-top">
       <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline">
-        <el-form-item label="杆塔/图片描述" prop="mark">
+        <el-form-item label="杆塔描述" prop="mark">
           <el-input v-model="formInline.mark" placeholder="文件详情..." />
         </el-form-item>
         <el-form-item label="时间范围" prop="startTime">
@@ -18,33 +18,41 @@
       </el-form>
       <div>
         <el-button type="primary" @click="queryList1()">查询</el-button>
-        <el-button type="primary" @click="uploadFiles({ fileType: 'image' , id : 0,reqUrl:'efapi/pointcloud/media/photo/upload' })">上传</el-button>
+        <el-button type="primary" @click="uploadFiles({ fileType: 'image' , id : 0,reqUrl:'efapi/pointcloud/media/photo/surveyupload' ,title:'图片' })">上传</el-button>
       </div>
     </div>
     <div class="media-container">
-      <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" stripe style="width: 100%">
+      <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" stripe style="width: 100%" @selection-change="handleSelectionChange">
+        <el-table-column
+          type="selection"
+          width="55"
+        />
         <el-table-column prop="date" label="日期" width="180">
           <template slot-scope="scope">
             <span size="medium">{{ parseTime(scope.row.createTime ) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="fileName" label="文件名" width="180">
+        <el-table-column prop="fileName" label="文件名">
           <template slot-scope="scope">
             <span size="medium">{{ scope.row.imageTag }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="formats" label="类型">
+        <el-table-column prop="formats" label="拍摄经纬度">
           <template slot-scope="scope">
-            <span size="medium">{{ scope.row.formats }}</span>
+            <span size="medium">{{ scope.row.lat }},{{ scope.row.lng }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="size" label="大小">
+        <el-table-column prop="size" label="大小" width="100">
           <template slot-scope="scope">
             <span size="medium">{{ filtersType(scope.row.size) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="towerId" label="杆塔标注" />
-        <el-table-column prop="path" label="地址">
+        <el-table-column prop="towerMark" label="杆塔编号" width="200">
+          <template slot-scope="scope">
+            <el-tag type="success">{{ scope.row.towerMark }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="path" label="地址" width="200">
           <template slot-scope="scope">
             <el-image
               style="width: 100px; height: 100px"
@@ -53,11 +61,15 @@
             />
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="100">
+        <el-table-column fixed="right" label="操作" width="130">
+          <template slot="header" slot-scope="scope">
+            <span v-if="multipleSelection.length==0">操作</span>
+            <el-tag v-else size="small" @click="delectChecked()">删除选中</el-tag>
+          </template>
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="beforeView(scope.row)">查看</el-button>
             <el-button v-if="!scope.row.downLoadProgress" type="text" size="small" @click="downimgbyAxios(scope.row)">下载</el-button>
-            <el-button v-else type="text" size="small">{{ scope.row.downLoadProgress >= 99 ? '已下载':`${Number(scope.row.downLoadProgress).toFixed(1)}下载中。。`  }}</el-button>
+            <el-button v-else type="text" size="small">{{ scope.row.downLoadProgress >= 99 ? '已下载':`${Number(scope.row.downLoadProgress).toFixed(1)}下载中。。` }}</el-button>
           </template>
         </el-table-column>
       </el-table>

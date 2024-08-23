@@ -41,6 +41,22 @@ export default {
     activated() { },
     //方法集合
     methods: {
+        uploadFiles(item, index) {
+            const windowName = 'uploadWindow-' + item.fileType; // 设定窗口名称
+            if (!this.windows[windowName] || this.windows[windowName].closed) {
+                // 如果窗口存在并且关闭了就在this.windows中删除
+                if (this.windows[windowName]) {
+                    delete this.windows[windowName];
+                }
+                const existingWindow = window.open('', windowName);
+                const queryString = `?id=${item.id}&src=${encodeURIComponent(item.reqUrl)}&type=${encodeURIComponent(item.fileType)}&title=${encodeURIComponent(item.title)}`; //data=${encodeURIComponent(JSON.stringify(item))}
+                const url = '/uploadphoto' + queryString;
+                existingWindow.location.href = url; //'/uploadpage' + '?id=' + item.id + '&fileType=' + item.fileType;
+                this.windows[windowName] = existingWindow;
+            } else {
+                this.windows[windowName].focus();
+            }
+        },
 
         downloadVideo(row) {
             this.getMethod(row.path).then((blob) => {

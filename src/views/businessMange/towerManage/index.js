@@ -36,7 +36,20 @@ export default {
     //监听属性 类似于data概念
     computed: {},
     //监控data中的数据变化
-    watch: {},
+    watch: {
+        // 监听 tableData 变化
+        'tableData': {
+            handler(newVal, oldVal) {
+                console.log('tableData', this.tableData.length);
+                if (this.tableData.length && this.tableData.length > 0) {
+                    this.formInline.total = this.tableData.length;
+                } else {
+                    this.formInline.total = 0;
+                }
+            },
+            deep: true
+        }
+    },
     //方法集合
     methods: {
         handleClose(done) {
@@ -71,6 +84,27 @@ export default {
         },
 
         //#region ---------------------------------------------------   查询   ---------------------------------------------------
+        async  delectTower(row, delectAll) {
+            try {
+                this.mixinsLoading = true;
+                const id = row.id;
+                const mark = row.mark;
+                const formdata = new FormData();
+                formdata.append('id', id);
+                formdata.append('mark', mark)
+                formdata.append('delectAll', delectAll)
+                const res = await this.$store.dispatch('business/delectTower', formdata)
+                if (res.code === 1) {
+                    this.$message.success('删除成功')
+                    // tableData 删除 id 等于 row.id 的数据
+                    this.tableData = this.tableData.filter(item => item.id !== id)
+                }
+            } catch (e) {
+                this.$message.error(e.message)
+            } finally {
+                this.mixinsLoading = false;
+            }
+        },
         async queryTowerlist(formatFu = this.formatTowerData) {
             try {
                 this.mixinsLoading = true;
@@ -100,7 +134,19 @@ export default {
                 if (code === 1) {
                     const temp = this.formatTowerData([data])
                     // temp 与 tableData 合并 并放入头部
-                    this.tableData = [...temp, ...this.tableData]
+                    const firstData = temp[0];
+                    if (this.tableData.some(item => item.id === firstData.id)) {
+                        // 存在id 存在为修改 否则为新增
+                        this.tableData = this.tableData.map(item => {
+                            if (item.id === firstData.id) {
+                                return firstData;
+                            }
+                            return item;
+                        })
+                    } else {
+                        this.tableData = [...temp, ...this.tableData]
+                    }
+                    // this.tableData = [...temp, ...this.tableData]
                     this.showToast(message, 'success');
                 } else {
                     this.showToast(message, 'error');

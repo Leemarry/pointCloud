@@ -59,11 +59,11 @@ export default {
                 id: '101',
                 token: this.$store.getters.token
             }
-            this.$store.dispatch('ws/onopenWebSocket', data)
+            // this.$store.dispatch('ws/onopenWebSocket', data)
             // this.onopenWebSocket()
-            console.log('ws--app-true');
+            // console.log('ws--app-true');
         } else {
-            console.log('ws--app-false');
+            // console.log('ws--app-false');
         }
 
         window.addEventListener('beforeunload', this.saveState);
@@ -78,10 +78,10 @@ export default {
     // resetRouter();
         console.log('ws断开连接');
         // alert('ws断开连接')
-        this.$store.dispatch('ws/disconnectWebSocket') // ws断开连接
+        // this.$store.dispatch('ws/disconnectWebSocket') // ws断开连接
     },
     destroyed() {
-        this.$store.dispatch('ws/disconnectWebSocket') // ws断开连接
+        // this.$store.dispatch('ws/disconnectWebSocket') // ws断开连接
     }, //生命周期 - 销毁完成
     onDestroy() {
     //  alert('关闭浏览器');
@@ -104,6 +104,7 @@ export default {
         saveState() {
             // console.log("保存状态到Session ...");
             // window.sessionStorage["isopened"] = true;
+            // delete storeState.ws;
             sessionStorage.setItem('vuexstate', JSON.stringify(this.$store.state));
             // console.log("saveState ---  保存状态到Session ..." + JSON.stringify(this.$store.state))
         }

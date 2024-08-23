@@ -255,6 +255,7 @@ export default class ImageryManager {
         const { mtype } = options;
         let manager = null
         if (mtype === 'TMS' || mtype === 'WMS') {
+            console.log('TMS');
             manager = new ImageryProvider(this.viewer, options)
             manager.targetPosition = fromDegrees(destination.longitude, destination.latitude, destination.height)
         } else if (mtype === 'Tileset') {
@@ -271,7 +272,6 @@ export default class ImageryManager {
                 mid: mid
             }
         })
-        console.log(evt, 'addImageryEvent');
         document.dispatchEvent(evt)
     }
 }

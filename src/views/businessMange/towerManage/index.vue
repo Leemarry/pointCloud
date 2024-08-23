@@ -84,13 +84,24 @@
         </el-table-column>
         <el-table-column prop="lastpath" label="全貌图">
           <template slot-scope="scope">
-            <el-image style="width: 100px; height: 100px" :src="scope.row.lastpath" fit="fit" />
+            <el-image style="width: 100px; height: 100px; cursor: pointer;" :src="scope.row.lastpath" fit="fit" @click="beforeView(scope.row)" />
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="100">
+        <el-table-column fixed="right" label="操作" width="130">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="beforeView(scope.row)">查看</el-button>
             <el-button type="text" size="small" @click="updateTower(scope.row)">编辑</el-button>
+            <!-- <el-button type="text" size="small" @click="delectTower(scope.row)">删除</el-button> -->
+            <el-popconfirm
+              confirm-button-text="是的"
+              cancel-button-text="仅附带图片"
+              icon="el-icon-info"
+              icon-color="red"
+              @confirm="delectTower(scope.row,true)"
+              @cancel="delectTower(scope.row,false)"
+              title="确定该杆塔所有信息删除吗？"
+            >
+              <el-button slot="reference" type="text">删除</el-button>
+            </el-popconfirm>
           </template>
         </el-table-column>
         <!-- <template slot="header" slot-scope="scope">

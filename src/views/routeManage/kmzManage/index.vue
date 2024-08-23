@@ -55,11 +55,10 @@
       </div>
     </div>
     <div class="Map-viewer">
-      <OlMaps :center-position="[114.27932686576446, 37.540419484036846]" :points="points" />
+      <OlMaps :center-position="[115.20445022502247,30.839853465243316]" :points="points" />
     </div>
   </div>
 </template>
-
 <script>
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等!）
 //例如：import 《组件名称》 from '《组件路径》';

@@ -21,6 +21,16 @@ const mutations = {
 const actions = {
 
     /**查询该架次图片 */
+    delectPhotos({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            mediaApi.delectPhotos(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+    /**查询该架次图片 */
     queryPhotolist({ commit, state }, data) {
         return new Promise((resolve, reject) => {
             mediaApi.queryPhotolist(data).then(response => {

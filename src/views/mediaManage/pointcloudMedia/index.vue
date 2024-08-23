@@ -19,15 +19,12 @@
       <div>
         <el-button type="primary" @click="queryList1">查询</el-button>
         <!-- <el-button type="primary" @click="uploadFiles({ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploads2' })">上传</el-button> -->
-        <el-dropdown split-button type="primary" style="margin-left: 5px;" @click="uploadFiles({ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploads2' })">
+        <el-dropdown split-button type="primary" style="margin-left: 5px;" @click="beforeUpload()">
           {{ title }}
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="operationType('上传',{ operation: 'hand' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploads2' })">上传</el-dropdown-item>
-            <!-- <el-dropdown-item>批量导入</el-dropdown-item> -->
-            <!-- <el-dropdown-item @click.native="operationType('手动新增',{ operation: 'hand' , id : 0, reqUrl:'/business/hand/addOrupdateTower' })">手动新增</el-dropdown-item>
-            <el-dropdown-item @click.native="operationType('批量导入',{ operation: 'batch' , id : 1, reqUrl:'/business/batch/batchInsertTower' })">批量导入</el-dropdown-item> -->
-          </el-dropdown-menu>
-        </el-dropdown>
+            <el-dropdown-item @click.native="operationType('web上传',{ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploadwebcloud' ,title:'web上传'})">web上传</el-dropdown-item>
+            <el-dropdown-item @click.native="operationType('pnts上传',{ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploadpntscloud',title:'pnts上传' })">pnts上传</el-dropdown-item>
+          </el-dropdown-menu></el-dropdown>
       </div>
     </div>
     <div class="media-container">
@@ -121,8 +118,8 @@ export default {
                 webUrl: '',
                 amendCloudUrl: ''
             },
-            title: '上传',
-            reqData: {},
+            title: 'web上传',
+            reqData: { fileType: 'cloud',id: 0, reqUrl: 'efapi/pointcloud/media/cloud/uploadwebcloud', title: 'web上传' },
             reqUrl: '/media/cloud/querylist',
             //分页
             currentPage: 1,
@@ -184,6 +181,25 @@ export default {
         operationType(title, obj) {
             this.title = title;
             this.reqData = obj;
+        },
+        beforeUpload() {
+            this.uploadFiles(this.reqData, 0)
+        },
+        uploadFiles(item, index) {
+            const windowName = 'uploadWindow-' + item.fileType; // 设定窗口名称
+            if (!this.windows[windowName] || this.windows[windowName].closed) {
+                // 如果窗口存在并且关闭了就在this.windows中删除
+                if (this.windows[windowName]) {
+                    delete this.windows[windowName];
+                }
+                const existingWindow = window.open('', windowName);
+                const queryString = `?id=${item.id}&src=${encodeURIComponent(item.reqUrl)}&type=${encodeURIComponent(item.fileType)}&title=${encodeURIComponent(item.title)}`;
+                const url = '/uploadphoto' + queryString;
+                existingWindow.location.href = url; //'/uploadpage' + '?id=' + item.id + '&fileType=' + item.fileType;
+                this.windows[windowName] = existingWindow;
+            } else {
+                this.windows[windowName].focus();
+            }
         },
         openfull(row) {
         // row.id, row.webUrl, 'web', row.mark
@@ -254,11 +270,9 @@ export default {
         previewPointCloud(row) {
             const windowName = 'pointCloudPreview-' + row.id;
             if (!this.windows[windowName] || this.windows[windowName].closed) {
-                const queryString = `?id=${row.id}&src=${encodeURIComponent(row.amendCloudUrl)}&data=${encodeURIComponent(JSON.stringify(row))}`;
+                const queryString = `?id=${row.id}&src=${encodeURIComponent(row.amendCloudUrl)}&data=${encodeURIComponent(JSON.stringify(row))}&title=${encodeURIComponent('点云瓦片')}`;
                 const url = '/previewPointcloud' + queryString;
                 const existingWindow = window.open(url, windowName);
-                console.log('this.windows', window.tableData);
-                console.log('this.windows', existingWindow);
                 existingWindow.tableData = this.tableData;
                 this.windows[windowName] = existingWindow;
             } else {

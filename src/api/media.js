@@ -16,6 +16,16 @@ import axios from 'axios'
 // axios 重新点击取消上一次请求  // 取消重复请求  // 取消路由跳转所有请求
 const { CancelToken } = axios
 const cancel = ''
+
+
+export function delectPhotos(formdata) {
+    return request({
+        url: '/media/photos/delect',
+        method: 'post',
+        data: formdata,
+        timeout: 30000 // 设置超时时间为30秒
+    })
+}
 export function queryPhotolist(formdata) {
     return request({
         url: '/media/photo/querylist',

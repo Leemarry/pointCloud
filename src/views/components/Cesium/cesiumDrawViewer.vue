@@ -116,8 +116,8 @@
       ref="layerManager"
       :tools="tools"
       class="layer-manager-class"
-      @changeUnifiedHeight="changeUnifiedHeightEvent"
       :class="{ 'edit-layer-manager-class': editMode }"
+      @changeUnifiedHeight="changeUnifiedHeightEvent"
       @locate="locateGraphic"
       @edit="editGraphic"
       @delete="deleteGraphic"
@@ -145,10 +145,13 @@ import { open } from 'shapefile';
 import { moveDiv } from '../../core/utils';
 import $ from 'jquery';
 import { checkComponent, checkViewer, getPolygonArea } from '../../core/utils';
+import ImageryManager from '../../core/ImageryManager';
 import { mapGetters } from 'vuex';
 /**航线列表管理 */
 import routeManager from './cesiumRouteList.vue';
 let graphicManager;
+// eslint-disable-next-line
+let imageryManager;
 const console = window.console;
 // var polyArr = []; // 面数据
 var jdArrs = []; // 交点集合
@@ -234,7 +237,8 @@ export default {
             modelColor: '#FFFFFF',
             modelMixed: 0.5,
             modelSelectPanelvisible: false,
-            selectedModel: undefined
+            selectedModel: undefined,
+            extendTileseImageryList: []
         };
     },
     computed: {
@@ -422,6 +426,9 @@ export default {
     //生命周期 - 创建完成（可以访问当前this实例）
     created() {
         // console.log("parent", this.$attrs, this.$listeners);
+        this.$bus.$on('send:removeAll', this.removeImageryAll)
+        this.$bus.$on('send:toFocus', this.toFocus)
+        this.$bus.$on('send:addImagery', this.addImagery)
     },
     mounted() {
         window.jq = $;
@@ -447,6 +454,9 @@ export default {
     },
     beforeDestroy() {
         this.destroyEventListener()
+        this.$bus.$off('send:removeAll', this.removeImageryAll)
+        this.$bus.$off('send:addImagery', this.addImagery)
+        this.$bus.$off('send:toFocus', this.toFocus)
     }, //生命周期 - 销毁之前
     methods: {
         /**
@@ -464,6 +474,7 @@ export default {
                   viewer.scene.globe.depthTestAgainstTerrain;
             this.$refs.markerManager.init(viewer); //传递子组件
             graphicManager = new GraphicManager(viewer);
+            imageryManager = new ImageryManager(viewer);
             this.selectedModel = this.extendMarkerModel.length
                 ? this.extendMarkerModel[0].url
                 : undefined;
@@ -488,6 +499,7 @@ export default {
             document.addEventListener('startEdit', this.startEdit);
             document.addEventListener('destroyEvent', this.destroyEvent);
             document.addEventListener('deleteEvent', this.deleteEvent);
+            document.addEventListener('addImageryEvent', this.imageryEvent);
         },
         addmarkerEvent(e) {
             const self = this;
@@ -617,6 +629,13 @@ export default {
                 console.log('没有加载上');
             }
         },
+        imageryEvent(e) {
+            console.log('存在sss',e,imageryManager);
+            if (imageryManager.has(e.detail.mid)) {
+                const { mid, type, name } = e.detail;
+                this.extendTileseImageryList.push({ mid, type, name })
+            }
+        },
         deleteEvent(e) {
             const self = this;
             self.menuSelected = {};
@@ -639,6 +658,7 @@ export default {
             document.removeEventListener('getpositionsEvent', this.getpositionsEvent)
             document.removeEventListener('addmarkerEvent', this.addmarkerEvent)
             document.removeEventListener('deleteEvent', this.deleteEvent)
+            document.removeEventListener('addImageryEvent', this.imageryEvent);
 
             const pointItems = document.querySelectorAll('.cursor-tip-class');
             console.log(pointItems);
@@ -1191,6 +1211,35 @@ export default {
                     graphicManager.material =
                           new Cesium.PolylineArrowMaterialProperty(color);
                     break;
+            }
+        },
+        addImagery(tilesetForm) {
+            const { url, longitude, latitude, height, name, mtype } = tilesetForm
+            // const tileset = new Cesium.Cesium3DTileset({
+            //     url: 'http://127.0.0.1:9090/efuavmodel/pointCloud/kunmingPv/tileset.json'
+            // });
+            // this.cesiumViewer.scene.primitives.add(tileset);
+            // this.cesiumViewer.zoomTo(tileset);
+
+            console.log('tileset', url, name, mtype);
+            imageryManager.addImagery({ url, name, mtype }, {
+                longitude,
+                latitude,
+                height
+            })
+        },
+        removeImageryAll() {
+            checkComponent(this);
+            console.log('removeAll');
+            imageryManager.removeAll()
+        },
+        toFocus(id) {
+            checkComponent(this);
+            const mid = id
+            console.log('send:toFocus',id);
+            if (imageryManager.has(mid)) {
+                console.log('send:toFocus');
+                imageryManager.focus(mid)
             }
         }
     }

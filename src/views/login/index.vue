@@ -358,7 +358,8 @@ export default {
                     Cookies.set('efuav_password', userinfo.get('userPwd'))
                 }
                 Cookies.set('efuav_remember', this.isRememberMe)
-                this.$router.push({ path: this.redirect || '/index' })
+                // this.$router.push({ path: this.redirect || '/index' }) // mediaManage
+                this.$router.push({ path: this.redirect || '/mediaManage' }) // mediaManage
                 console.log('登录成功');
                 const data = { id: '101', token: this.$store.getters.token }
                 this.$store.dispatch('ws/onopenWebSocket', data)

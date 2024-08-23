@@ -54,10 +54,17 @@ export const constantRoutes = [
         name: 'index'
     },
     {
-        path: '/uploadpage',
+        path: '/uploadphoto',
         meta: { title: '上传窗口', icon: 'el-icon-setting' },
         name: 'uploadpage',
         component: () => import('@/views/mediaUpload/index.vue'),
+        hidden: true
+    },
+    {
+        path: '/uploadpage',
+        meta: { title: '上传窗口', icon: 'el-icon-setting' },
+        name: 'uploadpage',
+        component: () => import('@/views/mediaUpload/indexss.vue'),
         hidden: true
     },
     {
@@ -111,6 +118,12 @@ export const constantRoutes = [
                 name: 'tower',
                 component: () => import('@/views/businessMange/towerManage/index.vue'),
                 meta: { title: '杆塔管理', icon: 'el-icon-picture' }
+            },
+            {
+                path: '/towerline',
+                name: 'towerline',
+                component: () => import('@/views/businessMange/towerLineManage/index.vue'),
+                meta: { title: '杆线管理', icon: 'el-icon-picture' }
             },
             {
                 path: '/point',

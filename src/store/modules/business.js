@@ -28,7 +28,16 @@ const actions = {
             })
         })
     },
-
+    
+    getTowerAllList({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            businessApi.getTowerAllList(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
     // #region ta
     getTowerList({ commit, state }, data) {
         return new Promise((resolve, reject) => {
@@ -39,10 +48,47 @@ const actions = {
             })
         })
     },
+    delectTower({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            businessApi.delectTower(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+    delectTowerLine({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            businessApi.delectTowerLine(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+    
+    getTowerLineList({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            businessApi.getTowerLineList(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
 
     handTower({ commit, state }, data) {
         return new Promise((resolve, reject) => {
             businessApi.handTower(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+    handTowerLine({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            businessApi.handTowerLine(data).then(response => {
                 resolve(response)
             }).catch(error => {
                 reject(error)

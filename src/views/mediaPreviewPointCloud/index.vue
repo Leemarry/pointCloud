@@ -24,8 +24,8 @@
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
 //例如：import 《组件名称》 from '《组件路径》';
 import CesiumDraw from './tool/cesiumDrawViewer.vue';
-import CesiumTool from './tool/cesiumTool.vue';
-import TilesetManager from './core/TilesetManager'
+// import CesiumTool from './tool/cesiumTool.vue';
+// import TilesetManager from './core/TilesetManager'
 import ImageryManager from './core/ImageryManager'
 import { mapGetters } from 'vuex';
 import { calculateSquareCoordinates } from '@/views/core/Geo'
@@ -37,7 +37,7 @@ var imageryManager;
 export default {
     name: 'CesiumMap',
     //import引入的组件需要注入到对象中才能使用
-    components: { CesiumDraw, CesiumTool },
+    components: { CesiumDraw },
     //让组件接收外部传来的数据
     props: {
         /**是否飞行移动 */
@@ -54,13 +54,6 @@ export default {
         MapProvider: {
             type: String,
             default: 'tiandi'
-        },
-        //客户密钥
-        CesiumAccessToken: {
-            type: String,
-            default:
-                  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4ZmVjNGI2Zi1kMTA3LTQ4NjEtOWY5Mi1hOTQ0NjkwYzM0Y2YiLCJpZCI6NjQyMiwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU0NjQ4MjQzMH0.TmEcQVmerVoMPXZ2_xa9D2Dy5Wysy2j6_tgPeiV88aM'
-            // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjNzRiNzNkYS0zZTRmLTRhOTMtODFlNS0zOWFhN2FmYzZmYjkiLCJpZCI6MTUyMTEwLCJpYXQiOjE2ODg2OTYyMDl9.sWkoSUmLFPfbMTMFgAZeQKjBQERg-TZPBBtIN34sDNQ"
         },
         /**默认无人机 */
         defaultUavSn: {
@@ -112,13 +105,7 @@ export default {
     //监听属性 类似于data概念
     computed: {
         ...mapGetters([
-            'currentMid',
-            'currentMidUnifiedHeight',
-            'geoCoordinates',
-            'webSocketMsg',
-            'webSocketData',
-            'messageId',
-            'defaultUavHeartbeat'
+            'currentMid'
         ])
     },
     //监控data中的数据变化
@@ -130,17 +117,23 @@ export default {
     //生命周期 - 挂载完成（可以访问DOM元素）
     mounted() {
         const urlParams = new URLSearchParams(window.location.search);
-        const id = parseInt(urlParams.get('id'), 10); // 假设 id 是整数
+        const id = decodeURIComponent(urlParams.get('id'));
         const src = decodeURIComponent(urlParams.get('src'));
+        const title = decodeURIComponent(urlParams.get('title'))
+        document.title = '预览-' + title; // 设置页面标题
         const dataString = urlParams.get('data');
         const data = JSON.parse(decodeURIComponent(dataString));
         // const data = decodeURIComponent(urlParams.get('data'));
         const myObject = { id, src, data };
+        sessionStorage.setItem('rowData', JSON.stringify(myObject));
         console.log(myObject, urlParams); // 输出: { id: 1, name: 'Example', data: 'Some data' }
         this.src = src;
+        // 115.48027239020547 30.910056912936394
         this.urioptions = [{
             value: src,
-            label: 'Tileset点云'
+            label: title,
+            longitude: data.lon || 115.48027239020547,
+            latitude: data.lat || 30.910056912936394
         }]
 
         const pointItems = document.querySelectorAll('.cursor-tip-class');
@@ -265,11 +258,22 @@ export default {
                 // requestRenderMode: true, //启用请求渲染模式
                 scene3DOnly: false, //每个几何实例将只能以3D渲染以节省GPU内存
                 sceneMode: 3, //初始场景模式 1 2D模式 2 2D循环模式 3 3D模式  Cesium.SceneMode
-                terrainProvider: Cesium.createWorldTerrain()
+                // terrainProvider: Cesium.createWorldTerrain()
                 //添加本地瓦片地图
                 // imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
                 //     url: 'https://elevation3d.arcgis.com/arcgis/rest/services/World_Imagery/MapServer'
                 // })
+                imageryProvider: new Cesium.UrlTemplateImageryProvider({
+                    // Satellite
+                    url: 'http://127.0.0.1:9090/efuav-image/hubeijux/Satellite/{z}/{x}/{y}.png', // ok 不能删
+                    //   url: 'http://127.0.0.1:9090/efuav-ortho-img/900/900/map/{z}/{x}/{y}.png'  // 黄冈
+                    // url: 'http://127.0.0.1:456/static/satellite/{z}/{x}/{y}.jpg', // 456 http://localhost:456/static/satellite
+                    // url: 'http://127.0.0.1:9090/efuav-image/csch/tiles/{z}/{x}/{y}.jpg' // cs
+
+                    minimumLevel: 3,
+                    maximumLevel: 18
+                    // tilingScheme: new AmapMercatorTilingScheme(), //坐标矫正
+                })
             });
 
             window.viewer.cesiumWidget.creditContainer.style.display = 'none'; // 去除logo
@@ -470,73 +474,6 @@ export default {
                     )
                 );
             });
-            viewer.scene.requestRender();
-        },
-        // 显示3d title在地图上
-        showTitlesOffset(url, offsetAlt = 15, offsetLat, offsetLng) {
-            const viewer = window.viewer;
-            viewer.trackedEntity = undefined; //模型-- 实体模型视口锁定问题
-            const palace3DTileset = new Cesium.Cesium3DTileset({
-                url: url, //加载倾斜示范数据
-                maximumMemoryUsage: 1024 * 1024, // 设置3D Tiles的最大内存使用量--浏览器内层占用,
-                maximumScreenSpaceError: 2, // 数值加大，能让最终成像变模糊,加载快;初始化的清晰度
-                skipScreenSpaceErrorFactor: 16,
-                dynamicScreenSpaceErrorDensity: 0.3, // 数值加大，能让周边加载变快
-                dynamicScreenSpaceError: true // 根据测试，有了这个后，会在真正的全屏加载完之后才清晰化房屋
-            });
-            // 订阅加载完成事件
-            palace3DTileset.readyPromise.then(palace3DTileset => {
-                viewer.scene.primitives.add(palace3DTileset);
-                var heightOffset = offsetAlt; //高度 高度你调这个就可以了
-                var longitude = offsetLng; //模型需要改变的经度--适用倾斜偏移
-                var latitude = offsetLat; //模型需要改变的纬度--适用倾斜偏移
-                //获取3Dtlies的bounds范围
-                var boundingSphere = palace3DTileset.boundingSphere;
-                //获取3Dtlies的范围中心点的弧度
-                var cartographic = Cesium.Cartographic.fromCartesian(
-                    boundingSphere.center
-                );
-                //定义3Dtlies改变之后中心点的弧度 （offsetvalue.longitude,offsetvalue.latitude,...
-                var offsetvalue = Cesium.Cartographic.fromDegrees(
-                    longitude,
-                    latitude,
-                    heightOffset
-                );
-                // 模型本身的位置 :根据经纬度和高度0，得到地面笛卡尔坐标
-                var surface = Cesium.Cartesian3.fromRadians(
-                    cartographic.longitude,
-                    cartographic.latitude,
-                    0.0
-                );
-                //模型本身的位置
-                // var surface = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, cartographic.height);
-                //模型改变的位置
-                const lng =
-                      offsetLng == undefined || 0 ? cartographic.longitude : longitude;
-                const lat =
-                      offsetLat == undefined || 0 ? cartographic.latitude : latitude;
-                var offset = Cesium.Cartesian3.fromRadians(lng, lat, heightOffset);
-                //定义模型的改变状态---offset需求位置---surface本身位置
-                var translation = Cesium.Cartesian3.subtract(
-                    offset,
-                    surface,
-                    new Cesium.Cartesian3()
-                );
-                palace3DTileset.modelMatrix = Cesium.Matrix4.fromTranslation(
-                    translation
-                );
-                // 设置相机视角
-                window.viewer.zoomTo(
-                    palace3DTileset,
-                    new Cesium.HeadingPitchRange(
-                        0.6,
-                        -0.4,
-                        palace3DTileset.boundingSphere.radius * 0.35
-                    )
-                );
-            });
-
-            this.TitlesMap[url] = palace3DTileset; // 映射瓦片模型
             viewer.scene.requestRender();
         },
         //添加影像图层 格式--// url: "../../../static/Maps/result/{z}/{x}/{y}.png",

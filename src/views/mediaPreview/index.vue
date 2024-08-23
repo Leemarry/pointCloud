@@ -86,7 +86,6 @@ export default {
         const src = decodeURIComponent(urlParams.get('src'));
         const formats = decodeURIComponent(urlParams.get('formats'));
 
-        console.log('formats', formats);
         this.formats = formats;
         this.src = src; // `https://view.officeapps.live.com/op/view.aspx?src=https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/solution/demo.docx`
         console.log('src', this.src);

@@ -18,7 +18,14 @@
       </el-form>
       <div>
         <el-button type="primary" @click="queryList1">查询</el-button>
-        <el-button type="primary" @click="uploadFiles({ fileType: 'orthoimg' , id : 0,reqUrl:'efapi/pointcloud/media/orthoimg/uploads' })">上传</el-button>
+        <!-- <el-button type="primary" @click="uploadFiles({ fileType: 'orthoimg' , id : 0,reqUrl:'efapi/pointcloud/media/orthoimg/uploads' })">上传</el-button> -->
+        <el-dropdown split-button type="primary" style="margin-left: 5px;" @click="beforeUpload()">
+          {{ title }}
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item @click.native="operationType('正射图级',{ fileType: 'orthoimg' , id : 0, reqUrl:'efapi/pointcloud/media/orthoimg/mapupload',title: '地图图级' })">正射图级</el-dropdown-item>
+            <!-- <el-dropdown-item @click.native="operationType('正射tif',{ fileType: 'orthoimg' , id : 1, reqUrl:'efapi/pointcloud/media/orthoimgTif/uploads',title: 'TIF' })">正射tif</el-dropdown-item> -->
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
     </div>
     <div class="media-container">
@@ -33,16 +40,21 @@
           </template>
         </el-table-column>
         <el-table-column prop="mark" label="标注名" width="120" />
-        <el-table-column prop="amendType" label="类型" />
-        <el-table-column prop="size" label="大小">
-          <template  slot-scope="scope">
-            <span>{{ filtersType(scope.row.size) }}</span>
+        <el-table-column prop="formats" label="类型" />
+        <el-table-column prop="lat" label="经纬度">
+          <template slot-scope="scope">
+            <span>{{ scope.row.lat }} , {{ scope.row.lon }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="path" label="地址" />
+        <el-table-column prop="towerMark" label="杆塔编号" width="200">
+          <template slot-scope="scope">
+            <el-tag type="success">{{ scope.row.towerMark }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" label="操作" width="100">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="beforeView(scope.row.id,scope.row.path,scope.row.formats)">查看</el-button>
+            <!-- <el-button type="text" size="small" @click="beforeView(scope.row.id,scope.row.path,scope.row.formats)">查看</el-button> -->
+            <el-button type="text" size="small" @click="previewPointCloud(scope.row)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -74,6 +86,8 @@ export default {
     data() {
     //这里存放数据
         return {
+            title: '正射图级',
+            reqData: { fileType: 'orthoimg', id: 1, reqUrl: 'efapi/pointcloud/media/orthoimg/mapupload', title: '地图图级' },
             reqUrl: '/media/orthoImg/querylist'
         };
     },
@@ -98,7 +112,41 @@ export default {
     activated() { },
     //方法集合
     methods: {
-
+        operationType(title, data) {
+            this.title = title
+            this.reqData = data
+        },
+        beforeUpload() {
+            this.uploadFiles(this.reqData, 0)
+        },
+        uploadFiles(item, index) {
+            const windowName = 'uploadWindow-' + item.fileType; // 设定窗口名称
+            if (!this.windows[windowName] || this.windows[windowName].closed) {
+                // 如果窗口存在并且关闭了就在this.windows中删除
+                if (this.windows[windowName]) {
+                    delete this.windows[windowName];
+                }
+                const existingWindow = window.open('', windowName);
+                const queryString = `?id=${item.id}&src=${encodeURIComponent(item.reqUrl)}&type=${encodeURIComponent(item.fileType)}&title=${encodeURIComponent(item.title)}`; //data=${encodeURIComponent(JSON.stringify(item))}
+                const url = '/uploadphoto' + queryString;
+                existingWindow.location.href = url; //'/uploadpage' + '?id=' + item.id + '&fileType=' + item.fileType;
+                this.windows[windowName] = existingWindow;
+            } else {
+                this.windows[windowName].focus();
+            }
+        },
+        previewPointCloud(row) {
+            const windowName = 'orthoimgPreview-' + row.id;
+            if (!this.windows[windowName] || this.windows[windowName].closed) {
+                const queryString = `?id=${row.id}&src=${encodeURIComponent(row.mapPath)}&data=${encodeURIComponent(JSON.stringify(row))}&title=${encodeURIComponent('正射瓦片')}`;
+                const url = '/previewPointcloud' + queryString;
+                const existingWindow = window.open(url, windowName);
+                existingWindow.tableData = this.tableData;
+                this.windows[windowName] = existingWindow;
+            } else {
+                this.windows[windowName].focus();
+            }
+        },
         // #region ------------------------------------------------------------- 查询 ----------------------------------------------------
         // #endregion
 

@@ -4,7 +4,6 @@ import AlDialog from '@/views/AlDialog/index.vue'
 import AlImagePreview from '@/views/AlImagePreview/index.vue'
 import currencyMinins from '@/utils/currencyMinins'
 import ElImageViewer from 'element-ui/packages/image/src/image-viewer'
-import axios from 'axios'
 import * as mediaApi from '@/api/media';
 export default {
     name: 'PhotoManager',
@@ -26,7 +25,8 @@ export default {
             fileList: [],
             imgViewerVisible: false,
             imgList: [],
-            previewVisible: false
+            previewVisible: false,
+            multipleSelection: []
         };
     },
     //监听属性 类似于data概念
@@ -49,6 +49,52 @@ export default {
     activated() { },
     //方法集合
     methods: {
+        handleSelectionChange(val) {
+            this.multipleSelection = val;
+            console.log('multipleSelection', val);
+        },
+        async  delectChecked() {
+            const ids = this.multipleSelection.map(item => {
+                return item.id
+            })
+            try {
+                this.mixinsLoading = true;
+                const formData = new FormData();
+                formData.append('ids', ids);
+
+                const res = await this.$store.dispatch('media/delectPhotos', formData)
+                const { code, message, data } = res;
+                if (code > 0) {
+                    // 使用 filter 方法过滤出不在 idsToRemove 中的数据
+                    // this.tableData = this.tableData.filter(item =>!data.includes(item.id));
+                    const newData = this.tableData.filter(item =>!data.includes(item.id));
+                    // 更新响应式数组
+                    this.tableData.splice(0, this.tableData.length,...newData);
+                } else {
+                    this.$message.error(message);
+                }
+            } catch (err) {
+                this.showToast(err, 'error');
+            } finally {
+                this.mixinsLoading = false;
+            }
+        },
+        uploadFiles(item, index) {
+            const windowName = 'uploadWindow-' + item.fileType; // 设定窗口名称
+            if (!this.windows[windowName] || this.windows[windowName].closed) {
+                // 如果窗口存在并且关闭了就在this.windows中删除
+                if (this.windows[windowName]) {
+                    delete this.windows[windowName];
+                }
+                const existingWindow = window.open('', windowName);
+                const queryString = `?id=${item.id}&src=${encodeURIComponent(item.reqUrl)}&type=${encodeURIComponent(item.fileType)}&title=${encodeURIComponent(item.title)}`; //data=${encodeURIComponent(JSON.stringify(item))}
+                const url = '/uploadphoto' + queryString;
+                existingWindow.location.href = url; //'/uploadpage' + '?id=' + item.id + '&fileType=' + item.fileType;
+                this.windows[windowName] = existingWindow;
+            } else {
+                this.windows[windowName].focus();
+            }
+        },
         onSubmit() {
 
         },

@@ -9,7 +9,7 @@
   <div v-loading="mixinsLoading" element-loading-background="rgba(0, 0, 0, 0.3)" class="media">
     <div class="media-top">
       <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline">
-        <el-form-item label="杆塔/图片描述" prop="mark">
+        <el-form-item label="杆塔/视频描述" prop="mark">
           <el-input v-model="formInline.mark" placeholder="文件详情..." />
         </el-form-item>
         <el-form-item label="时间范围" prop="startTime">
@@ -24,7 +24,7 @@
       </el-form>
       <div>
         <el-button type="primary" @click="queryList1()">查询</el-button>
-        <el-button type="primary" @click="uploadFiles({ fileType: 'video' , id : 0,reqUrl:'efapi/pointcloud/media/video/upload' })">上传</el-button>
+        <el-button type="primary" @click="uploadFiles({ fileType: 'video' , id : 0,reqUrl:'efapi/pointcloud/media/video/upload',title:'视频' })">上传</el-button>
       </div>
     </div>
     <div class="media-container">
