@@ -105,7 +105,7 @@ export default {
                 this.mixinsLoading = false;
             }
         },
-        async queryTowerlist(formatFu = this.formatTowerData) {
+        async queryTowerlist() {
             try {
                 this.mixinsLoading = true;
                 this.beforeFormMixin()
@@ -116,7 +116,7 @@ export default {
                 const res = await this.$store.dispatch('business/getTowerList', formData)
                 const { code, message, data } = res;
                 if (code === 1) {
-                    this.tableData = formatFu(data)
+                    this.tableData = this.formatTowerData(data)
                 } else {
                     this.$message.error(message);
                 }
@@ -168,6 +168,7 @@ export default {
                 const { code, message } = res;
                 if (code === 1) {
                     this.showToast(message, 'success');
+                    this.formInline.endTime = new Date(Date.now() + 3600000);
                     this.queryTowerlist();
                 } else {
                     this.showToast(message, 'error');
@@ -262,7 +263,7 @@ export default {
     },
     //生命周期 - 挂载完成（可以访问DOM元素）
     mounted() {
-        this.queryTowerlist(this.formatTowerData)
+        this.queryTowerlist()
     },
     beforeCreate() { }, //生命周期 - 创建之前
     beforeMount() { }, //生命周期 - 挂载之前

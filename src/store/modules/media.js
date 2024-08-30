@@ -19,11 +19,38 @@ const mutations = {
 }
 
 const actions = {
+    queryDistanceWithDis({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            mediaApi.queryDistanceWithDis(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
 
     /**查询该架次图片 */
     delectPhotos({ commit, state }, data) {
         return new Promise((resolve, reject) => {
             mediaApi.delectPhotos(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+    deleteMdia({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            mediaApi.deleteMdia(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+    delectVideos({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            mediaApi.delectVideos(data).then(response => {
                 resolve(response)
             }).catch(error => {
                 reject(error)

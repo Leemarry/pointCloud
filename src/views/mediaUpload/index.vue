@@ -180,7 +180,6 @@ export default {
                     return new Promise((resolve, reject) => {
                         reader.readEntries((entries) => {
                             const folder = entry.fullPath || entry.name
-                            console.log('folder', entries);
                             const subPromises = entries.map((subEntry) => processEntry(subEntry, folder));
                             Promise.all(subPromises)
                                 .then(() => resolve())
@@ -224,6 +223,10 @@ export default {
         checkFileType(file, selfFileType) {
             const fileType = file.type;
             // orthoimg
+            // selfFileType
+            if (selfFileType.includes('report')) {
+                return Promise.resolve()
+            }
             if (selfFileType === 'orthoimg') {
                 return Promise.resolve()
             }

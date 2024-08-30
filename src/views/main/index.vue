@@ -32,7 +32,7 @@
             </div>
           </div>
         </div>
-        <div v-loading="loading" class="main" element-loading-text="拼命加载中" element-loading-background="rgba(0, 0, 0, 0.8)">
+        <div v-loading="mixinsLoading" class="main" element-loading-text="拼命加载中" element-loading-background="rgba(0, 0, 0, 0.8)">
           <div ref="mainleft" class="mainleft">
             <dv-border-box-7 class="main_left_uav_count">
               <div class="main_left_uav_count_body">
@@ -69,26 +69,15 @@
                   :default-time="['3:00:00', '23:00:00']"
                   @change="handleChange"
                 />
-                <!-- <el-form :inline="true" :rules="rules" :model="formInline" class="demo-form-inline">
-                  <el-form-item label="" prop="startTime">
-                    <el-col :span="10">
-                      <el-date-picker v-model="formInline.startTime" type="datetime" placeholder="选择起始时间" align="right" :picker-options="pickerOptions" />
-                    </el-col>
-                    <el-col class="line" :span="2">至</el-col>
-                    <el-col :span="10">
-                      <el-date-picker v-model="formInline.endTime" type="datetime" placeholder="选择日期时间" default-time="12:00:00" />
-                    </el-col>
-                  </el-form-item>
-                </el-form> -->
                 <div v-if="tableData.length>0" class="uav-list">
                   <el-scrollbar style="width:98%" wrap-style="overflow-x:hidden;flex:1">
                     <el-row v-for="(item,index) in tableData" :key="index" :gutter="1" justify="flex" align="middle" style="margin:8px">
-                      <TowerItem ref="TowerItem" :uav-name="item.mark" :uav-sn="item.id" :online="item.checked" @click.native="clickTowerItem(item)" @sendOpenWeb="OpenWeb" @sendToFocus="toFocus" />
+                      <TowerItem ref="TowerItem" :uav-name="item.mark" :uav-sn="item.id" :online="item.checked" :cloudchecked="item.cloudChecked" @click.native="clickTowerItem(item)" @sendOpenWeb="OpenWeb" @sendToFocus="toFocus" @sendShowCloud="showCloud" @sendHideCloud="hideCloud" />
                     </el-row>
                   </el-scrollbar>
                 </div>
                 <div v-else class="no_uav"><i class="el-icon-warning-outline">未绑定杆塔信息</i></div>
-                </el-date-picker></div>
+              </div>
             </dv-border-box-7>
             <div class="main_right_parms_title" @click="createWebWorker()">航线任务</div>
             <dv-border-box-7 class="main_left_exception">
@@ -105,13 +94,12 @@
                       <div style="text-align: center;" :class="'cursorStyle' + (isActive == '2' ? 'active' :'') " @click="SelectTime(2)">本周</div>
                     </el-col>
                     <el-col :span="9">
-                      <i style="margin:0px 5px; float: right;" title="上传无人机" class="iconfont icon-icon_update cursorStyle" :class="{ disabled: maploading }" @click="maploading ? null : uploadKmzBefore()" />
-                      <i style="margin:0px 5px; float: right;" title="解析航线" class="iconfont  icon-hangxianxinxi cursorStyle" :class="{ disabled: maploading }" @click="maploading ? null :readerKml()" />
+                      <i style="margin:0px 5px; float: right;" title="解析航线" class="iconfont  icon-hangxianxinxi cursorStyle" :class="{ disabled: maploading }" @click="maploading ? null :openVideoTag()" />
                     </el-col>
                   </el-row>
                 </div>
                 <el-scrollbar v-if="!tasksLoading" class="scrollbar" style="width:98%;" wrap-style="overflow-x:hidden;flex:1;font-size:small;">
-                  <div v-for="(item,index) in tasksRoutes.slice((currentPage-1)*pagesize,currentPage*pagesize)" :key="index" :class="'route_item plusInborder cursorStyle' + (currentIndex === index ? ' showplusInborder' : '')" @click="changeColor(index,item)">
+                  <div v-for="(item,index) in kmzData.slice((currentPage-1)*pagesize,currentPage*pagesize)" :key="index" :class="'route_item plusInborder cursorStyle' + (currentIndex === index ? ' showplusInborder' : '')" @click="changeColor(index,item)">
                     <span>{{ time(item.kmzUpdateTime) }}</span>
                     <span>{{ item.kmzName }}</span>
                   </div>
@@ -124,28 +112,27 @@
             </dv-border-box-7>
           </div>
           <div ref="mainMiddle" v-loading="maploading" element-loading-spinner="el-icon-loading" :element-loading-text="loadingText" :element-loading-background="this.loadingBackground" class="mainMiddle height-calc zindex include_cesium_blocks">
-            <CesiumMap ref="CesiumMap" :visible="CesiumDrawVisible" :maploading="maploading" :tasks-routes="tasksRoutes" :tasks-name="tasksName" :default-uav-sn="defaultUavSn" @senddoFlyCommands="senddoFlyCommandsEvent" />
+            <CesiumMap ref="CesiumMap" :visible="CesiumDrawVisible" :maploading="maploading" :tasks-routes="tasksRoutes" :tasks-name="tasksName" :default-uav-sn="defaultUavSn" @senddoFlyCommands="senddoFlyCommandsEvent" @getClickPoint="getClickPoint" />
             <div v-show="isMap" class="drawButton">
               <i class="el-icon-edit clickstyle" :title="'绘制'" @click="CesiumDrawVisible=!CesiumDrawVisible" />
             </div>
           </div>
           <div class="mainRight">
             <dv-border-box-7 class="main_right_hud">
-              <el-row style="height:100%;">
-                <el-col :span="24" align="middle" style="height:100%">
-                  <video src="" />
-                </el-col>
-              </el-row>
+                <el-image :src="clickPhoto&&clickPhoto.path" style="width: 100%; height: 200px;">
+                    <div slot="placeholder" class="image-slot">
+                      加载中<span class="dot">...</span>
+                    </div>
+                  </el-image>
             </dv-border-box-7>
             <div class="main_right_parms_title">杆塔数据</div>
-            <dv-border-box-7 class="main_right_parms">
-              <!-- defaultTowerInfo -->
+            <dv-border-box-7 class="main_right_parms  hei500">
               <template v-if="defaultTowerInfo.photos&&defaultTowerInfo.photos.length>0">
                 <virtual-list
-                  class="list"
-                  style="height: 200px; overflow-y: auto;"
+                  class="list virtual-list"
+                  style="height:calc(100% - 2px); overflow-y: auto;"
                   :data-key="'id'"
-                  :data-sources="getObjData(defaultTowerInfo.photos)"
+                  :data-sources="defaultTowerInfo.photos"
                   :data-component="EImage"
                   :estimate-size="50"
                   :extra-props="{

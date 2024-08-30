@@ -10,6 +10,7 @@ import { getDefaultObj, getDefaultData, switchNode, getTimeRangeByKey } from '@/
 import { parseTime, filtersType } from '@/utils/index';
 import VirtualList from 'vue-virtual-scroll-list'
 import EImage from '@/views/components/Other/image.vue'
+import { parseXML } from '@/utils/currency'
 export default {
     name: '',
     mixins: [], //
@@ -60,6 +61,7 @@ export default {
             },
             defaultTowerMark: '', //默认选中的无人机
             defaultTowerInfo: {},
+            defaultPhotos:{},
             formInline: {
                 total: 500,
                 mark: null,
@@ -87,7 +89,10 @@ export default {
             //分页
             currentPage: 1,
             pageSize: 10,
-            mixinsLoading: false
+            mixinsLoading: false,
+            kmzData: [],
+            clickPhoto: {},
+            points: []
         };
     },
     //让组件接收外部传来的数据
@@ -97,35 +102,6 @@ export default {
     computed: {},
     //监控data中的数据变化
     watch: {
-        tableData: {
-            handler(newVal, oldVal) {
-                this.$bus.$emit('send:removeAll');
-                console.log('监听到tableData变化了', newVal);
-                if (!newVal || !newVal.length === 0) {
-                    return
-                }
-                for (let index = 0; index < newVal.length; index++) {
-                    const tower = newVal[index]; // orthoImg
-                    let latitude = tower.lat
-                    let longitude = tower.lon
-                    if (tower.orthoImg) {
-                        latitude = tower.orthoImg.lat
-                        longitude = tower.orthoImg.lon
-                        if (tower.orthoImg.mapPath) {
-                            const url = tower.orthoImg.mapPath
-                            const name = tower.id; // `${new Date().getTime()}`
-                            const mtype = 'TMS'
-                            this.$bus.$emit('send:addImagery', { url, longitude, latitude, height: 1000, name, mtype });
-                        } else {
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-            },
-            deep: true
-        },
         tableDatas: {
             handler(newVal, oldVal) {
                 // 发送事件通知移除所有
@@ -182,10 +158,10 @@ export default {
                     ...photo
                 })
             }
-            console.log('data', data);
+            // console.log('data', data);
             return data
         },
-
+        //#region --------------------------------------------------------------------------- 组件 交互事件 --------------------------------------------------------------
         previewWebCloud(row) {
             this.beforeView(row.id, row.webUrl, 'web', row.mark)
         },
@@ -204,16 +180,78 @@ export default {
                 this.$bus.$emit('send:toFocus', id);
             }
         },
+        showCloud(id) {
+            const tower = this.tableData.find(item => item.id === id);
+            const index = this.tableData.findIndex(item => item.id === id);
+            if (index < 0) {
+                this.showToast('未查询点云数据')
+            }
+            let latitude = tower.lat
+            let longitude = tower.lon
+            const name = tower.id + 'cloud'; // `${new Date().getTime()}`
+            if (tower.orthoImg) {
+                latitude = tower.orthoImg.lat
+                longitude = tower.orthoImg.lon
+            }
+            if (tower.pointCloud && tower.pointCloud.amendCloudUrl) {
+                const url = tower.pointCloud.amendCloudUrl
+                const mtype = 'Tileset'
+                // console.log('数据', { url, longitude, latitude, height: 1000, name, mtype });
+                this.$bus.$emit('send:addImagery', { url, longitude, latitude, height: 1000, name, mtype });
+                this.tableData.splice(index, 1, { ...tower, cloudChecked: true })
+            } else {
+                this.showToast('未查询点云数据')
+            }
+        },
+
+        hideCloud(id) {
+            const tower = this.tableData.find(item => item.id === id);
+            const index = this.tableData.findIndex(item => item.id === id);
+            if (index < 0) {
+                this.showToast('未查询点云数据')
+            }
+            this.tableData.splice(index, 1, { ...tower, cloudChecked: false })
+            const mid = tower.id + 'cloud'; // `${new Date().getTime()}`
+            this.$bus.$emit('send:toHide', { mid });
+        },
+        removeAllImagery() {
+            this.$bus.$emit('send:removeAll');
+        },
+        showImagery() {
+
+        },
+        showAllImagery(newVal) {
+            for (let index = 0; index < newVal.length; index++) {
+                const tower = newVal[index]; // orthoImg
+                let latitude = tower.lat
+                let longitude = tower.lon
+                if (tower.orthoImg) {
+                    latitude = tower.orthoImg.lat
+                    longitude = tower.orthoImg.lon
+                    if (tower.orthoImg.mapPath) {
+                        const url = tower.orthoImg.mapPath
+                        const name = tower.id; // `${new Date().getTime()}`
+                        const mtype = 'TMS'
+                        this.$bus.$emit('send:addImagery', { url, longitude, latitude, height: 1000, name, mtype });
+                    } else {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+        },
+        // #endregion
         handleChange() {
             this.formInline.startTime = this.value1[0]
             this.formInline.endTime = this.value1[1]
             this.queryTowerAlllist()
         },
         clickTowerItem(item) {
+            console.log('clickTowerItem');
             if (item.mark === this.defaultTowerMark) {
                 return;
             }
-            console.log('dji ');
             const key = 'defaultUav-' + this.userId;
             localStorage.setItem(key, item.mark);
             this.defaultTowerMark = item.mark;
@@ -239,8 +277,14 @@ export default {
                     // 在data 添加 checked
                     data.forEach(item => {
                         item.checked = false;
+                        item.cloudChecked = false
                     })
                     this.tableData = data
+                    this.removeAllImagery()
+                    if (this.tableData.length > 0) {
+                        this.clickTowerItem(this.tableData[0])
+                        this.showAllImagery(this.tableData)
+                    }
                 } else {
                     this.$message.error(message);
                 }
@@ -250,7 +294,96 @@ export default {
                 this.mixinsLoading = false;
             }
         },
+        async ChoiseKmzTimeEvent(choiseTime) {
+            try {
+                this.tasksLoading = true
+                this.kmzData = [];
+                // 时间戳大1000倍
+                const startTime = choiseTime && choiseTime[0] ? new Date(choiseTime[0]) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); //   console.log(startTime);
+                const endTime = choiseTime && choiseTime[1] ? new Date(choiseTime[1]) : new Date(Date.now());
+                const formdata = new FormData();
+                formdata.append('startTime', startTime);
+                formdata.append('endTime', endTime);
+                await this.$store.dispatch('routeManage/queryKmzInfo', formdata).then(response => {
+                    const { code, message, data } = response;
+                    if (code === 1) {
+                        this.kmzData = data || []; // 返回数据
+                    } else {
+                        this.showMessage(message, 'warning');
+                    }
+                })
+            } catch (error) {
+                this.showMessage(error, 'error');
+            } finally {
+                this.tasksLoading = false
+            }
+        },
+        getClickPoint(lng, lat) {
+            this.queryDistanceWithDis(lat, lng)
+        },
+        queryDistanceWithDis(lat, lng) {
+            this.mixinsLoading = true
+            try {
+                const formdata = new FormData()
+                formdata.append('lat', lat)
+                formdata.append('lng', lng)
+                this.$store.dispatch('media/queryDistanceWithDis', formdata).then(response => {
+                    const { code, message, data } = response;
+                    if (code === 1) {
+                      this.clickPhoto = data
+                    } else {
+                        this.showMessage(message, 'warning');
+                    }
+                })
+            } catch (err) {
+                this.showMessage(err, 'error');
+            } finally {
+                this.mixinsLoading = false
+            }
+        },
 
+        // #endregion
+        // #region ------------------------------------------------------------ 数据下载 ---------------------------------------------------------------------
+        openVideoTag(kmzTask = this.currentTask) {
+            const url = kmzTask.kmzPath;
+            this.fetchAndExtractZipContent(url).then(res => {
+                console.log('parseXML(res)', parseXML(res));
+                this.points = parseXML(res).points;
+                const CesiumMap = this.$refs.CesiumMap;
+                if (CesiumMap) {
+                    this.$refs.CesiumMap.drawLines2(this.points);
+                }
+            }, rej => {
+                this.showMessage('获取kmz文件失败', 'error')
+            }
+            )
+        },
+        async fetchAndExtractZipContent(url) {
+            try {
+                const response = await fetch(url);
+
+                if (response.status === 200) {
+                    const arrayBuffer = await response.arrayBuffer();
+                    // eslint-disable-next-line no-undef
+                    const zip = await JSZip.loadAsync(arrayBuffer);
+                    // 假设您要获取的文件名是 'file.txt'
+                    const file = zip.file('waylines.wpml');
+                    if (file) {
+                        const content = await file.async('text');
+                        return Promise.resolve(content);
+                    } else {
+                        console.error('指定的文件未在压缩包中找到');
+                        return Promise.reject('指定的文件未在压缩包中找到');
+                    }
+                } else {
+                    console.error(`获取压缩包失败，状态码: ${response.status}`);
+                    return Promise.reject(`获取压缩包失败，状态码: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('发生错误:', error);
+                return Promise.reject(error);
+            }
+        },
         // #endregion
         // #region 私有方法
         /**

@@ -78,7 +78,10 @@ export default {
                 const res = await this.$store.dispatch('business/delectTowerLine', formData);
                 if (res.code === 1) {
                     this.$message.success('删除成功');
-                    // this.tableData.
+                    const index = this.tableData.findIndex(item => item.id === id);
+                    if (index !== -1) {
+                        this.tableData.splice(index, 1);
+                    }
                 } else {
                     this.$message.error(res.message);
                 }
@@ -88,7 +91,7 @@ export default {
                 this.mixinsLoading = false;
             }
         },
-        async queryTowerLinelist(formatFu = this.formatTowerData) {
+        async queryTowerLinelist() {
             try {
                 this.mixinsLoading = true;
                 this.beforeFormMixin()
@@ -99,7 +102,7 @@ export default {
                 const res = await this.$store.dispatch('business/getTowerLineList', formData)
                 const { code, message, data } = res;
                 if (code === 1) {
-                    this.tableData = formatFu(data)
+                    this.tableData = this.formatTowerData(data)
                 } else {
                     this.$message.error(message);
                 }
@@ -140,6 +143,7 @@ export default {
                 const { code, message } = res;
                 if (code === 1) {
                     this.showToast(message, 'success');
+                    this.formInline.endTime = new Date(Date.now() + 3600000);
                     this.queryTowerLinelist();
                 } else {
                     this.showToast(message, 'error');
@@ -159,23 +163,39 @@ export default {
         formatTowerData(towerData) {
             return towerData.map(item => {
                 let url = '';
+                let startUrl = '';
+                let endUrl = '';
+                let startUrlList = [];
+                let endUrlList = [];
                 let urlList = [];
-                if (item.startphotos && item.startphotos.length > 0) {
-                    url = item.startphotos[0].path
+                if (item.photos && item.photos.length > 0) {
+                    url = item.photos[0].path
                     //并且将path放入到urllist
-                    urlList = item.startphotos.map(item => item.path)
+                    urlList = item.photos.map(item => item.path)
+                }
+                if (item.startphotos && item.startphotos.length > 0) {
+                    startUrl = item.startphotos[0].path
+                    //并且将path放入到urllist
+                    startUrlList = item.startphotos.map(item => item.path)
+                }
+                if (item.endphotos && item.endphotos.length > 0) {
+                    endUrl = item.endphotos[0].path
+                    //并且将path放入到urllist
+                    endUrlList = item.endphotos.map(item => item.path)
                 }
                 // 移除photos
                 delete item.startphotos;
-                const obj = { lastpath: url, urlList, ...item }
+                delete item.endphotos;
+                delete item.photos;
+                const obj = { lastpath: url, urlList, endUrl, startUrl, startUrlList, endUrlList, ...item }
                 return obj;
             })
         },
         //#endregion
         // 图片预览
         // #region ---------------------------------------------------  图片预览 ---------------------------------------------------
-        beforeView(row) {
-            this.imgList = row.urlList
+        beforeView(urlList) {
+            this.imgList = urlList
             this.showImgViewer()
         },
         showImgViewer() {
@@ -234,7 +254,7 @@ export default {
     },
     //生命周期 - 挂载完成（可以访问DOM元素）
     mounted() {
-        this.queryTowerLinelist(this.formatTowerData)
+        this.queryTowerLinelist()
     },
     beforeCreate() { }, //生命周期 - 创建之前
     beforeMount() { }, //生命周期 - 挂载之前

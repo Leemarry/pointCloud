@@ -32,7 +32,7 @@
     </div>
     <div class="media-container">
       <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" stripe height="100%" style="width: 100%">
-        <el-table-column prop="createTime" label="日期" width="120">
+        <el-table-column prop="createTime" label="日期">
           <template slot-scope="scope">
             <span size="medium">{{ parseTime(scope.row.createTime ) }}</span>
           </template>
@@ -40,16 +40,21 @@
         <el-table-column prop="mark">
           <template slot="header">
             <span>杆塔号</span>
-            <!-- <el-tag size="medium">{{ `竣工杆号` }}</el-tag> -->
           </template>
           <template slot-scope="scope">
-            <el-tag size="medium">{{ scope.row.name }}</el-tag>
+            <el-popover trigger="hover" placement="top">
+              <h4>其他：</h4>
+              <p>塔型:{{ `${scope.row.type ? scope.row.type:'未登记'}` }}</p>
+              <p>竣工杆号:{{ `${ scope.row.name ? scope.row.name : '未登记'}` }}</p>
+              <div slot="reference" class="name-wrapper">
+                <el-tag size="medium">{{ scope.row.mark}}</el-tag>
+              </div>
+            </el-popover>
           </template>
         </el-table-column>
         <el-table-column prop="name">
           <template slot="header">
             <span>竣工杆号</span>
-            <!-- <el-tag size="medium">{{ `竣工杆号` }}</el-tag> -->
           </template>
           <template slot-scope="scope">
             <el-tag size="medium">{{ scope.row.name }}</el-tag>
@@ -90,15 +95,14 @@
         <el-table-column fixed="right" label="操作" width="130">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="updateTower(scope.row)">编辑</el-button>
-            <!-- <el-button type="text" size="small" @click="delectTower(scope.row)">删除</el-button> -->
             <el-popconfirm
               confirm-button-text="是的"
               cancel-button-text="仅附带图片"
               icon="el-icon-info"
               icon-color="red"
+              title="确定该杆塔所有信息删除吗？"
               @confirm="delectTower(scope.row,true)"
               @cancel="delectTower(scope.row,false)"
-              title="确定该杆塔所有信息删除吗？"
             >
               <el-button slot="reference" type="text">删除</el-button>
             </el-popconfirm>

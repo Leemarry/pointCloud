@@ -1,3 +1,9 @@
+/*
+ * @Date: 2024-08-22 20:34:47
+ * @LastEditors: likai 2806699104@qq.com
+ * @FilePath: \pointCouldPages\src\views\core\ImageryManager.js
+ * @Description: Do not edit
+ */
 
 export function fromDegrees(longitude, latitude, height = 500) {
     return Cesium.Cartesian3.fromDegrees(longitude, latitude, height)
@@ -148,7 +154,6 @@ class ImageryProvider {
         }
     }
     show() {
-        console.log('xs显示');
         if (this.imageryLayer) {
             this.imageryLayer.show = true;
         }

@@ -694,7 +694,7 @@ export default {
                 var spacing = e.detail.spacing
                 // 查找要修改的对象
                 const index = this.routes.findIndex((item) => {
-                    return item.mid == mid;
+                    return item.mid === mid;
                 });
                 if (index < 0) {
                     // 将 mid 和 positions 添加到 routes 数组的头部

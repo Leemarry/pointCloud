@@ -37,7 +37,11 @@
       </div>
     </div>
     <div class="media-container">
-      <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" stripe style="width: 100%">
+      <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" stripe style="width: 100%" @selection-change="handleSelectionChange">
+        <el-table-column
+          type="selection"
+          width="55"
+        />
         <el-table-column prop="createTime" label="日期" width="180">
           <template slot-scope="scope">
             <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -54,11 +58,16 @@
             <span>{{ filtersType(scope.row.size) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="fileUrl" label="地址" />
-        <el-table-column fixed="right" label="操作" width="100">
+        <!-- <el-table-column prop="fileUrl" label="地址" /> -->
+        <el-table-column fixed="right" label="操作" width="130">
+          <template slot="header" slot-scope="scope">
+            <span v-if="multipleSelection.length==0">操作</span>
+            <el-tag v-else size="small" @click="delectChecked('/media/reports/delects')">删除选中</el-tag>
+          </template>
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="beforeView(scope.row)">查看</el-button>
-            <el-button type="text" size="small" @click="downloadFile(scope.row, scope.$index)">下载</el-button>
+            <el-button v-if="!scope.row.downLoadProgress" type="text" size="small" @click="downloadFile(scope.row,scope.$index)">下载</el-button>
+            <el-button v-else type="text" size="small" @click="downloadFile(scope.row,scope.$index)">{{ scope.row.downLoadProgress >= 99 ? '已下载':`${Number(scope.row.downLoadProgress).toFixed(1)}下载中。。` }}</el-button>
           </template>
         </el-table-column>
       </el-table>

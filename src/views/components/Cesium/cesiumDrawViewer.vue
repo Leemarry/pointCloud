@@ -33,12 +33,13 @@
             <span :class="{ 'selected-graphic': layerManagerVisible }" @click="toggleLayerManager">清单</span>
           </li>
           <!-- 上传航线  -->
-          <li>
+          <!-- <li>
             <el-badge :hidden="routes.length==0" :value="routes.length" class="routelist">
               <i class="el-icon-s-flag" :class="{ 'selected-graphic': routeManagerVisible }" title="航线列表" @click="toggleRouteManager" />
               <span :class="{ 'selected-graphic': routeManagerVisible }" @click="toggleRouteManager">航表</span>
             </el-badge>
-          </li>
+          </li> -->
+          <!-- 上传航线上 -->
           <!-- routeManagerVisible @click="sendupload()" -->
           <!-- <li>
               <i class="cesiumDrawFont iconlayer icon-class"
@@ -429,6 +430,7 @@ export default {
         this.$bus.$on('send:removeAll', this.removeImageryAll)
         this.$bus.$on('send:toFocus', this.toFocus)
         this.$bus.$on('send:addImagery', this.addImagery)
+        this.$bus.$on('send:toHide', this.toHide)
     },
     mounted() {
         window.jq = $;
@@ -457,6 +459,7 @@ export default {
         this.$bus.$off('send:removeAll', this.removeImageryAll)
         this.$bus.$off('send:addImagery', this.addImagery)
         this.$bus.$off('send:toFocus', this.toFocus)
+        this.$bus.$off('send:toHide', this.toHide)
     }, //生命周期 - 销毁之前
     methods: {
         /**
@@ -1220,7 +1223,6 @@ export default {
             // });
             // this.cesiumViewer.scene.primitives.add(tileset);
             // this.cesiumViewer.zoomTo(tileset);
-
             console.log('tileset', url, name, mtype);
             imageryManager.addImagery({ url, name, mtype }, {
                 longitude,
@@ -1236,10 +1238,16 @@ export default {
         toFocus(id) {
             checkComponent(this);
             const mid = id
-            console.log('send:toFocus',id);
             if (imageryManager.has(mid)) {
                 console.log('send:toFocus');
                 imageryManager.focus(mid)
+            }
+        },
+        toHide(item) {
+            const { mid } = item
+            if (imageryManager.has(mid)) {
+                imageryManager.hide(mid)
+                // console.log('toHidetoHide',item);
             }
         }
     }

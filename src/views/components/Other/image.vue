@@ -4,28 +4,15 @@
  * @Author: Eugene
  * @Date: 2024-04-18 16:27:18
  * @LastEditors: likai 2806699104@qq.com
- * @LastEditTime: 2024-08-23 11:43:26
+ * @LastEditTime: 2024-08-26 17:53:24
 -->
 <!--  -->
 <template>
-    <el-image :src="source.path">
-                    <div slot="placeholder" class="image-slot">
-                      加载中<span class="dot">...</span>
-                    </div>
-                  </el-image>
-  <!-- <div class="item">
-    <el-row :gutter="5" style="width:100%">
-      <el-col :span="24">
-        {{ `航点${index}` }}
-      </el-col>
-      <el-col :span="12">
-        <span>ssssss</span>
-      </el-col>
-      <el-col :span="12">
-        <span>{{ source.lat }}</span>
-      </el-col>
-    </el-row>
-  </div> -->
+  <el-image :src="source.path">
+    <div slot="placeholder" class="image-slot">
+      加载中<span class="dot">...</span>
+    </div>
+  </el-image>
 </template>
 
 <script>

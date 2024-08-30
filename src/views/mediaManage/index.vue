@@ -51,8 +51,8 @@
         :page-sizes="[1, 5, 10, 20]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-@size-change="handleSizeChange"
         :total="tableData.length"
+        @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
     </div>
@@ -208,21 +208,21 @@ export default {
         //#region ---------------------------------------------------   查询   ---------------------------------------------------
         async queryPhotolist() {
             try {
-                let formdata = new FormData();
+                const formdata = new FormData();
                 formdata.append('startTime', this.formInline.startTime);
                 formdata.append('endTime', this.formInline.endTime);
                 formdata.append('name', this.formInline.name)
                 const res = await this.$store.dispatch('media/queryPhotolist', formdata)
                 const { code, message, data } = res;
                 if (code === 1) {
-        
+
                 }
             } catch (err) {
                 this.showToast(error, 'error');
             } finally {
 
             }
-    },
+        },
 
         //#endregion
 
@@ -232,7 +232,7 @@ export default {
             const m = (e) => { e.preventDefault() };
             document.body.style.overflow = 'hidden';
             document.addEventListener('touchmove', m, false); // 禁止页面滑动
-    },
+        },
         closeImgViewer() {
             this.imgViewerVisible = false;
             const m = (e) => { e.preventDefault() };
@@ -264,7 +264,7 @@ export default {
         changeFile(file, fileList) {
             this.fileList = [];
             let fileName = file.name;
-            let size = file.size;
+            const size = file.size;
             fileName = fileName.substring(fileName.lastIndexOf('.'))
             console.log('fileName', fileName);
 
@@ -292,7 +292,7 @@ export default {
             const file = this.fileList[0] || null;
             const handleDate = (new Date()).getTime(); // 439c-1711335601702-53646
             const handleUuid = this.generateId(handleDate);
-            let formData = new FormData()
+            const formData = new FormData()
             formData.append('handleUuid', handleUuid) // 额外参数
             formData.append('file', file.raw)
             formData.append('handleDate', handleDate)
@@ -306,7 +306,7 @@ export default {
             }).finally(() => {
                 this.btnloading = false
             })
-    }
+        }
         // #endregion
 
     } //如果页面有keep-alive缓存功能，这个函数会触发

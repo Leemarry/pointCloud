@@ -29,6 +29,7 @@ import CesiumDraw from './tool/cesiumDrawViewer.vue';
 import ImageryManager from './core/ImageryManager'
 import { mapGetters } from 'vuex';
 import { calculateSquareCoordinates } from '@/views/core/Geo'
+import AMapImageryProvider from '@/views/core/provider/AMapImageryProvider'
 let imagelayer;
 // eslint-disable-next-line no-unused-vars
 var tilesetManager;
@@ -240,6 +241,18 @@ export default {
             if (window.viewer) {
                 window.viewer.destroy();
             } // 初始时，判断视口是否存在
+            const serviceURL = 'mapsource/satellite/{z}/{x}/{y}.jpg' //http://127.0.0.1:456/static/satellite/{z}/{x}/{y}.jpg'
+            // 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=' +
+            // '1' +
+            // '&style=' +
+            // '6';
+            const options = {
+                url: serviceURL,
+                crs: 'WGS84' // 使用84坐标系
+            };
+                //按自己实际路径修改
+                // const tip = require('../transfer/amap/AmapImageryProvider')
+            const provider = new AMapImageryProvider(options);
             Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjNzRiNzNkYS0zZTRmLTRhOTMtODFlNS0zOWFhN2FmYzZmYjkiLCJpZCI6MTUyMTEwLCJpYXQiOjE2ODg2OTYyMDl9.sWkoSUmLFPfbMTMFgAZeQKjBQERg-TZPBBtIN34sDNQ'; //密钥 否则页面提示
             // 将窗口设置为cesiumshiko
             window.viewer = new Cesium.Viewer('cesiumContainer', {
@@ -258,22 +271,24 @@ export default {
                 // requestRenderMode: true, //启用请求渲染模式
                 scene3DOnly: false, //每个几何实例将只能以3D渲染以节省GPU内存
                 sceneMode: 3, //初始场景模式 1 2D模式 2 2D循环模式 3 3D模式  Cesium.SceneMode
-                // terrainProvider: Cesium.createWorldTerrain()
+                // terrainProvider: Cesium.createWorldTerrain(),
                 //添加本地瓦片地图
                 // imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
                 //     url: 'https://elevation3d.arcgis.com/arcgis/rest/services/World_Imagery/MapServer'
                 // })
-                imageryProvider: new Cesium.UrlTemplateImageryProvider({
-                    // Satellite
-                    url: 'http://127.0.0.1:9090/efuav-image/hubeijux/Satellite/{z}/{x}/{y}.png', // ok 不能删
-                    //   url: 'http://127.0.0.1:9090/efuav-ortho-img/900/900/map/{z}/{x}/{y}.png'  // 黄冈
-                    // url: 'http://127.0.0.1:456/static/satellite/{z}/{x}/{y}.jpg', // 456 http://localhost:456/static/satellite
-                    // url: 'http://127.0.0.1:9090/efuav-image/csch/tiles/{z}/{x}/{y}.jpg' // cs
+                imageryProvider: provider
+                // imageryProvider: new Cesium.UrlTemplateImageryProvider({
+                //     // Satellite
+                //     // url: 'http://127.0.0.1:9090/efuav-image/hubeijux/Satellite/{z}/{x}/{y}.png', // ok 不能删
+                //     url: 'mapsource/satellite/{z}/{x}/{y}.jpg',
+                //     //   url: 'http://127.0.0.1:9090/efuav-ortho-img/900/900/map/{z}/{x}/{y}.png'  // 黄冈
+                //     // url: 'http://127.0.0.1:456/static/satellite/{z}/{x}/{y}.jpg', // 456 http://localhost:456/static/satellite
+                //     // url: 'http://127.0.0.1:9090/efuav-image/csch/tiles/{z}/{x}/{y}.jpg' // cs
 
-                    minimumLevel: 3,
-                    maximumLevel: 18
-                    // tilingScheme: new AmapMercatorTilingScheme(), //坐标矫正
-                })
+                //     minimumLevel: 3,
+                //     maximumLevel: 18
+                //     // tilingScheme: new AmapMercatorTilingScheme(), //坐标矫正
+                // })
             });
 
             window.viewer.cesiumWidget.creditContainer.style.display = 'none'; // 去除logo

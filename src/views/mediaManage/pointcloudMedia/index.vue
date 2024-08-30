@@ -38,34 +38,51 @@
             {{ parseTime(scope.row.createTime) }}
           </template>
         </el-table-column>
-        <el-table-column prop="mark" label="标注名" width="120" />
+        <el-table-column prop="mark" label="标注名" width="250" />
         <el-table-column prop="amendType" label="类型" width="80" />
-        <el-table-column prop="amendSize" label="大小" width="80">
+        <el-table-column prop="towerMark" label="杆塔编号" width="200">
           <template slot-scope="scope">
-            <span>{{ filtersType(scope.row.amendSize) }}</span>
+            <el-tag type="success">{{ scope.row.towerMark }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="amendCloudUrl" label="地址">
+        <el-table-column prop="amendCloudUrl" label="Pnts文件地址">
+          <!-- danger -->
           <template slot-scope="scope">
             <el-tag
-              :type="'info'"
+            :type=" scope.row.amendCloudUrl ? 'info' :'danger'"
               effect="plain"
               :hit="true"
               style="cursor: pointer;"
               @click="copy(scope.row.amendCloudUrl,scope.row.id)"
             >
-              {{ scope.row.amendCloudUrl }}
+              {{  }}
               <i v-if="scope.row.copy " class="el-icon-finished" />
               <i v-else class="el-icon-document" />
-              <!-- <i :class="scope.row.active ? 'el-icon-finished' : 'el-icon-document'" /> -->
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="webUrl" label="Web文件地址">
+          <!-- danger -->
+          <template slot-scope="scope">
+            <el-tag
+              :type=" scope.row.webUrl ? 'info' :'danger'"
+              effect="plain"
+              :hit="true"
+              style="cursor: pointer;"
+              @click="copy(scope.row.webUrl,scope.row.id)"
+            >
+              {{  }}
+              <i v-if="scope.row.copy " class="el-icon-finished" />
+              <i v-else class="el-icon-document" />
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="150">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="previewPointCloud(scope.row)">查看</el-button>
-            <el-button type="text" size="small" @click="previewWebCloud(scope.row)">web查看</el-button>
+            <el-button type="text" size="small" :disabled="!scope.row.amendCloudUrl" @click="previewPointCloud(scope.row)" >查看</el-button>
+            <el-button type="text" size="small" :disabled="!scope.row.webUrl" @click="previewWebCloud(scope.row)">web查看</el-button>
             <el-button type="text" size="small" @click="openupadte(scope.row)">编辑</el-button>
+            <el-button type="text" size="small" @click="beforeDelect(scope.row,'/media/cloud/delect')">删除</el-button>
             <!-- <el-button type="text" size="small" @click="openfull(scope.row)">web查看</el-button> -->
           </template>
         </el-table-column>
@@ -119,7 +136,7 @@ export default {
                 amendCloudUrl: ''
             },
             title: 'web上传',
-            reqData: { fileType: 'cloud',id: 0, reqUrl: 'efapi/pointcloud/media/cloud/uploadwebcloud', title: 'web上传' },
+            reqData: { fileType: 'cloud', id: 0, reqUrl: 'efapi/pointcloud/media/cloud/uploadwebcloud', title: 'web上传' },
             reqUrl: '/media/cloud/querylist',
             //分页
             currentPage: 1,
@@ -143,6 +160,24 @@ export default {
     activated() { },
     //方法集合
     methods: {
+        beforeDelect(row, url) {
+            try {
+                this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    const prams = { id: row.id, url: row.amendCloudUrl, url2: row.webUrl }
+                    this.delete(prams, url)
+                })
+            } catch (err) {
+                this.$message({
+                    message: '操作失败c',
+                    type: 'warning',
+                    duration: 1000
+                })
+            }
+        },
         openupadte(row) {
             this.Urldialog = true;
             this.form = {

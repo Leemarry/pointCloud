@@ -144,7 +144,6 @@ export default {
         async fetchAndExtractZipContent(url) {
             try {
                 const response = await fetch(url);
-                console.log('response', response);
 
                 if (response.status === 200) {
                     const arrayBuffer = await response.arrayBuffer();

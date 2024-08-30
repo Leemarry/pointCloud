@@ -115,8 +115,72 @@ export default {
             })
         },
         // #endregion
+        handleSelectionChange(val) {
+            this.multipleSelection = val;
+        },
+        async  delectChecked(url) {
+            const ids = this.multipleSelection.map(item => {
+                return item.id
+            })
+            try {
+                this.mixinsLoading = true;
+                const formData = new FormData();
+                formData.append('ids', ids);
+                const reqData = {
+                    formdata: formData, url: url
+                }
+
+                const res = await this.$store.dispatch('media/delectPhotos', reqData)
+                const { code, message, data } = res;
+                if (code > 0) {
+                    // 使用 filter 方法过滤出不在 idsToRemove 中的数据
+                    // this.tableData = this.tableData.filter(item =>!data.includes(item.id));
+                    const newData = this.tableData.filter(item => !data.includes(item.id));
+                    // 更新响应式数组
+                    this.tableData.splice(0, this.tableData.length, ...newData);
+                } else {
+                    this.$message.error(message);
+                }
+            } catch (err) {
+                this.showToast(err, 'error');
+            } finally {
+                this.mixinsLoading = false;
+            }
+        },
         // 查询
         // #region ---------------------------------------------------   查询信息   ---------------------------------------------------
+
+        async delete(parmas, reqUrl) {
+            this.mixinsLoading = true
+            try {
+                const formdata = new FormData()
+                formdata.append('id', parmas.id)
+                formdata.append('url', parmas.url)
+                formdata.append('url2', parmas.url2)
+                const reqData = {
+                    url: reqUrl, formdata
+                }
+                const response = await this.$store.dispatch('media/deleteMdia', reqData)
+                const { message, code } = response
+                if (code === 1) {
+                    const index = this.tableData.findIndex(item => item.id === parmas.id)
+                    this.tableData.splice(index, 1)
+                } else {
+                    this.$message({
+                        message: message,
+                        type: 'error'
+                    })
+                }
+            } catch (err) {
+                this.$message({
+                    message: '操作失败',
+                    type: 'warning',
+                    duration: 1000
+                })
+            } finally {
+                this.mixinsLoading = false
+            }
+        },
         /**查询无人机信息 */
         async queryAllUavsByMix() {
             let uavArray = []; // 在try块之外定义uavArray

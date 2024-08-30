@@ -3,8 +3,8 @@
   <div v-loading="mixinsLoading" element-loading-background="rgba(0, 0, 0, 0.3)" class="media">
     <div class="media-top">
       <el-form :inline="true" :rules="rules" :model="formInline" class="demo-form-inline">
-        <el-form-item label="杆塔数目">
-          <el-input v-model="formInline.total" placeholder="杆塔数目" disabled class="custom-input" />
+        <el-form-item label="杆线数目">
+          <el-input v-model="tableData.length" placeholder="杆塔数目" disabled class="custom-input" />
         </el-form-item>
         <el-form-item label="杆线描述" prop="mark">
           <el-input v-model="formInline.mark" placeholder="塔线编号详情..." />
@@ -20,24 +20,24 @@
         </el-form-item>
       </el-form>
       <div>
-        <el-button type="primary" @click="queryTowerlist()">查询</el-button>
+        <el-button type="primary" @click="queryTowerLinelist()">查询</el-button>
         <el-dropdown split-button type="primary" style="margin-left: 5px;" @click="addTowers(reqData)">
           {{ title }}
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item @click.native="operationType('手动新增',{ operation: 'hand' , id : 0, reqUrl:'/business/hand/addOrupdateLine' })">手动新增</el-dropdown-item>
-            <el-dropdown-item @click.native="operationType('批量导入',{ operation: 'batch' , id : 1, reqUrl:'/business/batch/batchInsertLine' })">批量导入</el-dropdown-item>
+            <el-dropdown-item @click.native="operationType('批量导入',{ operation: 'batch' , id : 1, reqUrl:'/business/batch/batchInsertToweLine' })">批量导入</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
     </div>
     <div class="media-container">
       <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" stripe height="100%" style="width: 100%">
-        <el-table-column prop="createTime" label="日期" width="155">
+        <el-table-column prop="createTime" label="日期">
           <template slot-scope="scope">
             <span size="medium">{{ parseTime(scope.row.createTime ) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="mark" width="135">
+        <el-table-column prop="mark" width="115">
           <template slot="header">
             <span>塔线编号</span>
           </template>
@@ -45,19 +45,9 @@
             <el-tag size="medium">{{ scope.row.mark }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="startTowerMark" label="起始杆塔编号" width="80">
-          <template slot-scope="scope">
-            <span>{{scope.row.startTowerMark}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="endTowerMark" label="末杆塔编号" width="80">
-          <template slot-scope="scope">
-            <span>{{scope.row.endTowerMark}}</span>
-          </template>
-        </el-table-column>
         <el-table-column prop="lineLength" label="塔线长度">
           <template slot-scope="scope">
-            <span>{{scope.row.lineLength}}</span>
+            <span>{{ scope.row.lineLength }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="des" label="备注">
@@ -67,7 +57,31 @@
         </el-table-column>
         <el-table-column prop="lastpath" label="图片详情">
           <template slot-scope="scope">
-            <el-image style="width: 100px; height: 100px" :src="scope.row.lastpath" fit="fit" />
+            <el-image style="width: 100px; height: 100px" :src="scope.row.lastpath" fit="fit" @click="beforeView(scope.row.urlList)">
+              <div slot="placeholder" class="image-slot">
+                加载中<span class="dot">...</span>
+              </div>
+            </el-image>
+          </template>
+        </el-table-column>
+        <el-table-column prop="startTowerMark" label="起始塔编号" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.startTowerMark }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="startUrl" label="图片详情">
+          <template slot-scope="scope">
+            <el-image style="width: 100px; height: 100px;cursor: pointer;" :src="scope.row.startUrl" fit="fit" @click="beforeView(scope.row.startUrlList)" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="endTowerMark" label="末杆塔编号" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.endTowerMark }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="endUrl" label="图片详情">
+          <template slot-scope="scope">
+            <el-image style="width: 100px; height: 100px" :src="scope.row.endUrl" fit="fit" @click="beforeView(scope.row.endUrlList)" />
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="130">

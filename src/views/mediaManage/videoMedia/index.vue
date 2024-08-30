@@ -28,16 +28,20 @@
       </div>
     </div>
     <div class="media-container">
-      <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" stripe style="width: 100%">
+      <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" stripe style="width: 100%" @selection-change="handleSelectionChange">
+        <el-table-column
+          type="selection"
+          width="55"
+        />
         <el-table-column prop="date" label="日期" width="180">
           <template slot-scope="scope">
             <span size="medium">{{ parseTime(scope.row.createTime ) }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="mark" label="文件名" width="180" />
-        <el-table-column prop="fileType" label="类型">
+        <el-table-column prop="towerMark" label="杆塔编号" width="200">
           <template slot-scope="scope">
-            <span size="medium">{{ getFileType('video',scope.row.type ) }}</span>
+            <el-tag type="success">{{ scope.row.towerMark }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="size" label="大小">
@@ -45,11 +49,20 @@
             <span size="medium">{{ filtersType(scope.row.size) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="path" label="地址" />
-        <el-table-column fixed="right" label="操作" width="100">
+        <el-table-column prop="path" label="地址">
+          <template slot-scope="scope">
+            <video :src="scope.row.path" style="height: 80px;" />
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作">
+          <template slot="header" slot-scope="scope">
+            <span v-if="multipleSelection.length==0">操作</span>
+            <el-tag v-else size="small" @click="delectChecked('/media/video/delects')">删除选中</el-tag>
+          </template>
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="beforeView(scope.row.id,scope.row.path,scope.row.formats)">查看</el-button>
-            <el-button type="text" size="small" @click="downloadVideo(scope.row)">下载</el-button>
+            <el-button v-if="!scope.row.downLoadProgress" type="text" size="small" @click="downloadVideo(scope.row)">下载</el-button>
+            <el-button v-else type="text" size="small" @click="downloadVideo(scope.row)">{{ scope.row.downLoadProgress >= 99 ? '已下载':`${Number(scope.row.downLoadProgress).toFixed(1)}下载中。。` }}</el-button>
           </template>
         </el-table-column>
       </el-table>

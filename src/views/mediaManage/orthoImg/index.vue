@@ -39,11 +39,27 @@
             {{ parseTime(scope.row.createTime) }}
           </template>
         </el-table-column>
-        <el-table-column prop="mark" label="标注名" width="120" />
+        <el-table-column prop="mark" label="标注名" width="220" />
         <el-table-column prop="formats" label="类型" />
         <el-table-column prop="lat" label="经纬度">
           <template slot-scope="scope">
             <span>{{ scope.row.lat }} , {{ scope.row.lon }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="mapPath" label="正射文件地址">
+          <!-- danger -->
+          <template slot-scope="scope">
+            <el-tag
+              :type=" scope.row.mapPath ? 'info' :'danger'"
+              effect="plain"
+              :hit="true"
+              style="cursor: pointer;"
+              @click="copy(scope.row.mapPath,scope.row.id)"
+            >
+              {{  }}
+              <i v-if="scope.row.copy " class="el-icon-finished" />
+              <i v-else class="el-icon-document" />
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="towerMark" label="杆塔编号" width="200">
@@ -55,6 +71,7 @@
           <template slot-scope="scope">
             <!-- <el-button type="text" size="small" @click="beforeView(scope.row.id,scope.row.path,scope.row.formats)">查看</el-button> -->
             <el-button type="text" size="small" @click="previewPointCloud(scope.row)">查看</el-button>
+            <el-button type="text" size="small" @click="beforeDelect(scope.row,'/media/orthoimg/delect')">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -147,7 +164,49 @@ export default {
                 this.windows[windowName].focus();
             }
         },
+        copy(textToCopy, id) {
+            console.log(textToCopy);
+            const self = this;
+            if (!navigator.clipboard) {
+                console.error('Clipboard API not supported');
+                // 如通过创建一个临时的 <textarea> 元素，将其设置为只读并设置为选中状态，然后使用 document.execCommand('copy')
+                this.copyTextToClipboard(textToCopy)
+                const index = self.tableData.findIndex(item => item.id === id);
+                if (index >= 0) {
+                    self.tableData[index].copy = true;
+                }
+                return;
+            }
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const index = self.tableData.findIndex(item => item.id === id);
+                console.log('文本已复制到剪贴板', index);
+                if (index >= 0) {
+                // self.tableData[index].copy = true;
+                    this.$set(this.tableData[index], 'copy', true);
+                }
+            }).catch(function(err) {
+                console.error('复制失败: ', err);
+            });
+        },
         // #region ------------------------------------------------------------- 查询 ----------------------------------------------------
+        beforeDelect(row, url) {
+            try {
+                this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    const prams = { id: row.id, url: row.mapPath, url2: undefined }
+                    this.delete(prams, url)
+                })
+            } catch (err) {
+                this.$message({
+                    message: '操作失败',
+                    type: 'warning',
+                    duration: 1000
+                })
+            }
+        },
         // #endregion
 
         // #region ---------------------------------------------------------- 打开新标签页 ---------------------------------------------------

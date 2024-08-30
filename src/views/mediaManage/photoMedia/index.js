@@ -49,36 +49,6 @@ export default {
     activated() { },
     //方法集合
     methods: {
-        handleSelectionChange(val) {
-            this.multipleSelection = val;
-            console.log('multipleSelection', val);
-        },
-        async  delectChecked() {
-            const ids = this.multipleSelection.map(item => {
-                return item.id
-            })
-            try {
-                this.mixinsLoading = true;
-                const formData = new FormData();
-                formData.append('ids', ids);
-
-                const res = await this.$store.dispatch('media/delectPhotos', formData)
-                const { code, message, data } = res;
-                if (code > 0) {
-                    // 使用 filter 方法过滤出不在 idsToRemove 中的数据
-                    // this.tableData = this.tableData.filter(item =>!data.includes(item.id));
-                    const newData = this.tableData.filter(item =>!data.includes(item.id));
-                    // 更新响应式数组
-                    this.tableData.splice(0, this.tableData.length,...newData);
-                } else {
-                    this.$message.error(message);
-                }
-            } catch (err) {
-                this.showToast(err, 'error');
-            } finally {
-                this.mixinsLoading = false;
-            }
-        },
         uploadFiles(item, index) {
             const windowName = 'uploadWindow-' + item.fileType; // 设定窗口名称
             if (!this.windows[windowName] || this.windows[windowName].closed) {
@@ -100,6 +70,58 @@ export default {
         },
         openUploadDialog() {
             this.dialogVisible = true;
+        },
+        async downloadVideo(row, index) {
+            const url = row.path;
+            if (!url) {
+                this.showToast('请选择图片路径异常');
+                return false;
+            }
+            const lastIndex = url.lastIndexOf('/');
+            let fileName = 'text.JPG';
+            if (lastIndex !== -1) {
+                fileName = url.substring(lastIndex + 1);
+            }
+            console.log('downloadVideo', row);
+            const response = await this.xhrToDownload(url, {}, (progress) => {
+                // console.log('progress', progress);
+                this.tableData[index].downLoadProgress = progress
+            }, (response) => {}, (err) => { console.log(err); }
+            )
+            if (response.status !== 200) {
+                this.$message.error('下载失败');
+            }
+            const a = document.createElement('a');
+            const blodUrl = URL.createObjectURL(response.data);
+            a.href = blodUrl;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(blodUrl)
+            document.body.removeChild(a);
+        },
+        xhrToDownload(url, options, onProgress, onSuccess, onError) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.responseType = 'blob';
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        // onSuccess && onSuccess({ status: xhr.status, data: xhr.response });
+                        resolve({ status: xhr.status, data: xhr.response });
+                    }
+                }
+                xhr.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        const progress = (e.loaded / e.total) * 100;
+                        onProgress && onProgress(progress);
+                    }
+                }
+                xhr.send()
+            }).catch(err => {
+                // onError && onError({sta});
+                return Promise.reject({ status: 400, data: err });
+            });
         },
         async downimgbyAxios(row, name = Date.now()) {
             const url = row.path;
@@ -162,11 +184,6 @@ export default {
             };
 
             xhr.send();
-            // this.$store.dispatch('media/downimg').then(res => {
-
-            // }).catch(error => {
-            //     console.log('sss', error);
-            // })
         },
 
         // #region ---------------------------------------------------  图片预览 ---------------------------------------------------

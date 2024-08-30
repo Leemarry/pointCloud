@@ -13,19 +13,48 @@
 
 import request from '@/utils/request'
 import axios from 'axios'
+import { data } from 'jquery'
 // axios 重新点击取消上一次请求  // 取消重复请求  // 取消路由跳转所有请求
 const { CancelToken } = axios
 const cancel = ''
 
-
-export function delectPhotos(formdata) {
+export function queryDistanceWithDis(formdata) {
     return request({
-        url: '/media/photos/delect',
+        url: '/media/photo/distance',
         method: 'post',
         data: formdata,
         timeout: 30000 // 设置超时时间为30秒
     })
 }
+
+export function delectPhotos(data) {
+    const { url, formdata } = data
+    return request({
+        url,
+        method: 'post',
+        data: formdata,
+        timeout: 30000 // 设置超时时间为30秒
+    })
+}
+export function delectVideos(formdata) {
+    return request({
+        url: '/media/video/delects',
+        method: 'post',
+        data: formdata,
+        timeout: 30000 // 设置超时时间为30秒
+    })
+}
+
+export function deleteMdia(data) {
+    const { url, formdata } = data
+    return request({
+        url,
+        method: 'post',
+        data: formdata,
+        timeout: 30000 // 设置超时时间为30秒
+    })
+}
+
 export function queryPhotolist(formdata) {
     return request({
         url: '/media/photo/querylist',
@@ -78,6 +107,7 @@ export function downimg(formdata) {
 
 export function miniodownload(data) {
     const { url, self } = data
+    console.log(data);
     return request({
         url,
         method: 'get',

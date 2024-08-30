@@ -66,6 +66,30 @@ module.exports = {
                     '^/resourceminio': '/efapi/pointcloud/resourceminio'
                 }
             },
+            // mapsource/satellite/{z}/{x}/{y}.jpg
+            // http://127.0.0.1:456/static/satellite/{z}/{x}/{y}.jpg
+            '/mapsource': {
+                target: 'http://localhost:456',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/mapsource': '/mapsource'
+                }
+
+            },
+            'miniosource': {
+                target: 'http://127.0.0.1:9090', // 'http://localhost:9090',
+                changeOrigin: true,
+                logLevel: 'debug',
+                pathRewrite: {
+                    '^/miniosource': ''
+                },
+                onProxyRes(proxyRes, req, res) {
+                    const realUrl = 'http://localhost:9090' + req.url || ''; // 真实请求网址
+                    console.log(realUrl); // 在终端显示
+                    proxyRes.headers['A-Real-Url'] = realUrl; // 添加响应标头(A-Real-Url为自定义命名)，在浏览器中显示
+                }
+            },
+            // miniosource
             /**代理查询天气  */
             '/queryWeather': {
                 target: 'https://api.seniverse.com',
@@ -158,14 +182,6 @@ module.exports = {
                 logLevel: 'debug',
                 pathRewrite: {
                     '^/efuavword': 'http://www.efuav.vip:29000/efuavword'
-                }
-            },
-            '/mapresource': {
-                target: process.env.HOST_URL,
-                changeOrigin: true,
-                logLevel: 'debug',
-                pathRewrite: {
-                    '^/mapresource': '/efapi/pvinspect/mapresource'
                 }
             },
             '/websocketapi': {

@@ -13,6 +13,13 @@ export function queryKmzlist(formdata) {
         data: formdata
     })
 }
+export function queryKmzInfo(formdata) {
+    return request({
+        url: '/route/kmz/querylistByTime',
+        method: 'post',
+        data: formdata
+    })
+}
 export function uploadKmz(formdata) {
     return request({
         url: '/route/kmz/upload',

@@ -1,3 +1,9 @@
+/*
+ * @Date: 2024-07-16 09:54:49
+ * @LastEditors: likai 2806699104@qq.com
+ * @FilePath: \pointCouldPages\src\views\main\index.js
+ * @Description: Do not edit
+ */
 import { mapGetters } from 'vuex'
 import videoPlayer from '../components/videoPlayer.vue'
 import parmItem from '../components/parmItem.vue'
@@ -295,10 +301,10 @@ export default {
         // this.handleResize()
         this.init();
         // this.startDataCheckTimer(); // 在组件被挂载后启动检查数据定时器
-        const CesiumMap = this.$refs.CesiumMap;
-        if (CesiumMap) {
-            this.$refs.CesiumMap.handleOperation();
-        }
+        // const CesiumMap = this.$refs.CesiumMap;
+        // if (CesiumMap) {
+        //     this.$refs.CesiumMap.handleOperation();
+        // }
     },
     // created() {},
     beforeDestroy() {
@@ -320,8 +326,6 @@ export default {
     },
     methods: {
         reElement() {
-            console.log('this.$refs.opp', this.$refs.opp);
-
             this.$refs.opp.removeAttribute('v-op');
         },
         //#region  -----------------------------------------------worker------------------------------------------------------------
@@ -370,7 +374,7 @@ export default {
             this.logo = null;
             // this.queryAllUavs()
             // this.SelectTime(this.isActive) // 出现航线h怄气改
-            // this.ChoiseTimeEvent()
+            this.ChoiseKmzTimeEvent()
         },
         // #region --------------------------------------------------------- 后台交互 发送http请求---------------------------------------------------------
         /**退出 */
@@ -462,7 +466,8 @@ export default {
             const choiseTime = getTimeRangeByKey(val);
             this.currentIndex = null;
             this.currentTask = {};
-            this.ChoiseTimeEvent(choiseTime)
+            console.log('choiseTime0', choiseTime, new Date(choiseTime[0]));
+            this.ChoiseKmzTimeEvent(choiseTime)
             this.isActive = val
         },
         /**编辑历史航线信息 */
@@ -1070,7 +1075,7 @@ export default {
                 this.tasksLoading = true
                 this.tasksRoutes = [];
                 // 时间戳大1000倍
-                const startTime = choiseTime && choiseTime[0] ? new Date(choiseTime[0]).getTime() : (Date.now() - 30 * 24 * 60 * 60 * 1000); //   console.log(startTime);
+                const startTime = choiseTime && choiseTime[0] ? new Date(choiseTime[0]).getTime() : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); //   console.log(startTime);
                 const endTime = choiseTime && choiseTime[1] ? new Date(choiseTime[1]).getTime() : Date.now();
                 const formdata = new FormData();
                 formdata.append('startTime', startTime);

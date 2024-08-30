@@ -335,7 +335,7 @@ export function uploadFile21(file, filesList, url) {
             }
         }
         // 发送请求
-        xhr.open('POST', url); //efapi/pointcloud/media/photo/upload 'efapi/pointcloud/media/photo/upload8'
+        xhr.open('POST', url);
         xhr.setRequestHeader('token', getToken());
         xhr.send(formData);
     });
@@ -430,7 +430,7 @@ export async function concurRequestfiles(files, uploadFilesList, url, maxNum = 2
     // 执行前时间
     console.time('fileMD5s')
     // const { overallMD5, fileMD5s } = await calculateHash5(files);
-    const overallMD5 =  files.length
+    const overallMD5 = files.length
 
     // console.log('md5', overallMD5);
     // console.log('fileMD5s', fileMD5s);

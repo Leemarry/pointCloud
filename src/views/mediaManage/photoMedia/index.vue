@@ -64,12 +64,14 @@
         <el-table-column fixed="right" label="操作" width="130">
           <template slot="header" slot-scope="scope">
             <span v-if="multipleSelection.length==0">操作</span>
-            <el-tag v-else size="small" @click="delectChecked()">删除选中</el-tag>
+            <el-tag v-else size="small" @click="delectChecked('/media/photo/delects')">删除选中</el-tag>
           </template>
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="beforeView(scope.row)">查看</el-button>
-            <el-button v-if="!scope.row.downLoadProgress" type="text" size="small" @click="downimgbyAxios(scope.row)">下载</el-button>
-            <el-button v-else type="text" size="small">{{ scope.row.downLoadProgress >= 99 ? '已下载':`${Number(scope.row.downLoadProgress).toFixed(1)}下载中。。` }}</el-button>
+            <el-button v-if="!scope.row.downLoadProgress" type="text" size="small" @click="downloadVideo(scope.row,scope.$index)">下载</el-button>
+            <el-button v-else type="text" size="small" @click="downloadVideo(scope.row,scope.$index)">{{ scope.row.downLoadProgress >= 99 ? '已下载':`${Number(scope.row.downLoadProgress).toFixed(1)}下载中。。` }}</el-button>
+            <!-- <el-button v-if="!scope.row.downLoadProgress" type="text" size="small" @click="downimgbyAxios(scope.row)">下载</el-button>
+            <el-button v-else type="text" size="small">{{ scope.row.downLoadProgress >= 99 ? '已下载':`${Number(scope.row.downLoadProgress).toFixed(1)}下载中。。` }}</el-button> -->
           </template>
         </el-table-column>
       </el-table>

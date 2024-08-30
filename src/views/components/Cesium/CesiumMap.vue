@@ -29,6 +29,7 @@
 import CesiumDraw from './cesiumDrawViewer.vue';
 import { mapGetters } from 'vuex';
 import { calculateSquareCoordinates } from '@/views/core/Geo'
+import AMapImageryProvider from '@/views/core/provider/AMapImageryProvider'
 let imagelayer;
 export default {
     name: 'CesiumMap',
@@ -170,8 +171,6 @@ export default {
 
         this.CreateCesium();
         // this.addimageryLayers(this.MapProvider);
-
-        console.log('子组件');
     },
     beforeCreate() { }, //生命周期 - 创建之前
     beforeMount() { }, //生命周期 - 挂载之前
@@ -186,10 +185,12 @@ export default {
     //方法集合
     methods: {
         /**获取坐标信息 */
-        getCoordinates() {
+        getCoordinates(viewer) {
+            console.log('注册屏幕点击事件');
             // 注册屏幕点击事件
             var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-            // 监听鼠标点击事件
+            let timeout;
+            const self = this;
             handler.setInputAction(function(click) {
                 var ellipsoid = viewer.scene.globe.ellipsoid;
                 var cartesian = viewer.camera.pickEllipsoid(click.position, ellipsoid);
@@ -198,8 +199,15 @@ export default {
                     var cartographic = ellipsoid.cartesianToCartographic(cartesian);
                     var longitude = Cesium.Math.toDegrees(cartographic.longitude);
                     var latitude = Cesium.Math.toDegrees(cartographic.latitude);
-
-                    console.log('注册地图点击事件', '经度：', longitude, '，纬度：', latitude);
+                    // 如果存在定时器，则清除它
+                    if (timeout) {
+                        clearTimeout(timeout);
+                    }
+                    // 设置新的定时器
+                    timeout = setTimeout(() => {
+                        console.log('注册地图点击事件', '经度：', longitude, '，纬度：', latitude);
+                        self.$emit('getClickPoint', longitude, latitude)
+                    }, 300); // 300 毫秒后执行，可根据实际情况调整这个时间
                 }
             }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
         },
@@ -264,7 +272,21 @@ export default {
         CreateCesium() {
             if (window.viewer) {
                 window.viewer.destroy();
-            } // 初始时，判断视口是否存在
+            }// 初始时，判断视口是否存在
+
+            const serviceURL = 'mapsource/satellite/{z}/{x}/{y}.jpg' //http://127.0.0.1:456/static/satellite/{z}/{x}/{y}.jpg'
+            // 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=' +
+            // '1' +
+            // '&style=' +
+            // '6';
+            const options = {
+                url: serviceURL,
+                crs: 'WGS84' // 使用84坐标系
+            };
+                //按自己实际路径修改
+                // const tip = require('../transfer/amap/AmapImageryProvider')
+            const provider = new AMapImageryProvider(options);
+            // window.viewer.imageryLayers.addImageryProvider(provider)
             Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjNzRiNzNkYS0zZTRmLTRhOTMtODFlNS0zOWFhN2FmYzZmYjkiLCJpZCI6MTUyMTEwLCJpYXQiOjE2ODg2OTYyMDl9.sWkoSUmLFPfbMTMFgAZeQKjBQERg-TZPBBtIN34sDNQ'; //密钥 否则页面提示
             // 将窗口设置为cesiumshiko
             window.viewer = new Cesium.Viewer('cesiumContainer', {
@@ -289,17 +311,7 @@ export default {
                 //     url: "http://data.mars3d.cn/terrain",
                 //     show:false,
                 // })
-                imageryProvider: new Cesium.UrlTemplateImageryProvider({
-                    // Satellite
-                    url: 'http://127.0.0.1:9090/efuav-image/hubeijux/Satellite/{z}/{x}/{y}.png', // ok 不能删
-                    //   url: 'http://127.0.0.1:9090/efuav-ortho-img/900/900/map/{z}/{x}/{y}.png'  // 黄冈
-                    // url: 'http://127.0.0.1:456/static/satellite/{z}/{x}/{y}.jpg', // 456 http://localhost:456/static/satellite
-                    // url: 'http://127.0.0.1:9090/efuav-image/csch/tiles/{z}/{x}/{y}.jpg' // cs
-
-                    minimumLevel: 3,
-                    maximumLevel: 18
-                    // tilingScheme: new AmapMercatorTilingScheme(), //坐标矫正
-                })
+                imageryProvider: provider
             });
 
             window.viewer.cesiumWidget.creditContainer.style.display = 'none'; // 去除logo
@@ -316,15 +328,6 @@ export default {
             //           // style : 'raster',
             //       },
             //   });
-            //   // 图层添加
-            //   viewer.imageryLayers.addImageryProvider(imageryProvider);
-            // viewer.scene.camera.flyTo({
-            //     destination: Cesium.Cartesian3.fromDegrees(
-            //         112.2667,
-            //         31.01892,
-            //         1000
-            //     ),
-            // });
             // // 是否支持图像渲染像素化处理
             // if (Cesium.FeatureDetection.supportsImageRenderingPixelated()) {
             //     window.viewer.resolutionScale = window.devicePixelRatio
@@ -334,26 +337,22 @@ export default {
             // window.viewer.scene.postProcessStages.fxaa.enabled = true;
 
             this.viewer = window.viewer;
+            console.log('注册屏幕点击事件222');
+            this.getCoordinates(window.viewer)
 
             // this.reloadLoadProgress(); //加载进度
-
             // var helper = new Cesium.EventHelper();
             // helper.add(
             //     this.viewer.scene.globe.tileLoadProgressEvent,
-            //     function (e) {
-            //         console.log("每次加载地图服务矢量切片都会进入这个回调", e);
-            //         if (e == 0) {
-            //             console.log("矢量切片加载完成时的回调");
+            //     function(e) {
+            //         console.log('每次加载地图服务矢量切片都会进入这个回调', e);
+            //         if (e === 0) {
+            //             console.log('矢量切片加载完成时的回调');
             //             // that.loading = false; //关闭加载动画
             //             // 懒加载
-
             //         }
             //     }
             // );
-
-            //         viewer.scene.globe.tilesLoaded.addEventListener(() => {
-            //             console.log("cesium加载上了");
-            //   });
         },
         reloadLoadProgress(viewer = window.viewer) {
             var helper = new Cesium.EventHelper();
@@ -699,6 +698,84 @@ export default {
                 this.updateMapCenter(113.36887409647213, 23.155143504551752, 400.05766199658808, 0, -90);
             }
         },
+        async drawLines2(PositionsList) {
+            // eslint-disable-next-line new-cap
+            const startColor = new Cesium.Color.fromCssColorString('#009DFF').withAlpha(0.3) // #9EE8E7
+            // eslint-disable-next-line new-cap
+            const endColor = new Cesium.Color.fromCssColorString('#9EE8E7').withAlpha(0.3)
+            // eslint-disable-next-line new-cap
+            const lineColor = new Cesium.Color.fromCssColorString('#E6E6E6').withAlpha(0.3) // #9EE8E7
+            const viewer = window.viewer;
+            if (PositionsList.length > 0) {
+                // 设置默认相机视角
+                viewer.camera.setView({
+                    destination: Cesium.Cartesian3.fromDegrees(PositionsList[0].longitude, PositionsList[0].latitude, 500),
+                    // 方向，俯视和仰视的视角
+                    orientation: {
+                        heading: Cesium.Math.toRadians(0), // 设置偏航角度（单位：弧度）
+                        pitch: Cesium.Math.toRadians(-90), // 设置俯仰角度（单位：弧度）
+                        roll: Cesium.Math.toRadians(0) // 设置横滚角度（单位：弧度）
+                    }
+                });
+            }
+
+            this.clearAllPointAndLine(); // 清除
+            // 定义航点数组
+            var waypoints = [];
+            // 用于存储实体的 map
+            var entityMap = new Map();
+
+            // 添加航点
+            window.viewer.scene.globe.depthTestAgainstTerrain = false;
+            for (let i = 0; i < PositionsList.length; i++) {
+                const currentCorlor = i === 0 ? startColor : endColor; //Cesium.Color.YELLOW;
+                var Position = PositionsList[i];
+                var longitude = Position.longitude;
+                var latitude = Position.latitude;
+                var height = 10;
+                var altitude = height; // 指定航点的高度
+                var newPosition = Cesium.Cartesian3.fromDegrees(
+                    longitude,
+                    latitude,
+                    altitude
+                );
+                var pointEntity = new Cesium.Entity({
+                    position: newPosition,
+                    label: {
+                        font: '16px sans-serif',
+                        // text: "航点",
+                        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                        pixelOffset: new Cesium.Cartesian2(0, -10)
+                    },
+                    id: 'storePoint' + i,
+                    point: {
+                        color: currentCorlor,
+                        pixelSize: 10
+                    }
+                });
+
+                window.viewer.entities.add(pointEntity);
+                waypoints.push(newPosition);
+
+                // 将实体添加到 map 中
+                entityMap.set(pointEntity.id, pointEntity);
+            }
+            // 添加航线
+            var redLine = viewer.entities.add({
+                id: 'storePolyline',
+                name: '绘制上传的航线',
+                polyline: {
+                    positions: waypoints,
+                    width: 3,
+                    material: lineColor, //  Cesium.Color.RED,
+                    granularity: 0.03
+                }
+            });
+            // 将航线实体添加到 map 中
+            entityMap.set(redLine.id, redLine);
+            viewer.scene.requestRender();
+        },
         /**
          * @name:
          * @msg: 绘制航线-- 用于主页航线
@@ -787,15 +864,6 @@ export default {
 
             // 将航线实体添加到 map 中
             entityMap.set(redLine.id, redLine);
-
-            // 5 秒后修改第一个点的颜色为红色
-            // setTimeout(() => {
-            //     var firstPoint = viewer.entities.getById("storePoint0");
-            //     if (firstPoint) {
-            //         firstPoint.point.color = Cesium.Color.RED;
-            //     }
-            // }, 5000);
-
             viewer.scene.requestRender();
         },
         async drawPoints(PositionsList = this.geoCoordinates) {
@@ -1583,7 +1651,7 @@ export default {
 .cesiumOutdiv {
     // 引用注意外侧
     height:calc(100% - 6px) !important;
-    width: calc(100%)!important; 
+    width: calc(100%)!important;
     position: relative;
 }
 

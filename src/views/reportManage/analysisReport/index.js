@@ -1,6 +1,7 @@
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等!）
 //例如：import 《组件名称》 from '《组件路径》';
 import currencyMinins from '@/utils/currencyMinins'
+import { data } from 'jquery';
 export default {
     name: 'Reports',
     //import引入的组件需要注入到对象中才能使用
@@ -17,7 +18,8 @@ export default {
             reqUrl: '/media/reports/querylist',
             reportOptions,
             data: { fileType: 'peril_point_report', id: 0, reqUrl: 'efapi/pointcloud/media/peril_point_report/upload' },
-            title: '危险点分析报告'
+            title: '危险点分析报告',
+            multipleSelection: []
         };
     },
     //让组件接收外部传来的数据
@@ -39,6 +41,23 @@ export default {
             this.data = data;
         },
 
+        uploadFiles(item, index) {
+            const windowName = 'uploadWindow-' + item.fileType; // 设定窗口名称
+
+            if (!this.windows[windowName] || this.windows[windowName].closed) {
+                // 如果窗口存在并且关闭了就在this.windows中删除
+                if (this.windows[windowName]) {
+                    delete this.windows[windowName];
+                }
+                const existingWindow = window.open('', windowName);
+                const queryString = `?id=${item.id}&src=${encodeURIComponent(item.reqUrl)}&type=${encodeURIComponent(item.fileType)}&title=${encodeURIComponent('文档' + item.fileType)}`; //data=${encodeURIComponent(JSON.stringify(item))}
+                const url = '/uploadphoto' + queryString;
+                existingWindow.location.href = url; //'/uploadpage' + '?id=' + item.id + '&fileType=' + item.fileType;
+                this.windows[windowName] = existingWindow;
+            } else {
+                this.windows[windowName].focus();
+            }
+        },
         beforeView(row) {
             console.log('row', row);
             const windowName = 'windowName-' + row.mark;
@@ -63,91 +82,88 @@ export default {
             }
         },
 
-        downloadFile(row, index) {
-            console.log('下载文件', row.fileUrl, index);
-            // this.handleFetchClick()
-            this.download(row.fileUrl);
-            // var element = document.createElement('a');
-            // element.setAttribute('href', row.fileUrl);
-            // element.setAttribute('download', 'filename');
-            // element.style.display = 'none';
-            // document.body.appendChild(element);
-            // element.click();
-            // document.body.removeChild(element);
-            // URL.revokeObjectURL(blobUrl)
+        async downloadFile(row, index) {
+            const url = row.path
+            if (!url) {
+                this.$message.error('文件路径为空')
+            }
+            const lastIndex = url.lastIndexOf('/')
+            let fileName = 'text.docx'
+            if (lastIndex !== -1) {
+                fileName = url.substring(lastIndex + 1)
+            }
+            // 判断fileName 字符长度是否超过30
+            if (fileName.length > 30) {
+                fileName = Date.now() + fileName.substring(fileName.lastIndexOf('.'))
+            }
+
+            const response = await this.xhrToDowdload(url, (process) => {
+                if (index !== -1) {
+                    this.tableData[index].downLoadProgress = process
+                }
+            }, (res) => {}, (err) => { console.error('Download failed:', err) })
+
+            if (response.status !== 200) {
+                return this.$message.error('下载失败')
+            }
+            this.downloadFile2(response.data, fileName)
         },
-        download(url) {
-            fetch(url, {
-                responseType: 'blob' //重要代码
-            })
-                .then(res => {
-                    const contentType = res.headers['content-type'] || 'application/pdf';
-                    let filename = '使用说明文档.pdf'; // 默认文件名
-                    // 根据content-type进行判断
-                    if (contentType.includes('application/pdf')) {
-                        filename = '使用说明文档.pdf';
-                    } else if (contentType.includes('image/jpeg')) {
-                        filename = '图片.jpg';
-                    } else if (contentType.includes('image/png')) {
-                        filename = '图片.png';
+        xhrToDowdload(url, onProgress, onSuccess, onError) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.responseType = 'blob';
+                xhr.open('GET', url, true);
+                xhr.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        const process = Math.ceil(e.loaded / e.total * 100);
+                        onProgress && onProgress(process);
+                    }
+                }
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        // onSuccess && onSuccess({ status: xhr.status, data: xhr.response });
+                        resolve({ status: xhr.status, data: xhr.response });
                     } else {
-                        filename = Date.now() + '.unknown';
+                        // onError && onError({ status: xhr.status, data: xhr.response });
+                        reject({ status: xhr.status, data: xhr.response });
                     }
-                    console.log(filename);
-                    if (res.status === 200) {
-                        // 返回的.blob()为promise，然后生成了blob对象，此方法获得的blob对象包含了数据类型，十分方便
-                        console.log('response', res);
-                        // var contentType = res.headers.get('content-type');
-                        return res.blob();
-                    }
-                })
-                .then(blob => {
-                    console.log('blobUrl', blob);
-
-                    var element = document.createElement('a');
-                    const blobUrl = URL.createObjectURL(blob);
-                    element.setAttribute('href', blobUrl);
-                    element.setAttribute('download', 'filename');
-                    element.style.display = 'none';
-                    document.body.appendChild(element);
-                    element.click();
-                    document.body.removeChild(element);
-                    URL.revokeObjectURL(blobUrl);
-                })
-                .catch(error => console.log(error));
+                }
+                xhr.send()
+            }).catch(err => {
+                Promise.reject({ status: 400, data: err })
+            });
         },
-        handleFetchClick(signal = 1) {
-            var url = 'http://127.0.0.1:9090/ceshi/14.jpg'; //http://127.0.0.1:9090/ceshi/14.jpg PvReport.pdf
-            console.log('signal', signal);
-            fetch(url, {})
-                .then(response => {
-                    if (response.status === 200) {
-                        // 返回的.blob()为promise，然后生成了blob对象，此方法获得的blob对象包含了数据类型，十分方便
-                        console.log('response', response);
-                        var contentType = response.headers.get('content-type');
-                        console.log(contentType);
-                        return response.blob();
+        fetchToDowdload(url, options, onProgress, onSuccess, onError) {
+            // eslint-disable-next-line no-async-promise-executor
+            return new Promise(async(resolve, reject) => {
+                const response = await fetch(url, options)
+                const reader = response.body.getReader()
+                const contentLength = +response.headers.get('Content-Length')
+                let receivedLength = 0; // 当前接收到了这么多字节
+                const chunks = []
+                // eslint-disable-next-line no-constant-condition
+                while (true) {
+                    const { done, value } = await reader.read()
+                    if (done) {
+                        break;
                     }
-                })
-                .then(blob => {
-                    console.log('blobUrl', blob);
-
-                    var element = document.createElement('a');
-                    const blobUrl = URL.createObjectURL(blob);
-                    element.setAttribute('href', blobUrl);
-                    element.setAttribute('download', 'filename');
-                    element.style.display = 'none';
-                    document.body.appendChild(element);
-                    element.click();
-                    document.body.removeChild(element);
-                    URL.revokeObjectURL(blobUrl);
-                })
-                .catch(error => {
-                    console.warn(`Fetch 2 error: ${error.message}`);
-                });
-
-            // 等待 2 秒后取消请求
+                    chunks.push(value)
+                    receivedLength += value.length
+                    const process = Math.ceil(receivedLength / contentLength * 100)
+                    onProgress && onProgress(process)
+                }
+                const blob = new Blob(chunks)
+                console.log(blob);
+            })
         },
+        downloadFile2(blob, fileName) {
+            const a = document.createElement('a')
+            a.href = URL.createObjectURL(blob)
+            a.download = fileName
+            a.click()
+            URL.revokeObjectURL(blob)
+        },
+
         // #region ---------------------------------------------------  分页 ---------------------------------------------------
         //每页条数改变时触发 选择一页显示多少行
         handleSizeChange(val) {

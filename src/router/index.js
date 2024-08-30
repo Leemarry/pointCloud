@@ -124,13 +124,13 @@ export const constantRoutes = [
                 name: 'towerline',
                 component: () => import('@/views/businessMange/towerLineManage/index.vue'),
                 meta: { title: '杆线管理', icon: 'el-icon-picture' }
-            },
-            {
-                path: '/point',
-                name: 'point',
-                component: () => import('@/views/businessMange/dangerousPointManage/index.vue'),
-                meta: { title: '危险点管理', icon: 'el-icon-picture' }
             }
+            // {
+            //     path: '/point',
+            //     name: 'point',
+            //     component: () => import('@/views/businessMange/dangerousPointManage/index.vue'),
+            //     meta: { title: '危险点管理', icon: 'el-icon-picture' }
+            // }
 
         ]
     },
