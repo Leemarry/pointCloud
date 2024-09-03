@@ -1,7 +1,7 @@
 <!--
  * @Date: 2024-07-16 14:50:40
  * @LastEditors: likai 2806699104@qq.com
- * @FilePath: \pointCouldPages\src\views\mediaUpload\index.vue
+ * @FilePath: \pointCloud\src\views\mediaUpload\index.vue
  * @Description: Do not edit
 -->
 <!--  -->
@@ -12,7 +12,7 @@
     <!-- 文件上传Ui -->
     <div class="al-input">
       <div id="drop_zone">拖放文件到这里</div>
-      <input type="file" multiple :accept="accept" @change="handleFilerSelect">
+      <!-- <input type="file" multiple :accept="accept" @change="handleFilerSelect"> -->
       <input type="file" webkitdirectory directory multiple @change="handleFolderSelect">
       <!-- <button @click="sub()">确认删除</button> -->
     </div>
@@ -119,16 +119,66 @@ export default {
         document.getElementById('drop_zone').addEventListener('dragleave', function(e) {
             this.classList.remove('over'); // 移除视觉效果
         });
+//         document.getElementById('drop_zone').addEventListener('drop', async function(e) {  
+//     e.preventDefault(); // Prevent default handling (which is to open the file)  
+//     this.classList.remove('over'); // Remove visual effect  
+//     var items = e.dataTransfer.items; // Get the file list  
+//     const fileList = [];  
+
+//     const processEntry = async (entry) => {  
+//         return new Promise((resolve) => {  
+//             if (entry.isDirectory) {  
+//                 console.log('Dragging folder');  
+//                 const reader = entry.createReader();  
+//                 reader.readEntries(async (entries) => {  
+//                     if (entries.length > 0) {  
+//                         for (const subEntry of entries) {  
+//                             await processEntry(subEntry); // Recursively process sub-entries  
+//                         }  
+//                     }  
+//                     resolve(); // Resolve when all entries are processed  
+//                 });  
+//             } else {  
+//                 entry.file(file => {  
+//                     const folder = entry.fullPath || entry.name;  
+//                     const obj = { file, folder, name: file.name, progress: 0, status: 'uploading' };  
+//                     fileList.push(obj);  
+//                     console.log('file', file, entry);  
+//                     resolve(); // Resolve when the file is processed  
+//                 });  
+//             }  
+//         });  
+//     };  
+
+//     const promises = [];  
+//     for (const item of items) {  
+//         const entry = item.webkitGetAsEntry();  
+//         promises.push(processEntry(entry)); // Collect promises for each entry  
+//     }  
+
+//     await Promise.all(promises); // Wait for all entries to be processed  
+
+//     // Print the total number of files  
+//     console.log('Total number of files:', fileList.length);  
+
+//     // eslint-disable-next-line require-atomic-updates  
+//     // self.tempFilelist = [...self.tempFilelist, ...fileList];  
+//     // self.submitTask(fileList);  
+// });
 
         document.getElementById('drop_zone').addEventListener('drop', async function(e) {
             e.preventDefault(); // 阻止默认处理（默认处理是打开文件）
             this.classList.remove('over'); // 移除视觉效果
             var items = e.dataTransfer.items; // 获取文件列表
+            let arr = []
+
             const fileList = await self.getFilesFromDrops(items)
-            console.log('拖放文件', fileList);
-            // eslint-disable-next-line require-atomic-updates
+            console.log('拖放文件数', fileList.length);
+            // // eslint-disable-next-line require-atomic-updates
             self.tempFilelist = [...self.tempFilelist, ...fileList];
-            self.submitTask(fileList)
+            console.log('拖放文件数', self.tempFilelist[0]);
+            self.submitTask(fileList);  
+
         });
     },
     beforeCreate() { }, //生命周期 - 创建之前
@@ -143,57 +193,49 @@ export default {
         async  getFilesFromDrops(items) {
             const fileList = [];
             const self = this;
-            function processEntry(entry, folder) {
-                if (entry.isFile) {
-                    return new Promise((resolve, reject) => {
-                        entry.file((file) => {
-                            self.checkFileType(file, self.fileType)
-                                .then(() => {
-                                    // 如果文件类型正确，继续执行添加文件到列表的操作
-                                    const obj = { file, folder, name: file.name, progress: 0, status: 'uploading' };
-                                    fileList.push(obj);
-                                    resolve();
-                                })
-                                .catch((error) => {
-                                    // 如果文件类型不正确，则拒绝Promise
-                                    reject(error);
-                                });
-                            // const fileType = file.type;
-                            // console.log('fileType', fileType);
-                            // //fileType 含有 video
-                            // if (!fileType.includes(self.fileType)) {
-                            //     // 如果文件不是视频类型，则拒绝 Promise
-                            //     reject(new Error(`Incorrect-Type file found: ${file.name}`));
-                            // } else {
-                            //     // 添加文件到列表
-                            //     const obj = { file, folder, progress: 0, status: 'uploading' };
-                            //     fileList.push(obj);
-                            //     resolve();
-                            // }
-                        }, (error) => {
-                            // 处理读取文件时发生的错误
-                            reject(error);
-                        });
-                    });
-                } else if (entry.isDirectory) {
-                    const reader = entry.createReader();
-                    return new Promise((resolve, reject) => {
-                        reader.readEntries((entries) => {
-                            const folder = entry.fullPath || entry.name
-                            const subPromises = entries.map((subEntry) => processEntry(subEntry, folder));
-                            Promise.all(subPromises)
-                                .then(() => resolve())
-                                .catch((error) => {
-                                    reject(error)
-                                });
-                        }, (error) => {
-                            reject(error);
-                        });
-                    })
-                } else {
-                    return Promise.reject('不支持的文件类型');
-                }
-            }
+            function processEntry(entry, folder) {  
+    // console.log(`Processing entry: ${entry.name}, Type: ${entry.isFile ? 'File' : 'Directory'}`);  
+    if (entry.isFile) {  
+        return new Promise((resolve, reject) => {  
+            entry.file((file) => {  
+                // console.log(`File found: ${file.name}, Type: ${file.type}`);  
+                self.checkFileType(file, self.fileType)  
+                    .then(() => {  
+                        const obj = { file, folder, name: file.name, progress: 0, status: 'uploading' };  
+                        fileList.push(obj);  
+                        resolve();  
+                    })  
+                    .catch((error) => {  
+                        console.log(`File type check failed for: ${file.name}`);  
+                        reject(error);  
+                    });  
+            }, (error) => {  
+                console.log(`Error reading file: ${error}`);  
+                reject(error);  
+            });  
+        });  
+    } else if (entry.isDirectory) {  
+        const reader = entry.createReader();  
+        return new Promise((resolve, reject) => {  
+            reader.readEntries((entries) => {  
+                const folder = entry.fullPath || entry.name;  
+                const subPromises = entries.map((subEntry) => processEntry(subEntry, folder));  
+                Promise.all(subPromises)  
+                    .then(() => resolve())  
+                    .catch((error) => {  
+                        console.log(`Error processing directory: ${error}`);  
+                        reject(error);  
+                    });  
+            }, (error) => {  
+                console.log(`Error reading directory: ${error}`);  
+                reject(error);  
+            });  
+        });  
+    } else {  
+        console.log(`Unsupported entry type: ${entry.name}`);  
+        return Promise.reject('不支持的文件类型');  
+    }  
+}
             const promises = []
             for (let i = 0; i < items.length; i++) {
                 const item = items[i];
@@ -204,10 +246,13 @@ export default {
                     promises.push(processEntry(entry, folder));
                 } else {
                     // 如果 item.webkitGetAsEntry() 返回 null 或 undefined，我们添加一个已解决的 Promise
+                    console.log('处理读取文件时发错误，则拒绝Promise');
                     promises.push(Promise.resolve());
                 }
             }
             try {
+                // console.log(fileList.length);
+                
                 await Promise.all(promises);
                 return fileList;
             } catch (e) {
@@ -221,13 +266,19 @@ export default {
             }
         },
         checkFileType(file, selfFileType) {
+            const maxFileSize = 150 * 1024 * 1024; // 200MB in bytes
             const fileType = file.type;
-            // orthoimg
-            // selfFileType
             if (selfFileType.includes('report')) {
                 return Promise.resolve()
             }
             if (selfFileType === 'orthoimg') {
+                const fileNameCheck = !file.name.includes('tif');  
+                
+                // 检查文件大小是否不超过 200MB  
+                 const fileSizeCheck = file.size <= maxFileSize; 
+                 if(fileNameCheck || fileSizeCheck) {
+                    return Promise.reject(new Error(`Incorrect-Type file found: ${file.name}`));
+                 }
                 return Promise.resolve()
             }
             if (selfFileType === 'cloud') {
@@ -334,23 +385,53 @@ export default {
                 console.log('请获取正确的文件');
                 return;
             }
-            const temp = Array.from(files).map((file, index) => {
-                const webkitRelativePath = file.webkitRelativePath || '';
-                const folder = this.extractString(webkitRelativePath) // 用于知道父目录
-
-                const obj = { file, folder, progress: 0, status: 'uploading' };
-                return obj
-            })
-            this.tempFilelist = [...this.tempFilelist, ...temp];
-            this.submitTask(temp)
+            // 文件数量
+            // console.log('文件数量',files.length);
+            // 首先，过滤掉文件名中含有 "tif" 的文件  
+// 过滤条件：文件名不包含 'tif' 且文件大小不超过 200MB  
+const maxFileSize = 150 * 1024 * 1024; // 200MB in bytes  
+const filteredFiles = Array.from(files).filter(file => { 
+    // fileType
+     const iscloud = this.fileType === 'cloud'
+     const isorthoimg =  this.fileType === 'orthoimg'
+    // 检查文件名是否不包含 'tif'  
+    const fileNameCheck = !file.name.includes('tif');  
+    // 检查文件大小是否不超过 200MB  
+    const fileSizeCheck = file.size <= maxFileSize;  
+    // 两个条件都必须满足  
+    return fileNameCheck || (fileSizeCheck && isorthoimg);  
+});  
+  
+  // 然后，为过滤后的文件生成对象数组  
+  const tempFilelist = filteredFiles.map(file => {  
+      const webkitRelativePath = file.webkitRelativePath || '';  
+      const folder = this.extractString(webkitRelativePath); // 假设这个方法存在且能正确工作  
+    
+      const obj = {  
+          file,  
+          folder,  
+          name: file.name,  
+          progress: 0,  
+          status: 'uploading' // 注意：这里可能需要根据实际情况调整状态  
+      };  
+    
+      return obj;  
+  });  
+            
+       
+            // 如果 this.tempFilelist 是类的一个属性，并且你想更新它  
+            this.tempFilelist = [...this.tempFilelist, ...tempFilelist];  
+            // console.log('拖放文件数', this.tempFilelist.length);
+            this.submitTask(tempFilelist)
         },
+
         extractString(str) {
             const lastSlashIndex = str.lastIndexOf('/');
             if (lastSlashIndex === -1) {
                 return '';
             }
             const startIndex = str.lastIndexOf('/', lastSlashIndex - 1) + 1;
-            return str.substring(startIndex, lastSlashIndex);
+            return '/'+str.substring(0, lastSlashIndex);
         },
         async handleFilerSelect(event) {
             const files = event.target.files;

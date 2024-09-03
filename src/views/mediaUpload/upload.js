@@ -1,7 +1,7 @@
 /*
  * @Date: 2024-07-30 13:18:59
  * @LastEditors: likai 2806699104@qq.com
- * @FilePath: \pointCouldPages\src\views\mediaUpload\upload.js
+ * @FilePath: \pointCloud\src\views\mediaUpload\upload.js
  * @Description: Do not edit
  */
 import { getToken } from '@/utils/auth' // get token from cookie
@@ -343,7 +343,8 @@ export function uploadFile21(file, filesList, url) {
 export function uploadFile2(file, filesList, url, fileNum = 2000, filemd5, overallMD5) {
     return new Promise((resolve, reject) => {
         var formData = new FormData();
-        formData.append('file', file.file);
+         const filename = file.name
+        formData.append('file', file.file,filename);
         formData.append('type', 'image');
         formData.append('folder', file.folder);
         formData.append('createTime', new Date());
@@ -356,7 +357,7 @@ export function uploadFile2(file, filesList, url, fileNum = 2000, filemd5, overa
         xhr.upload.addEventListener('progress', function(event) {
             if (event.lengthComputable) {
                 var percentComplete = (event.loaded / event.total) * 100;
-                console.log('上传进度：', index, filesList, xhr, percentComplete + '%');
+                // console.log('上传进度：', index, filesList, xhr, percentComplete + '%');
                 filesList[index].progress = percentComplete;
                 // 将 xhr 状态给对应文件 ploadFilesList[index].status = xhr.readyState;
                 filesList[index].status = xhr.readyState;
@@ -423,7 +424,7 @@ export async function concurRequest(urls, maxNum = 2) {
         }
     });
 }
-export async function concurRequestfiles(files, uploadFilesList, url, maxNum = 2) {
+export async function concurRequestfiles(files, uploadFilesList, url, maxNum = 5) {
     if (!files || !files.length) {
         return Promise.reject('files is empty');
     }
