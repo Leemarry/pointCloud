@@ -25,7 +25,8 @@
           {{ title }}
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item @click.native="operationType('手动新增',{ operation: 'hand' , id : 0, reqUrl:'/business/hand/addOrupdateTower' })">手动新增</el-dropdown-item>
-            <el-dropdown-item @click.native="operationType('批量导入',{ operation: 'batch' , id : 1, reqUrl:'/business/batch/batchInsertTower' })">批量导入</el-dropdown-item>
+            <el-dropdown-item @click.native="operationType('批量xlsx导入',{ operation: 'batch' , id : 1, reqUrl:'/business/batch/batchInsertTower' })">批量xlsx导入</el-dropdown-item>
+            <el-dropdown-item @click.native="operationType('导入kml坐标',{ operation: 'batchkml' , id : 1, reqUrl:'/business/batch/batchkmlInsertTower' })">导入kml坐标</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -44,45 +45,45 @@
           <template slot-scope="scope">
             <el-popover trigger="hover" placement="top">
               <h4>其他：</h4>
-              <p>塔型:{{ `${scope.row.type ? scope.row.type:'未登记'}` }}</p>
-              <p>竣工杆号:{{ `${ scope.row.name ? scope.row.name : '未登记'}` }}</p>
+              <p>塔型:{{ `${scope.row.type ? scope.row.type:'未填写'}` }}</p>
+              <p>竣工杆号:{{ `${ scope.row.name ? scope.row.name : '未填写'}` }}</p>
               <div slot="reference" class="name-wrapper">
-                <el-tag size="medium">{{ scope.row.mark}}</el-tag>
+                <el-tag size="medium">{{ scope.row.mark }}</el-tag>
               </div>
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="name">
+        <el-table-column prop="geo">
           <template slot="header">
-            <span>竣工杆号</span>
+            <span>位置</span>
           </template>
           <template slot-scope="scope">
-            <el-tag size="medium">{{ scope.row.name }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="fileType" label="经纬高">
-          <template slot-scope="scope">
-            <span>{{ `${scope.row.lon},${scope.row.lat},${scope.row.alt}` }}</span>
+            <el-popover trigger="hover" placement="top">
+              <p>经纬度:{{ `${scope.row.lonStr},${scope.row.latStr},${scope.row.absaltStr}` }}</p>
+              <div slot="reference" class="name-wrapper">
+                <span>{{ `${scope.row.geo},${scope.row.xian},${scope.row.zheng}` }}</span>
+              </div>
+            </el-popover>
           </template>
         </el-table-column>
         <el-table-column prop="span" label="档距m">
           <template slot-scope="scope">
-            <span>{{ `${scope.row.span? scope.row.span :'未标注'}` }}</span>
+            <span>{{ `${scope.row.endSpan? scope.row.endSpan :'未填写'}` }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="terrain" label="地形">
           <template slot-scope="scope">
-            <span>{{ `${scope.row.terrain? scope.row.terrain :'未标注'}` }}</span>
+            <span>{{ `${scope.row.terrain? scope.row.terrain :'未填写'}` }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="des" label="备注">
+        <el-table-column prop="des" label="联系">
           <template slot-scope="scope">
             <el-popover trigger="hover" placement="top">
-              <h3>其他：</h3>
-              <p>导地线弧垂:{{ `${scope.row.lineLineDis}m` }}</p>
-              <p>导地线间距:{{ `${scope.row.lineLineDis}m` }}</p>
+              <h3>村民：{{ scope.row.topTel }}</h3>
               <div slot="reference" class="name-wrapper">
-                <span>{{ scope.row.des ? `${scope.row.des}` : '暂无' }}</span>
+                <span>村干：{{ scope.row.topTel ? `${scope.row.topTel}` : '暂无' }}</span>
+                <br>
+                <span>村民:{{ scope.row.endTel ? `${scope.row.endTel}` : '暂无' }}</span>
               </div>
             </el-popover>
           </template>
@@ -94,6 +95,10 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="130">
           <template slot-scope="scope">
+            <!-- <template slot="header" slot-scope="scope">
+            <span v-if="multipleSelection.length==0">操作</span>
+            <el-tag v-else size="small" @click="delectChecked('/media/video/delects')">删除选中</el-tag>
+          </template> -->
             <el-button type="text" size="small" @click="updateTower(scope.row)">编辑</el-button>
             <el-popconfirm
               confirm-button-text="是的"
@@ -108,75 +113,119 @@
             </el-popconfirm>
           </template>
         </el-table-column>
-        <!-- <template slot="header" slot-scope="scope">
-            <el-button type="text" size="mini">展开</el-button>
-          </template> -->
-        <!-- 根据规划的巡检航线可实现对杆塔部位采集可见光图片，
-            拍摄部位应包括塔全貌、塔头、塔身、杆号牌、塔基、导线端挂点、绝缘子整串、横担端挂点、地线、跳线、小号侧通道和大号侧通道 -->
-        <!-- <el-table-column type="expand">
+        <template slot="header" slot-scope="scope">
+          <el-button type="text" size="mini">展开</el-button>
+        </template>
+        <el-table-column type="expand">
           <template slot-scope="props">
             <div class="tower-details">
               <div style="flex: 1;">
                 <el-form label-position="left" inline class="demo-table-expand">
-                  <el-form-item label="杆号牌">
-                    <span>{{ props.row.name }}</span>
+                  <el-form-item label="竣工杆号">
+                    <span>{{ props.row.name ? props.row.name : '未填写' }}</span>
                   </el-form-item>
-                  <el-form-item label="绝缘子整串状态">
-                    <span>{{ props.row.shop }}</span>
+                  <el-form-item label="杆塔类型">
+                    <span>{{ props.row.type }}</span>
                   </el-form-item>
-                  <el-form-item label="其他详情">
+                  <el-form-item label="维修建议">
+                    <span>{{ props.row.advise }}</span>
+                  </el-form-item>
+                  <el-form-item label="故障隐患">
+                    <span>{{ props.row.faultHazard }}</span>
+                  </el-form-item>
+                  <el-form-item label="前耐张塔">
+                    <span>{{ props.row.startTower }}</span>
+                  </el-form-item>
+                  <el-form-item label="后耐张塔">
+                    <span>{{ props.row.endTower }}</span>
+                  </el-form-item>
+                  <el-form-item label="故障类型">
+                    <span>{{ props.row.faultType }}</span>
+                  </el-form-item>
+                  <el-form-item label="杆塔故障">
+                    <span>{{ props.row.towerHazard }}</span>
+                  </el-form-item>
+                  <el-form-item label="前档距（米）">
+                    <span>{{ props.row.startSpan }}</span>
+                  </el-form-item>
+                  <el-form-item label="后档距（米）">
+                    <span>{{ props.row.endSpan }}</span>
+                  </el-form-item>
+                  <el-form-item label="导线故障">
+                    <span>{{ props.row.lineHazard }}</span>
+                  </el-form-item>
+                  <el-form-item label="绝缘子故障">
+                    <span>{{ props.row.insulatorHazard }}</span>
+                  </el-form-item>
+                  <el-form-item label="塔基面是否硬化">
+                    <span>{{ props.row.ishard }}</span>
+                  </el-form-item>
+                  <el-form-item label="地形">
+                    <span>{{ props.row.terrain }}</span>
+                  </el-form-item>
+                  <el-form-item label="金具故障">
+                    <span>{{ props.row.glodHazard }}</span>
+                  </el-form-item>
+                  <el-form-item label="接地故障">
+                    <span>{{ props.row.groundingHazard }}</span>
+                  </el-form-item>
+                  <el-form-item label="是否跨越">
+                    <span>{{ props.row.isCross }}</span>
+                  </el-form-item>
+                  <el-form-item label="跨越情况">
+                    <span>{{ props.row.crossingSituation }}</span>
+                  </el-form-item>
+                  <el-form-item label="杆塔基础故障">
+                    <span>{{ props.row.towerBasicHazard }}</span>
+                  </el-form-item>
+                  <el-form-item label="故障">
                     <span>{{ props.row.address }}</span>
                   </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.desc }}</span>
+                  <el-form-item label="村干联系">
+                    <span>{{ props.row.topTel }}</span>
                   </el-form-item>
-                  <el-form-item label="杆号牌">
-                    <span>{{ props.row.name }}</span>
+                  <el-form-item label="村民联系">
+                    <span>{{ props.row.endTel }}</span>
                   </el-form-item>
-                  <el-form-item label="绝缘子整串状态">
-                    <span>{{ props.row.shop }}</span>
+                  <el-form-item v-if="props.row.var1" label="字段1">
+                    <span>{{ props.row.var1 }}</span>
                   </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.address }}</span>
+                  <el-form-item v-if="props.row.var2" label="字段2">
+                    <span>{{ props.row.var2 }}</span>
                   </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.desc }}</span>
+                  <el-form-item v-if="props.row.var3" label="字段3">
+                    <span>{{ props.row.var3 }}</span>
                   </el-form-item>
-                  <el-form-item label="杆号牌">
-                    <span>{{ props.row.name }}</span>
+                  <el-form-item v-if="props.row.var4" label="字段4">
+                    <span>{{ props.row.var4 }}</span>
                   </el-form-item>
-                  <el-form-item label="绝缘子整串状态">
-                    <span>{{ props.row.shop }}</span>
+                  <el-form-item v-if="props.row.var5" label="字段5">
+                    <span>{{ props.row.var5 }}</span>
                   </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.address }}</span>
+                  <el-form-item v-if="props.row.verticalLineArc" label="导地线弧垂">
+                    <span>{{ props.row.verticalLineArc }}</span>
                   </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.desc }}</span>
+                  <el-form-item v-if="props.row.lineLineDis" label="导地线间距">
+                    <span>{{ props.row.lineLineDis }}</span>
                   </el-form-item>
-                  <el-form-item label="杆号牌">
-                    <span>{{ props.row.name }}</span>
+                  <el-form-item v-if="props.row.lineTowerDis" label="引流线到塔身距离">
+                    <span>{{ props.row.lineTowerDis }}</span>
                   </el-form-item>
-                  <el-form-item label="绝缘子整串状态">
-                    <span>{{ props.row.shop }}</span>
-                  </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.address }}</span>
-                  </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.desc }}</span>
+                  <el-form-item v-if="props.row.towerRotationAngle" label="耐张塔转角度数">
+                    <span>{{ props.row.towerRotationAngle }}</span>
                   </el-form-item>
                 </el-form>
               </div>
-              <div style="width: 70%; display: flex;">
-                <div v-for="(item, index) in 5" :key="index" style="display: flex; flex-direction: column ; flex: 1;">
+              <!-- <div style="width: 40%; display: flex;">
+                <div v-for="(item, index) in 4" :key="index" style="display: flex; flex-direction: column ; flex: 1;">
                   <label for="">图片{{ index }}:</label>
                   <el-image style="width: 100px; height: 100px" src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg" fit="fit" />
                 </div>
-              </div>
+              </div> -->
             </div>
           </template>
-        </el-table-column> -->
+        </el-table-column>
+
       </el-table>
     </div>
     <div class="media-footer">
@@ -195,11 +244,13 @@
     <el-image-viewer v-if="imgViewerVisible" :on-close="closeImgViewer" :url-list="imgList" />
     <!--弹窗 -->
     <TowerDrawer :drawer="drawerVisible" :tower="{...towerInfo}" @update:visible="handleClose" @hand:tower="handTower" />
+    <KmlDrawer :drawer="kmlVisible" :title="title" :reqdata="reqData" @update:visible="handleClosekml" @hand:tower="handTower" @visible:close="(v)=>{kmlVisible=v}" />
     <AlDialog title="弹窗" :visible="dialogVisible" height="200px" width="280px" @close="dialogVisible = false">
       <el-upload
         ref="upload"
         class="upload-demo"
         action="/"
+        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         :on-preview="handlePreview"
         size="mini"
         :before-remove="beforeRemove"
@@ -209,12 +260,12 @@
         :on-change="changeFile"
       >
         <el-button slot="trigger" size="mini" type="primary">点击导入</el-button>
-        <div slot="tip" class="el-upload__tip">只能上传zip文件，且不超过50M</div>
+        <div slot="tip" class="el-upload__tip">只能上传xlsx文件，且不超过50M</div>
         <el-button
           style="margin-left: 10px;"
           size="mini"
           type="success"
-          @click="submitUpload"
+          @click="submitUploadExcel"
         >提交上传</el-button>
       </el-upload>
     </AlDialog>
@@ -256,18 +307,12 @@
   .tower-details{
     display: flex;
     // justify-content: space-between;
+    padding: 2px 20px;
   }
 }
-.demo-table-expand {
-    // font-size: 0;
-  }
-  // .demo-table-expand label {
-  //   width: 90px;
-  //   color: #99a9bf;
-  // }
   .demo-table-expand .el-form-item {
-    margin-right: 0;
+    margin-right: 0px;
     margin-bottom: 0;
-    width: 50%;
+    width: 24%;
   }
 </style>

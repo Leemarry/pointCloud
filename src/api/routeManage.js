@@ -30,3 +30,11 @@ export function uploadKmz(formdata) {
         data: formdata
     })
 }
+
+export function delect(formdata) {
+    return request({
+        url: '/route/kmz/delect',
+        method: 'post',
+        data: formdata
+    })
+}

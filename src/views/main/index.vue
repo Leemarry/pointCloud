@@ -100,7 +100,8 @@
                 </div>
                 <el-scrollbar v-if="!tasksLoading" class="scrollbar" style="width:98%;" wrap-style="overflow-x:hidden;flex:1;font-size:small;">
                   <div v-for="(item,index) in kmzData.slice((currentPage-1)*pagesize,currentPage*pagesize)" :key="index" :class="'route_item plusInborder cursorStyle' + (currentIndex === index ? ' showplusInborder' : '')" @click="changeColor(index,item)">
-                    <span>{{ time(item.kmzUpdateTime) }}</span>
+                    <span>{{ parseTime(item.createTime) }}</span>
+                    <!-- parseTime(item.createTime -->
                     <span>{{ item.kmzName }}</span>
                   </div>
                 </el-scrollbar>

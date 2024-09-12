@@ -10,9 +10,9 @@ export default {
     data() {
         //这里存放数据
         // const fileTypes = ['全部', '危险点分析报告', '交跨报告', '输电线路杆塔缺陷分析报告'];
-        const fileTypes = [{ url: '/media/reports/querylist', name: '全部' }, { url: '/media/peril_point_report/querylist', name: '危险点分析报告' }, { url: '/media/cross_border_report/querylist', name: '交跨报告' }, { url: '/media/line_towers_analysis_report/querylist', name: '输电线路杆塔缺陷分析报告' }];
+        const fileTypes = [{ url: '/media/reports/querylist', name: '未区分', label: '全部' }, { url: '/media/peril_point_report/querylist', name: '危险点分析报告', label: '危险点分析报告' }, { url: '/media/cross_border_report/querylist', name: '交跨报告',label: '交跨报告' }, { url: '/media/line_towers_analysis_report/querylist', name: '输电线路杆塔缺陷分析报告' ,label: '输电线路杆塔缺陷分析报告' }, { url: '/media/line_analysis_report/querylist', name: '塔线缺陷分析报告', label: '塔线缺陷分析报告'}];
         const typeMap = new Map(fileTypes.map((item, index) => [index, item.name]));
-        const reportOptions = fileTypes.map((item, index) => ({ value: index, label: item.name, url: item.url }))
+        const reportOptions = fileTypes.map((item, index) => ({ value: index, label: item.label, url: item.url }))
         return {
             typeMap,
             reqUrl: '/media/reports/querylist',

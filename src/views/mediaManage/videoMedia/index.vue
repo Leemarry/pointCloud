@@ -9,8 +9,11 @@
   <div v-loading="mixinsLoading" element-loading-background="rgba(0, 0, 0, 0.3)" class="media">
     <div class="media-top">
       <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline">
-        <el-form-item label="杆塔/视频描述" prop="mark">
-          <el-input v-model="formInline.mark" placeholder="文件详情..." />
+        <el-form-item label="杆塔号" prop="mark">
+          <el-input v-model="formInline.mark" placeholder="请输入格式:B001" style="width: 150px;" />
+        </el-form-item>
+        <el-form-item label="文件" prop="fileName">
+          <el-input v-model="formInline.fileName" placeholder="请输入格式:XXX" style="width: 150px;" />
         </el-form-item>
         <el-form-item label="时间范围" prop="startTime">
           <el-col :span="12">

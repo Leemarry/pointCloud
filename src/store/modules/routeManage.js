@@ -47,6 +47,15 @@ const actions = {
                 reject(error)
             })
         })
+    },
+    delect({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            routeApi.delect(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
     }
 }
 export default {

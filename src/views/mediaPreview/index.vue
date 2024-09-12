@@ -6,7 +6,7 @@
 -->
 <!--  -->
 <template>
-  <div style="height: 100vh; width: 100wh; display: flex; flex-direction: column;">
+  <div style="height: 100vh; width: 100wh; display: flex; flex-direction: column; overflow: auto">
     <div ref="container" />
     <video v-if="formats === &quot;video&quot;" oncontextmenu="return false" controls controlslist="nodownload">
       <source :src="src" type="video/mp4">

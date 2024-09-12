@@ -6,11 +6,11 @@
  * 1.方法和参数在各组件中不共享
  * 2.值为对象的选项，如methods,components等，选项会被合并，键冲突的组件会覆盖混入对象的
  */
-import { getDefaultObj, getDefaultData, switchNode, getTimeRangeByKey } from '@/utils/currency'
+// import { getDefaultObj, getDefaultData, switchNode, getTimeRangeByKey } from '@/utils/currency'
 import { parseTime, filtersType } from '@/utils/index';
 import VirtualList from 'vue-virtual-scroll-list'
 import EImage from '@/views/components/Other/image.vue'
-import { parseXML } from '@/utils/currency'
+import { parseXML, isValidLatLng, getDefaultObj, getDefaultData, switchNode, getTimeRangeByKey } from '@/utils/currency'
 export default {
     name: '',
     mixins: [], //
@@ -61,7 +61,7 @@ export default {
             },
             defaultTowerMark: '', //默认选中的无人机
             defaultTowerInfo: {},
-            defaultPhotos:{},
+            defaultPhotos: {},
             formInline: {
                 total: 500,
                 mark: null,
@@ -174,12 +174,6 @@ export default {
             }
             this.previewWebCloud(row.pointCloud)
         },
-        toFocus(id) {
-            const tower = this.tableData.find(item => item.id === id);
-            if (tower.orthoImg && tower.orthoImg.mapPath) {
-                this.$bus.$emit('send:toFocus', id);
-            }
-        },
         showCloud(id) {
             const tower = this.tableData.find(item => item.id === id);
             const index = this.tableData.findIndex(item => item.id === id);
@@ -188,7 +182,6 @@ export default {
             }
             let latitude = tower.lat
             let longitude = tower.lon
-            const name = tower.id + 'cloud'; // `${new Date().getTime()}`
             if (tower.orthoImg) {
                 latitude = tower.orthoImg.lat
                 longitude = tower.orthoImg.lon
@@ -196,7 +189,7 @@ export default {
             if (tower.pointCloud && tower.pointCloud.amendCloudUrl) {
                 const url = tower.pointCloud.amendCloudUrl
                 const mtype = 'Tileset'
-                // console.log('数据', { url, longitude, latitude, height: 1000, name, mtype });
+                const name = tower.pointCloud.amendCloudUrl // tower.id + 'cloud'; // `${new Date().getTime()}`
                 this.$bus.$emit('send:addImagery', { url, longitude, latitude, height: 1000, name, mtype });
                 this.tableData.splice(index, 1, { ...tower, cloudChecked: true })
             } else {
@@ -211,7 +204,7 @@ export default {
                 this.showToast('未查询点云数据')
             }
             this.tableData.splice(index, 1, { ...tower, cloudChecked: false })
-            const mid = tower.id + 'cloud'; // `${new Date().getTime()}`
+            const mid = tower.pointCloud.amendCloudUrl // tower.id + 'cloud'; // `${new Date().getTime()}`
             this.$bus.$emit('send:toHide', { mid });
         },
         removeAllImagery() {
@@ -223,6 +216,7 @@ export default {
         showAllImagery(newVal) {
             for (let index = 0; index < newVal.length; index++) {
                 const tower = newVal[index]; // orthoImg
+                console.log('main,addImagery', tower);
                 let latitude = tower.lat
                 let longitude = tower.lon
                 if (tower.orthoImg) {
@@ -230,14 +224,30 @@ export default {
                     longitude = tower.orthoImg.lon
                     if (tower.orthoImg.mapPath) {
                         const url = tower.orthoImg.mapPath
-                        const name = tower.id; // `${new Date().getTime()}`
+                        const name = tower.orthoImg.mapPath //tower.id
                         const mtype = 'TMS'
                         this.$bus.$emit('send:addImagery', { url, longitude, latitude, height: 1000, name, mtype });
                     } else {
-                        break;
+                        continue;
                     }
                 } else {
-                    break;
+                    continue;
+                }
+            }
+        },
+        toFocus(id) {
+            const tower = this.tableData.find(item => item.id === id);
+            if (tower.orthoImg && tower.orthoImg.mapPath) {
+                const latitude = tower.lat
+                const longitude = tower.lon
+                if (isValidLatLng(latitude, longitude)) {
+                    console.log('经纬度有效', latitude, longitude);
+                    const url = tower.orthoImg.mapPath;
+                    const destination = { latitude, longitude, height: 800 }
+                    this.$bus.$emit('send:toFocus', url, destination);
+                } else {
+                    // console.log('经纬度无效或不存在');
+                    this.$message.warning('经纬度无效或不存在')
                 }
             }
         },
@@ -248,7 +258,6 @@ export default {
             this.queryTowerAlllist()
         },
         clickTowerItem(item) {
-            console.log('clickTowerItem');
             if (item.mark === this.defaultTowerMark) {
                 return;
             }
@@ -308,6 +317,9 @@ export default {
                     const { code, message, data } = response;
                     if (code === 1) {
                         this.kmzData = data || []; // 返回数据
+                        if (data.length > 0) {
+                            this.currentTask = data[0] || {};
+                        }
                     } else {
                         this.showMessage(message, 'warning');
                     }
@@ -330,7 +342,7 @@ export default {
                 this.$store.dispatch('media/queryDistanceWithDis', formdata).then(response => {
                     const { code, message, data } = response;
                     if (code === 1) {
-                      this.clickPhoto = data
+                        this.clickPhoto = data
                     } else {
                         this.showMessage(message, 'warning');
                     }
@@ -346,6 +358,10 @@ export default {
         // #region ------------------------------------------------------------ 数据下载 ---------------------------------------------------------------------
         openVideoTag(kmzTask = this.currentTask) {
             const url = kmzTask.kmzPath;
+            if (!url) {
+                this.$message.warning('kmz文件不存在，无法解析');
+            }
+            // kmzPath
             this.fetchAndExtractZipContent(url).then(res => {
                 console.log('parseXML(res)', parseXML(res));
                 this.points = parseXML(res).points;
@@ -353,16 +369,16 @@ export default {
                 if (CesiumMap) {
                     this.$refs.CesiumMap.drawLines2(this.points);
                 }
-            }, rej => {
-                this.showMessage('获取kmz文件失败', 'error')
-            }
-            )
+            }).catch(e => {
+                this.showMessage('解析kmz文件失败!', 'error')
+            });
         },
         async fetchAndExtractZipContent(url) {
             try {
                 const response = await fetch(url);
 
                 if (response.status === 200) {
+                    console.log('fetchAndExtractZipContent', response);
                     const arrayBuffer = await response.arrayBuffer();
                     // eslint-disable-next-line no-undef
                     const zip = await JSZip.loadAsync(arrayBuffer);

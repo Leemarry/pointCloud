@@ -86,6 +86,15 @@ const actions = {
             })
         })
     },
+    addproxyMap({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            mediaApi.addproxyMap(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
     downimg({ commit, state }, data) {
         return new Promise((resolve, reject) => {
             mediaApi.downimg(data).then(response => {
@@ -95,6 +104,7 @@ const actions = {
             })
         })
     },
+
     miniodownload({ commit, state }, data) {
         return new Promise((resolve, reject) => {
             mediaApi.miniodownload(data).then(response => {

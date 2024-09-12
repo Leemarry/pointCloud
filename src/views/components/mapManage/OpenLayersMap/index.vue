@@ -142,7 +142,7 @@ export default {
                 source: new XYZ({
                     visible: true,
                     wrapX: false,
-                    url: 'http://127.0.0.1:9090/efuav-image/hubeijux/Satellite/{z}/{x}/{y}.png'
+                    url: 'mapsource/satellite/{z}/{x}/{y}.jpg' //'http://127.0.0.1:9090/efuav-image/hubeijux/Satellite/{z}/{x}/{y}.png'
                 })
             })
 

@@ -361,8 +361,8 @@ export default {
                 // this.$router.push({ path: this.redirect || '/index' }) // mediaManage
                 this.$router.push({ path: this.redirect || '/mediaManage' }) // mediaManage
                 console.log('登录成功');
-                const data = { id: '101', token: this.$store.getters.token }
-                this.$store.dispatch('ws/onopenWebSocket', data)
+                // const data = { id: '101', token: this.$store.getters.token }
+                // this.$store.dispatch('ws/onopenWebSocket', data)
                 this.loading = false
                 this.clearRoute()
             }).catch((message) => {

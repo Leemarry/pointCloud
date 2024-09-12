@@ -1,9 +1,3 @@
-/**
- * import { getDefaultObj, getDefaultData, switchNode, time ,getTimeRange  ,timeRangeMap} from "@/utils/currency"
-// import * as currency from '@/utils/currency';
- */
-
-import { login } from '@/api/user';
 
 //#region -----------------------------------------------------意义不大------------------------------------------------------------------
 
@@ -453,3 +447,23 @@ export function queryWeather() {
 //#endregion
 
 // SelectTime  disconnectWebSocket onopenWebSocket
+
+export function isValidLatLng(latitude, longitude) {
+    // 检查经纬度是否已定义且不为null
+    if (latitude === undefined || latitude === null ||
+        longitude === undefined || longitude === null) {
+        return false;
+    }
+
+    // 转换为数字类型，以便进行数值比较
+    const latNum = Number(latitude);
+    const lonNum = Number(longitude);
+
+    // 检查转换后是否为NaN（非数字）
+    if (isNaN(latNum) || isNaN(lonNum)) {
+        return false;
+    }
+
+    // 检查经纬度是否在有效范围内
+    return (latNum >= -90 && latNum <= 90) && (lonNum >= -180 && lonNum <= 180);
+}

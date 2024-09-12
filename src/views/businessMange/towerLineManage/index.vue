@@ -47,7 +47,9 @@
         </el-table-column>
         <el-table-column prop="lineLength" label="塔线长度">
           <template slot-scope="scope">
-            <span>{{ scope.row.lineLength }}</span>
+            <span v-if="scope.row.lineLength">{{ scope.row.lineLength }}</span>
+            <span v-else>{{ scope.row.lineLengthStr }}</span>
+            <!-- lineLengthStr lineLength -->
           </template>
         </el-table-column>
         <el-table-column prop="des" label="备注">
@@ -91,75 +93,6 @@
             <el-button type="text" size="small" @click="delectTower(scope.row)">删除</el-button>
           </template>
         </el-table-column>
-        <!-- <template slot="header" slot-scope="scope">
-            <el-button type="text" size="mini">展开</el-button>
-          </template> -->
-        <!-- 根据规划的巡检航线可实现对杆塔部位采集可见光图片，
-            拍摄部位应包括塔全貌、塔头、塔身、杆号牌、塔基、导线端挂点、绝缘子整串、横担端挂点、地线、跳线、小号侧通道和大号侧通道 -->
-        <!-- <el-table-column type="expand">
-          <template slot-scope="props">
-            <div class="tower-details">
-              <div style="flex: 1;">
-                <el-form label-position="left" inline class="demo-table-expand">
-                  <el-form-item label="杆号牌">
-                    <span>{{ props.row.name }}</span>
-                  </el-form-item>
-                  <el-form-item label="绝缘子整串状态">
-                    <span>{{ props.row.shop }}</span>
-                  </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.address }}</span>
-                  </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.desc }}</span>
-                  </el-form-item>
-                  <el-form-item label="杆号牌">
-                    <span>{{ props.row.name }}</span>
-                  </el-form-item>
-                  <el-form-item label="绝缘子整串状态">
-                    <span>{{ props.row.shop }}</span>
-                  </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.address }}</span>
-                  </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.desc }}</span>
-                  </el-form-item>
-                  <el-form-item label="杆号牌">
-                    <span>{{ props.row.name }}</span>
-                  </el-form-item>
-                  <el-form-item label="绝缘子整串状态">
-                    <span>{{ props.row.shop }}</span>
-                  </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.address }}</span>
-                  </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.desc }}</span>
-                  </el-form-item>
-                  <el-form-item label="杆号牌">
-                    <span>{{ props.row.name }}</span>
-                  </el-form-item>
-                  <el-form-item label="绝缘子整串状态">
-                    <span>{{ props.row.shop }}</span>
-                  </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.address }}</span>
-                  </el-form-item>
-                  <el-form-item label="其他详情">
-                    <span>{{ props.row.desc }}</span>
-                  </el-form-item>
-                </el-form>
-              </div>
-              <div style="width: 70%; display: flex;">
-                <div v-for="(item, index) in 5" :key="index" style="display: flex; flex-direction: column ; flex: 1;">
-                  <label for="">图片{{ index }}:</label>
-                  <el-image style="width: 100px; height: 100px" src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg" fit="fit" />
-                </div>
-              </div>
-            </div>
-          </template>
-        </el-table-column> -->
       </el-table>
     </div>
     <div class="media-footer">

@@ -66,6 +66,20 @@ module.exports = {
                     '^/resourceminio': '/efapi/pointcloud/resourceminio'
                 }
             },
+            // miniosource/efuav-image/pointcloud/2/mage_202408160833_001_B001/images/survey/1dc0efae7a0a94552857781c2fb53501ff90063c.JPG
+            'miniosource': {
+                target: 'http://127.0.0.1:9000', // 'http://localhost:9090',
+                changeOrigin: true,
+                logLevel: 'debug',
+                pathRewrite: {
+                    '^/miniosource': ''
+                },
+                onProxyRes(proxyRes, req, res) {
+                    const realUrl = 'http://localhost:9000' + req.url || ''; // 真实请求网址
+                    console.log(realUrl); // 在终端显示
+                    proxyRes.headers['A-Real-Url'] = realUrl; // 添加响应标头(A-Real-Url为自定义命名)，在浏览器中显示
+                }
+            },
             // mapsource/satellite/{z}/{x}/{y}.jpg
             // http://127.0.0.1:456/static/satellite/{z}/{x}/{y}.jpg
             '/mapsource': {
@@ -76,19 +90,15 @@ module.exports = {
                 }
 
             },
-            'miniosource': {
-                target: 'http://127.0.0.1:9090', // 'http://localhost:9090',
+            // http://localhost:456/proxy/image/PDF.jpg
+            'proxy': {
+                target: 'http://localhost:456',
                 changeOrigin: true,
-                logLevel: 'debug',
                 pathRewrite: {
-                    '^/miniosource': ''
-                },
-                onProxyRes(proxyRes, req, res) {
-                    const realUrl = 'http://localhost:9090' + req.url || ''; // 真实请求网址
-                    console.log(realUrl); // 在终端显示
-                    proxyRes.headers['A-Real-Url'] = realUrl; // 添加响应标头(A-Real-Url为自定义命名)，在浏览器中显示
+                    '^/proxy': '/proxy'
                 }
             },
+
             // miniosource
             /**代理查询天气  */
             '/queryWeather': {
@@ -100,20 +110,6 @@ module.exports = {
                 }
                 // "https://api.seniverse.com/v3/weather/now.json?key=STZM3wOV_mjH8QsjJ&location=上海&language=zh-Hans&unit=c"
             },
-            //http://vjs.zencdn.net/v/oceans.mp4
-            // '/otherDownload': {
-            //     target: 'http://vjs.zencdn.net',
-            //     changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
-            //     logLevel: 'debug', // 打印代理日志
-            //     pathRewrite: {
-            //         '^/efapi/pointcloud/media/otherDownload': '/v/oceans.mp4' // 重写url
-            //     },
-            //     onProxyRes(proxyRes, req, res) {
-            //         const realUrl = 'http://vjs.zencdn.net' + req.url || ''; // 真实请求网址
-            //         console.log(realUrl); // 在终端显示
-            //         proxyRes.headers['A-Real-Url'] = realUrl; // 添加响应标头(A-Real-Url为自定义命名)，在浏览器中显示
-            //     }
-            // },
             '/otherDownload': {
                 target: 'http://114.132.62.199:9000',
                 changeOrigin: true, // 如果接口跨域，需要进行这个参数配置

@@ -146,7 +146,7 @@ import { open } from 'shapefile';
 import { moveDiv } from '../../core/utils';
 import $ from 'jquery';
 import { checkComponent, checkViewer, getPolygonArea } from '../../core/utils';
-import ImageryManager from '../../core/ImageryManager';
+import ImageryManager, { fromDegrees } from '../../core/ImageryManager';
 import { mapGetters } from 'vuex';
 /**航线列表管理 */
 import routeManager from './cesiumRouteList.vue';
@@ -154,8 +154,6 @@ let graphicManager;
 // eslint-disable-next-line
 let imageryManager;
 const console = window.console;
-// var polyArr = []; // 面数据
-var jdArrs = []; // 交点集合
 export default {
     name: 'CesiumDraw',
     data() {
@@ -429,7 +427,7 @@ export default {
         // console.log("parent", this.$attrs, this.$listeners);
         this.$bus.$on('send:removeAll', this.removeImageryAll)
         this.$bus.$on('send:toFocus', this.toFocus)
-        this.$bus.$on('send:addImagery', this.addImagery)
+        this.$bus.$on('send:addImagery', this.sendAddImagery)
         this.$bus.$on('send:toHide', this.toHide)
     },
     mounted() {
@@ -457,7 +455,7 @@ export default {
     beforeDestroy() {
         this.destroyEventListener()
         this.$bus.$off('send:removeAll', this.removeImageryAll)
-        this.$bus.$off('send:addImagery', this.addImagery)
+        this.$bus.$off('send:addImagery', this.sendAddImagery)
         this.$bus.$off('send:toFocus', this.toFocus)
         this.$bus.$off('send:toHide', this.toHide)
     }, //生命周期 - 销毁之前
@@ -633,7 +631,6 @@ export default {
             }
         },
         imageryEvent(e) {
-            console.log('存在sss',e,imageryManager);
             if (imageryManager.has(e.detail.mid)) {
                 const { mid, type, name } = e.detail;
                 this.extendTileseImageryList.push({ mid, type, name })
@@ -1216,13 +1213,8 @@ export default {
                     break;
             }
         },
-        addImagery(tilesetForm) {
+        sendAddImagery(tilesetForm) {
             const { url, longitude, latitude, height, name, mtype } = tilesetForm
-            // const tileset = new Cesium.Cesium3DTileset({
-            //     url: 'http://127.0.0.1:9090/efuavmodel/pointCloud/kunmingPv/tileset.json'
-            // });
-            // this.cesiumViewer.scene.primitives.add(tileset);
-            // this.cesiumViewer.zoomTo(tileset);
             console.log('tileset', url, name, mtype);
             imageryManager.addImagery({ url, name, mtype }, {
                 longitude,
@@ -1235,13 +1227,17 @@ export default {
             console.log('removeAll');
             imageryManager.removeAll()
         },
-        toFocus(id) {
+        toFocus(id, position) {
             checkComponent(this);
-            const mid = id
-            if (imageryManager.has(mid)) {
-                console.log('send:toFocus');
-                imageryManager.focus(mid)
-            }
+            const destination = fromDegrees(position.longitude, position.latitude, position.height)
+            console.log('toFocus', destination, position);
+            this.viewer.camera.flyTo({
+                destination: destination
+            });
+            // const mid = id
+            // if (imageryManager.has(mid)) {
+            //     imageryManager.focus(mid)
+            // }
         },
         toHide(item) {
             const { mid } = item

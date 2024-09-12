@@ -18,38 +18,38 @@
         <el-form-item label="竣工杆号" prop="name">
           <el-input v-model="ruleForm.name" style="width: 200px;" />
         </el-form-item>
-        <el-form-item label="杆塔标注号" prop="mark">
-          <el-input v-model="ruleForm.mark" style="width: 200px;" :disabled="tower.mark!=''" />
+        <el-form-item label="杆塔号" prop="mark">
+          <el-input v-model="ruleForm.mark" style="width: 200px;" :disabled="tower.mark!=''" placeholder="请输入格式：B001" />
         </el-form-item>
-        <el-form-item label="杆塔经度" prop="mark">
-          <el-input v-model="ruleForm.lon" style="width: 200px;" />
+        <el-form-item label="杆塔经度" prop="lon">
+          <el-input v-model="ruleForm.lon" type="number" style="width: 200px;" placeholder="请输入格式：116.3" />
         </el-form-item>
-        <el-form-item label="杆塔纬度" prop="mark">
-          <el-input v-model="ruleForm.lat" style="width: 200px;" />
+        <el-form-item label="杆塔纬度" prop="lat">
+          <el-input v-model="ruleForm.lat" type="number" style="width: 200px;" placeholder="请输入格式：16.3" />
         </el-form-item>
-        <el-form-item label="杆塔高度" prop="mark">
-          <el-input v-model="ruleForm.alt" style="width: 200px;" />
+        <el-form-item label="杆塔高度" prop="alt">
+          <el-input v-model="ruleForm.alt" type="number" style="width: 200px;" />
         </el-form-item>
-        <el-form-item label="杆塔海拔" prop="mark">
-          <el-input v-model="ruleForm.absalt" style="width: 200px;" />
+        <el-form-item label="杆塔海拔" prop="absalt">
+          <el-input v-model="ruleForm.absalt" type="number" style="width: 200px;" />
         </el-form-item>
         <el-form-item label="导地线弧垂" prop="verticalLineArc">
-          <el-input v-model="ruleForm.verticalLineArc" style="width: 200px;" />
+          <el-input v-model="ruleForm.verticalLineArc" type="number" style="width: 200px;" />
         </el-form-item>
         <el-form-item label="导地线间距" prop="lineLineDis">
-          <el-input v-model="ruleForm.lineLineDis" style="width: 200px;" />
+          <el-input v-model="ruleForm.lineLineDis" type="number" style="width: 200px;" />
         </el-form-item>
         <el-form-item label="引流线到塔距离" prop="lineTowerDis">
-          <el-input v-model="ruleForm.lineTowerDis" style="width: 200px;" />
+          <el-input v-model="ruleForm.lineTowerDis" type="number" style="width: 200px;" />
         </el-form-item>
         <el-form-item label="耐张塔转角度数" prop="towerRotationAngle">
-          <el-input v-model="ruleForm.towerRotationAngle" style="width: 200px;" />
+          <el-input v-model="ruleForm.towerRotationAngle" type="number" style="width: 200px;" />
         </el-form-item>
         <el-form-item label="备注" prop="des">
           <el-input v-model="ruleForm.des" type="textarea" style="width: 200px;" />
         </el-form-item>
         <div style="margin-left: 5px;">
-          <el-button type="primary" @click="submitForm('ruleForm')">确认修改</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
           <el-button @click="resetForm('ruleForm')">重置</el-button>
         </div>
       </el-form>
@@ -71,6 +71,24 @@ export default {
         tower: { type: Object, default: () => ({}), require: true }
     },
     data() {
+        // eslint-disable-next-line no-unused-vars
+        const validateLongitude = (rule, value, callback) => {
+            //经度,整数部分为0-180小数部分为0到15位
+            var longreg = /^(\-|\+)?(((\d|[1-9]\d|1[0-7]\d|0{1,3})\.\d{0,15})|(\d|[1-9]\d|1[0-7]\d|0{1,3})|180\.0{0,15}|180)$/
+            if (!longreg.test(value)) {
+                callback(new Error('经度整数部分为0-180,小数部分为0到15位!'))
+            }
+            callback()
+        }
+        // eslint-disable-next-line no-unused-vars
+        const validateLatitude = (rule, value, callback) => {
+            //纬度,整数部分为0-90小数部分为0到15位
+            var latreg = /^(\-|\+)?([0-8]?\d{1}\.\d{0,15}|90\.0{0,15}|[0-8]?\d{1}|90)$/
+            if (!latreg.test(value)) {
+                callback(new Error('纬度整数部分为0-90,小数部分为0到15位!'))
+            }
+            callback()
+        }
         //这里存放数据
         return {
             ruleForm: {
@@ -88,9 +106,18 @@ export default {
                     { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' }
                 ],
                 mark: [
-                    { required: true, message: '请输入标识', trigger: 'blur' },
+                    { required: true, message: '请输入标识,如:B001', trigger: 'blur' },
                     { min: 1, max: 15, message: '长度在 1 到 15 个字符', trigger: 'blur' }
                 ],
+                lon: [
+                    { validator: validateLongitude, trigger: 'blur' },
+                    { validator: validateLongitude, trigger: 'change' }
+                ],
+                lat: [
+                    { validator: validateLatitude, trigger: 'blur' },
+                    { validator: validateLatitude, trigger: 'change' }
+                ],
+
                 verticalLineArc: [
                     { required: true, message: '请输入导地线弧垂', trigger: 'blur' }
                 ],

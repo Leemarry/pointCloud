@@ -17,7 +17,7 @@
         </el-form-item>
       </el-form>
       <div>
-        <el-button type="primary" @click="queryList1">查询</el-button>
+        <el-button type="primary" @click="queryList1()">查询</el-button>
         <!-- <el-button type="primary" @click="uploadFiles({ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploads2' })">上传</el-button> -->
         <el-dropdown split-button type="primary" style="margin-left: 5px;" @click="beforeUpload()">
           {{ title }}
@@ -40,22 +40,27 @@
         </el-table-column>
         <el-table-column prop="mark" label="标注名" width="250" />
         <el-table-column prop="amendType" label="类型" width="80" />
-        <el-table-column prop="towerMark" label="杆塔编号" width="200">
+        <!-- <el-table-column prop="towerMark" label="杆塔编号" width="200">
           <template slot-scope="scope">
             <el-tag type="success">{{ scope.row.towerMark }}</el-tag>
+          </template>
+        </el-table-column> -->
+        <el-table-column prop="markTag" label="杆塔区间" width="200">
+          <template slot-scope="scope">
+            <el-tag type="success">{{ `${scope.row.markTag}-${formatNumber(scope.row.startMarkNum)}-${formatNumber( scope.row.endMarkNum)}` }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="amendCloudUrl" label="Pnts文件地址">
           <!-- danger -->
           <template slot-scope="scope">
             <el-tag
-            :type=" scope.row.amendCloudUrl ? 'info' :'danger'"
+              :type=" scope.row.amendCloudUrl ? 'info' :'danger'"
               effect="plain"
               :hit="true"
               style="cursor: pointer;"
               @click="copy(scope.row.amendCloudUrl,scope.row.id)"
             >
-              {{  }}
+              {{ }}
               <i v-if="scope.row.copy " class="el-icon-finished" />
               <i v-else class="el-icon-document" />
             </el-tag>
@@ -71,17 +76,20 @@
               style="cursor: pointer;"
               @click="copy(scope.row.webUrl,scope.row.id)"
             >
-              {{  }}
+              {{ }}
               <i v-if="scope.row.copy " class="el-icon-finished" />
               <i v-else class="el-icon-document" />
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="150">
+          <template slot="header" slot-scope="scope">
+            <el-tag size="small" style="cursor: pointer" @click="clickAdd()">数据新增</el-tag>
+          </template>
           <template slot-scope="scope">
-            <el-button type="text" size="small" :disabled="!scope.row.amendCloudUrl" @click="previewPointCloud(scope.row)" >查看</el-button>
+            <el-button type="text" size="small" :disabled="!scope.row.amendCloudUrl" @click="previewPointCloud(scope.row)">查看</el-button>
             <el-button type="text" size="small" :disabled="!scope.row.webUrl" @click="previewWebCloud(scope.row)">web查看</el-button>
-            <el-button type="text" size="small" @click="openupadte(scope.row)">编辑</el-button>
+            <!-- <el-button type="text" size="small" @click="openupadte(scope.row)">编辑</el-button> -->
             <el-button type="text" size="small" @click="beforeDelect(scope.row,'/media/cloud/delect')">删除</el-button>
             <!-- <el-button type="text" size="small" @click="openfull(scope.row)">web查看</el-button> -->
           </template>
@@ -114,6 +122,75 @@
         <el-button type="primary" @click="submitUpdate()">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog :visible.sync="dialogAddVisible" width="700px">
+      <span slot="title">
+        <el-tooltip content="数据存储代理文件下" placement="bottom" effect="light">
+          <span>{{ `新增数据` }}<i class="el-icon-warning" :style="{color: iswarn ? '#f56C6C' :'#E6A23C' }" /></span>
+        </el-tooltip>
+      </span>
+      <el-form ref="form2" :model="form2" :rules="rules" style="height: 200px;">
+        <el-col :span="24">
+          <el-form-item label="文件路径" :label-width="'120px'" prop="fullpath">
+            <span slot="label">
+              <i class="el-icon-edit" />
+              pnts路径
+            </span>
+            <el-input v-model="form2.fullpath" class="elinput" autocomplete="off" placeholder="格式：D:\dockerv\nginx\html\proxy\cloud_0731_B001_B006\terra_pnts\tileset.json" @change="changeText($event)" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="类型" :label-width="'120px'" prop="markTag">
+            <el-select v-model="form2.markTag" placeholder="请选择" style="width: 130px;">
+              <el-option
+                v-for="item in cities"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+                <span style="float: left">{{ item.label }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="16">
+          <el-col :span="11">
+            <el-form-item label="区间" :label-width="'100px'" prop="endMarkNumStr">
+              <el-input v-model="form2.startMarkNumStr" style="width: 130px;" class="elinput" autocomplete="off" placeholder="小区间格式：B001" />
+            </el-form-item>
+          </el-col>
+          <el-col class="line" :span="2" style="text-align: center; line-height: 40px;">-</el-col>
+          <el-col :span="11">
+            <el-form-item prop="endMarkNumStr">
+              <el-input v-model="form2.endMarkNumStr" style="width: 130px;" class="elinput" autocomplete="off" placeholder="小区间：B065" />
+            </el-form-item>
+          </el-col>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="文件路径" :label-width="'120px'" prop="fullpath2">
+            <span slot="label">
+              <i class="el-icon-edit" />
+              web路径
+            </span>
+            <el-input v-model="form2.fullpath2" class="elinput" autocomplete="off" placeholder="格式：D:\dockerv\nginx\html\proxy\cloud_0731_B001_B006\out\web.html" @change="changeText2($event)" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="pnts文件夹" :label-width="'120px'" prop="mark">
+            <el-input v-model="form2.mark" class="elinput" style="width: 130px;" autocomplete="off" placeholder="格式：map_0723_A001_A026" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="web文件夹" :label-width="'120px'" prop="mark2">
+            <el-input v-model="form2.mark2" class="elinput" style="width: 130px;" autocomplete="off" placeholder="格式：map_0723_A001_A026" />
+          </el-form-item>
+        </el-col>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="resetForm('form2')">取 消</el-button>
+        <el-button type="primary" :loading="mixinsLoading" @click="submitForm('form2')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -127,8 +204,64 @@ export default {
     props: {
     },
     data() {
-    //这里存放数据
+        const validatePrefixAndNumber = (rule, value, callback) => {
+            if (!value || !value.includes(this.form2.markTag)) {
+                callback(new Error('请与类型保持!'));
+                return
+            }
+            // 字符串以'A'或'B'开头，后续跟随一个或多个数字
+            var reg = /^[AB]\d+$/;
+            if (!reg.test(value)) {
+                callback(new Error('以A或B开头，且后续只能跟随数字!'));
+            } else {
+                callback(); // 验证通过
+            }
+        };
+        //这里存放数据
         return {
+            iswarn: false,
+            cities: [{
+                value: 'B',
+                label: '东西线'
+            }, {
+                value: 'A',
+                label: '南北线'
+            }],
+            dialogAddVisible: false,
+            form2: {
+                fullpath: '',
+                amendCloudUrl: '',
+                fullpath2: '',
+                webUrl: '',
+                mark: null,
+                markTag: 'B',
+                startMarkNumStr: null,
+                startMarkNum: null,
+                endMarkNumStr: null,
+                endMarkNum: null
+            },
+            rules: {
+                fullpath: [
+                    { required: true, message: '请输入文件目录标识,如:cloud_0731_B001_B006', trigger: 'blur' },
+                    { min: 9, max: 165, message: '长度在 9 到 165 个字符', trigger: 'blur' }
+                ],
+                mark: [
+                    { required: true, message: '请输入文件目录标识,如:map_0731_B001_B006', trigger: 'blur' },
+                    { min: 6, max: 50, message: '长度在 6 到 50 个字符', trigger: 'blur' }
+                ],
+                endMarkNumStr: [
+                    { min: 3, max: 50, message: '长度在 3 到 50 个字符', trigger: 'blur' },
+                    { validator: validatePrefixAndNumber, trigger: 'blur' },
+                    { validator: validatePrefixAndNumber, trigger: 'change' },
+                    { required: true, message: '请填写格式：B002', trigger: 'blur' }
+                ],
+                startMarkNumStr: [
+                    { required: true, message: '请填写格式：B002', trigger: 'blur' },
+                    { min: 3, max: 50, message: '长度在 3 到 50 个字符', trigger: 'blur' },
+                    { validator: validatePrefixAndNumber, trigger: 'blur' },
+                    { validator: validatePrefixAndNumber, trigger: 'change' }
+                ]
+            },
             Urldialog: false,
             form: {
                 id: '',
@@ -160,6 +293,117 @@ export default {
     activated() { },
     //方法集合
     methods: {
+        // #region --------------------------------------------------------------- 代理弹窗 ----------------------------------------------------------
+        clickAdd() {
+            this.dialogAddVisible = true
+            this.iswarn = false
+            this.$nextTick(() => {
+                this.$refs['form2'].resetFields()
+	        })
+        },
+        async changeText(e) {
+            const replacedPath = e.replace(/\\/g, '/');
+            console.log(replacedPath);
+            const startIndex = replacedPath.indexOf('proxy');
+            const result = replacedPath.substring(startIndex);
+            if (!result.endsWith('.json')) {
+                this.$message.warning('请选择tileset.json文件')
+                return;
+            }
+            this.fetchAndRead(result)
+            //取出 result 第一个/ 与第二个/ 中间的字符串 有可能不存在第二个/
+            const startIndex2 = result.indexOf('/') + 1;
+            const endIndex2 = result.indexOf('/', startIndex2 + 1);
+            let middleString = result.substring(startIndex2);
+            if (endIndex2 !== -1) {
+                middleString = result.substring(startIndex2, endIndex2);
+                console.log(middleString);
+            }
+            this.form2.mark = middleString
+            this.form2.amendCloudUrl = result
+        },
+        async changeText2(e) {
+            const replacedPath = e.replace(/\\/g, '/');
+            console.log(replacedPath);
+            const startIndex = replacedPath.indexOf('proxy');
+            const result = replacedPath.substring(startIndex);
+            // result 为空
+            if (result === '') {
+                return;
+            }
+            // result 判断字符串后缀是不是 .zip
+            if (!result.endsWith('.html')) {
+                this.$message.warning('请选择一个html文件')
+                return;
+            }
+            this.fetchAndRead(result)
+            //取出 result 第一个/ 与第二个/ 中间的字符串 有可能不存在第二个/
+            const startIndex2 = result.indexOf('/') + 1;
+            const endIndex2 = result.indexOf('/', startIndex2 + 1);
+            let middleString = result.substring(startIndex2);
+            if (endIndex2 !== -1) {
+                middleString = result.substring(startIndex2, endIndex2);
+                console.log(middleString);
+            }
+            this.form2.mark2 = middleString
+            this.form2.webUrl = result
+        },
+        async fetchAndRead(url) {
+            try {
+                const response = await fetch(url)
+                if (!response.ok) {
+                    this.iswarn = true
+                    this.$message.error('请检查是否存放proxy文件夹下');
+                }
+            } catch (err) {
+                this.iswarn = true
+                this.$message.error('请检查是否存放proxy文件夹下');
+            }
+        },
+        submitForm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    console.log('submitForm', this.form2);
+                    this.insertOrUpdate()
+                } else {
+                    // console.log('error submit!!');
+                    return false;
+                }
+            });
+        },
+        async insertOrUpdate() {
+            this.mixinsLoading = true;
+            try {
+            // efapi/pointcloud/media/orthoimg/mapupload
+                this.form2.startMarkNum = this.extractNumberAsString(this.form2.startMarkNumStr)
+                this.form2.endMarkNum = this.extractNumberAsString(this.form2.endMarkNumStr)
+                const reqData = { url: 'media/cloud/insertOrUpdate', data: this.form2 }
+                // const res = await this.$store.dispatch('media/queryList1', reqData)
+                const res = await this.$store.dispatch('media/addproxyMap', reqData);
+                const { code } = res
+                if (code === 1) {
+                    this.formInline.endTime = new Date(Date.now() + 3600);
+                    this.queryList1()
+                }
+            } catch (err) {
+                this.$message.error('新增失败')
+            } finally {
+                this.dialogAddVisible = false
+                this.mixinsLoading = false;
+            }
+        },
+        extractNumberAsString(str) {
+            const match = str.match(/\d+/); // 匹配一个或多个数字
+            return match ? match[0] : null; // 如果没有匹配到数字，则返回null
+        },
+        formatNumber(num) {
+            let str = num.toString();
+            while (str.length < 4) {
+                str = '0' + str;
+            }
+            return str;
+        },
+        // #endregion
         beforeDelect(row, url) {
             try {
                 this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
@@ -377,5 +621,29 @@ export default {
   flex: 1;
   background-color: #fafafa;
   overflow: auto;
+}
+::v-deep .elinput{
+
+input::-webkit-input-placeholder {
+/* WebKit browsers，webkit内核浏览器 */
+color: #ccc;
+font-size: 12px;
+}
+input:-moz-placeholder {
+/* Mozilla Firefox 4 to 18 */
+color: #ccc;
+font-size: 12px;
+}
+input::-moz-placeholder {
+/* Mozilla Firefox 19+ */
+color: #ccc;
+font-size: 12px;
+}
+input:-ms-input-placeholder {
+/* Internet Explorer 10+ */
+color: #ccc;
+font-size: 12px;
+}
+
 }
 </style>

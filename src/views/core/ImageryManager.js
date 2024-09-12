@@ -185,19 +185,8 @@ class ImageryProvider {
         mid: '55555',
         name: 'name',
         mtype: ''
-        // maximumLevel: 20,
-        // minimumLevel: 0,
-        // credit: '谷歌影像'
-        // position: Cesium.Cartesian3.fromDegrees(116.3975, 39.909, 0)
     }
 }
-
-// class TerrainProvider {
-//     constructor(options) {
-//         this.options = options;
-//         this.terrainProvider = new Cesium.CesiumTerrainProvider(options);
-//     }
-// }
 
 export default class ImageryManager {
     constructor(viewer) {
@@ -258,7 +247,12 @@ export default class ImageryManager {
     }
 
     addImagery(options, destination) {
-        const { mtype } = options;
+        const { mtype, name } = options;
+        // 检查是否已存在具有相同 name 的 Imagery
+        if (this.manager.has(name)) {
+            console.log(`addImagery Imagery with name "${name}" already exists. Skipping...`);
+            return;
+        }
         let manager = null
         if (mtype === 'TMS' || mtype === 'WMS') {
             console.log('TMS');
@@ -266,10 +260,7 @@ export default class ImageryManager {
             manager.targetPosition = fromDegrees(destination.longitude, destination.latitude, destination.height)
         } else if (mtype === 'Tileset') {
             manager = new CesiumTileset(this.viewer, { url: options.url });
-            // manager.addTileset('http://127.0.0.1:9090/efuavmodel/pointCloud/kunmingPv/tileset.json')
         }
-
-        const mid = this.generateId()
         this.manager.set(options.name, manager)
         const evt = new CustomEvent('addImageryEvent', {
             detail: {

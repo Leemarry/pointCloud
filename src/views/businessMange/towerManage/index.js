@@ -4,6 +4,7 @@
 import AlImagePreview from '@/views/AlImagePreview/index.vue'
 import currencyMinins from '@/utils/currencyMinins'
 import TowerDrawer from './TowerdDetails/index.vue'
+import KmlDrawer from './TowerdDetails/index2.vue'
 import AlDialog from '@/views/AlDialog/index.vue'
 // import ElImageViewer from 'element-ui/packages/image/src/image-viewer'
 export default {
@@ -11,6 +12,7 @@ export default {
     mixins: [currencyMinins],
     //import引入的组件需要注入到对象中才能使用
     components: {
+        KmlDrawer,
         AlImagePreview,
         TowerDrawer,
         AlDialog
@@ -25,9 +27,11 @@ export default {
             imgList: [],
             previewVisible: false,
             drawerVisible: false,
+            kmlVisible: false,
             towerInfo: {
             },
-            dialogVisible: false
+            dialogVisible: false,
+            isUpdate: false
         };
     },
     //让组件接收外部传来的数据
@@ -59,18 +63,25 @@ export default {
                 })
                 .catch(_ => {});
         },
+        handleClosekml(done) {
+            this.$confirm('确认关闭？')
+                .then(_ => {
+                    this.kmlVisible = false;
+                })
+                .catch(_ => {});
+        },
         operationType(title, obj) {
             this.title = title;
             this.reqData = obj;
         },
         addTowers(data) {
-            console.log('data', data);
             const { id, operation } = data;
             if (operation === 'hand') {
                 this.addTower();
             } else if (operation === 'batch') {
                 this.dialogVisible = true;
-                // this.updateTower({ ...this.towerInfo, id });
+            } else if (operation === 'batchkml') {
+                this.kmlVisible = true
             }
         },
         addTower() {
@@ -79,6 +90,8 @@ export default {
             this.drawerVisible = true;
         },
         updateTower(row) {
+            // '手动新增',{ operation: 'hand' , id : 0, reqUrl:'/business/hand/addOrupdateTower' }
+            this.isUpdate = true
             this.drawerVisible = true;
             this.towerInfo = row;
         },
@@ -105,17 +118,23 @@ export default {
                 this.mixinsLoading = false;
             }
         },
+        restartTowerlist() {
+            this.formInline.endTime = new Date(Date.now() + 3600000);
+            this.queryTowerlist()
+        },
         async queryTowerlist() {
             try {
                 this.mixinsLoading = true;
                 this.beforeFormMixin()
                 const formData = new FormData();
+                this.formInline.endTime = new Date(Date.now() + 5000);
                 formData.append('startTime', this.formInline.startTime.getTime());
                 formData.append('endTime', this.formInline.endTime.getTime()); //
                 formData.append('mark', this.formInline.mark)
-                const res = await this.$store.dispatch('business/getTowerList', formData)
+                const res = await this.$store.dispatch('business/getTowerAllList', formData)
+                // const res = await this.$store.dispatch('business/getTowerList', formData)
                 const { code, message, data } = res;
-                if (code === 1) {
+                if (code > 0) {
                     this.tableData = this.formatTowerData(data)
                 } else {
                     this.$message.error(message);
@@ -126,10 +145,14 @@ export default {
                 this.mixinsLoading = false;
             }
         },
-        async  handTower(towerInfo) {
+        async handTower(towerInfo) {
             // 是否存在id 存在为修改 否则为新增
             try {
-                const res = await this.$store.dispatch('business/handTower', { data: towerInfo, url: this.reqData.reqUrl })
+                let url = this.reqData.reqUrl
+                if (this.isUpdate) {
+                    url = '/business/update/addOrupdateTower'
+                }
+                const res = await this.$store.dispatch('business/handTower', { data: towerInfo, url: url })
                 const { code, message, data } = res;
                 if (code === 1) {
                     const temp = this.formatTowerData([data])
@@ -156,9 +179,10 @@ export default {
             } finally {
                 this.mixinsLoading = false;
                 this.drawerVisible = false;
+                this.isUpdate = false;
             }
         },
-        async submitUpload() {
+        async submitUploadExcel() {
             // reqUrl:'/business/batch/batchInsertTower'
             try {
                 const file = this.fileList[0] || null;

@@ -25,7 +25,7 @@
           <el-input v-model="ruleForm.endTowerMark" style="width: 200px;" />
         </el-form-item>
         <el-form-item label="杆线长度" prop="lineLength">
-          <el-input v-model="ruleForm.lineLength" style="width: 200px;" />
+          <el-input v-model="ruleForm.lineLength" type="number" style="width: 200px;" />
         </el-form-item>
         <el-form-item label="备注" prop="des">
           <el-input v-model="ruleForm.des" type="textarea" style="width: 200px;" />

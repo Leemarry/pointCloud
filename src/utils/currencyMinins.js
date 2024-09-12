@@ -15,6 +15,25 @@ export default {
     //import引入的组件需要注入到对象中才能使用
     components: {},
     data() {
+        // eslint-disable-next-line no-unused-vars
+        const validateLongitude = (rule, value, callback) => {
+            //经度,整数部分为0-180小数部分为0到15位
+            var longreg = /^(\-|\+)?(((\d|[1-9]\d|1[0-7]\d|0{1,3})\.\d{0,15})|(\d|[1-9]\d|1[0-7]\d|0{1,3})|180\.0{0,15}|180)$/
+            if (!longreg.test(value)) {
+                callback(new Error('经度整数部分为0-180,小数部分为0到15位!'))
+            }
+            callback()
+        }
+        // eslint-disable-next-line no-unused-vars
+        const validateLatitude = (rule, value, callback) => {
+            //纬度,整数部分为0-90小数部分为0到15位
+            var latreg = /^(\-|\+)?([0-8]?\d{1}\.\d{0,15}|90\.0{0,15}|[0-8]?\d{1}|90)$/
+            if (!latreg.test(value)) {
+                callback(new Error('纬度整数部分为0-90,小数部分为0到15位!'))
+            }
+            callback()
+        }
+
         //这里存放数据
         const tableData = [];
         const fileMap = {
@@ -69,7 +88,8 @@ export default {
                 mark: null,
                 startTime: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
                 endTime: new Date(Date.now()),
-                type: 0
+                type: 0,
+                fileName: null
             },
             rules: {
                 mark: [
@@ -207,6 +227,7 @@ export default {
                 formdata.append('endTime', this.formInline.endTime);
                 formdata.append('mark', this.formInline.mark)
                 formdata.append('type', this.formInline.type)
+                formdata.append('fileName', this.formInline.fileName)
                 const reqData = { url, formdata }
                 const res = await this.$store.dispatch('media/queryList1', reqData)
                 const { code, message, data } = res;

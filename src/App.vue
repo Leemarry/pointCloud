@@ -25,7 +25,7 @@ export default {
                 this.$gtmessage.success(msg);
                 // console.log(' this.$store', this.$store.getters);
                 // this.$store.commit('clearMessage');
-                this.$store.dispatch('ws/clearMessage') //isProcessWsMessage
+                // this.$store.dispatch('ws/clearMessage') //isProcessWsMessage
             }
         }
     },
@@ -92,15 +92,15 @@ export default {
     },
     methods: {
 
-        onopenWebSocket() {
-            const data = { id: '101', token: store.getters.token }
-            console.log('刷新连接ws:onopenWebSocket');
-            this.$store.dispatch('ws/onopenWebSocket', data)
-        },
-        disconnectWebSocket() {
-            console.log('退出ws断开连接');
-            this.$store.dispatch('ws/disconnectWebSocket') // ws断开连接
-        },
+        // onopenWebSocket() {
+        //     const data = { id: '101', token: store.getters.token }
+        //     console.log('刷新连接ws:onopenWebSocket');
+        //     this.$store.dispatch('ws/onopenWebSocket', data)
+        // },
+        // disconnectWebSocket() {
+        //     console.log('退出ws断开连接');
+        //     this.$store.dispatch('ws/disconnectWebSocket') // ws断开连接
+        // },
         saveState() {
             // console.log("保存状态到Session ...");
             // window.sessionStorage["isopened"] = true;
@@ -117,6 +117,7 @@ html,
 body,
 #app {
   height: 100%;
+  overflow: hidden
 }
 
 /* 加这个，隐藏el-scrollbar水平滚动条，下拉框显示不全*/

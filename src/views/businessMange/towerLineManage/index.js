@@ -63,7 +63,10 @@ export default {
             this.towerInfo = { ...this.towerInfo, mark: '', id: null };
             this.drawerVisible = true;
         },
+        // 编辑
         updateTower(row) {
+            this.title = '手动新增';
+            this.reqData = { operation: 'hand', id: 0, reqUrl: '/business/hand/addOrupdateLine' };
             this.drawerVisible = true;
             this.towerInfo = row;
         },
@@ -119,9 +122,11 @@ export default {
                 const res = await this.$store.dispatch('business/handTowerLine', { data: towerLineInfo, url: this.reqData.reqUrl })
                 const { code, message, data } = res;
                 if (code === 1) {
-                    const temp = this.formatTowerData([data])
+                    // const temp = this.formatTowerData([data])
                     // temp 与 tableData 合并 并放入头部
-                    this.tableData = [...temp, ...this.tableData]
+                    // this.tableData = [...temp, ...this.tableData]
+                    this.formInline.endTime = new Date(Date.now() + 3600);
+                    this.queryTowerLinelist()
                     this.showToast(message, 'success');
                 } else {
                     this.showToast(message, 'error');

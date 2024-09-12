@@ -92,6 +92,15 @@ export function queryList1(data) {
         // })
     })
 }
+export function addproxyMap(reqData) {
+    const { url, data } = reqData
+    return request({
+        url, //: 'media/orthoimg/insertOrUpdate', // /media/orthoImg/querylist
+        method: 'post',
+        timeout: 30000, // 设置超时时间为30秒
+        data
+    })
+}
 
 export function downimg(formdata) {
     return request({
