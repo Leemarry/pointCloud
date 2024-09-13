@@ -57,7 +57,7 @@
             <span>{{ scope.row.des ? `${scope.row.des}` : '暂无' }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="lastpath" label="图片详情">
+        <el-table-column prop="lastpath" label="塔线图片">
           <template slot-scope="scope">
             <el-image style="width: 100px; height: 100px" :src="scope.row.lastpath" fit="fit" @click="beforeView(scope.row.urlList)">
               <div slot="placeholder" class="image-slot">
@@ -66,29 +66,29 @@
             </el-image>
           </template>
         </el-table-column>
-        <el-table-column prop="startTowerMark" label="起始塔编号" width="80">
+        <el-table-column prop="startTowerMark" label="起始杆塔" width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.startTowerMark }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="startUrl" label="图片详情">
+        <el-table-column prop="startUrl" label="杆塔图片">
           <template slot-scope="scope">
             <el-image style="width: 100px; height: 100px;cursor: pointer;" :src="scope.row.startUrl" fit="fit" @click="beforeView(scope.row.startUrlList)" />
           </template>
         </el-table-column>
-        <el-table-column prop="endTowerMark" label="末杆塔编号" width="80">
+        <el-table-column prop="endTowerMark" label="终点杆塔" width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.endTowerMark }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="endUrl" label="图片详情">
+        <el-table-column prop="endUrl" label="杆塔图片">
           <template slot-scope="scope">
             <el-image style="width: 100px; height: 100px" :src="scope.row.endUrl" fit="fit" @click="beforeView(scope.row.endUrlList)" />
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="130">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="beforeView(scope.row)">查看</el-button>
+
             <el-button type="text" size="small" @click="updateTower(scope.row)">编辑</el-button>
             <el-button type="text" size="small" @click="delectTower(scope.row)">删除</el-button>
           </template>
