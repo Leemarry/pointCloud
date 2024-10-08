@@ -21,7 +21,8 @@
           <div> 上传失败：{{ errorList.length }}</div>
         </div>
         <div style="flex: 2;">
-          <el-button type="primary" @click="submitTask(uploadTotalFilesList)">确认上传</el-button>
+          <el-button v-if="!isSubmit" type="primary" :disabled="uploadTotalFilesList.length == 0" @click="submitTask(uploadTotalFilesList)">确认上传</el-button>
+          <el-button v-else type="primary" @click="reSubmitTask()">重新上传</el-button>
           <el-button v-if="!isCancelUpload" type="warning" @click="cancelUpload">取消上传</el-button>
           <el-button v-else type="primary" @click="resumeUpload">恢复</el-button>
         </div>
@@ -71,6 +72,7 @@ export default {
             errorList: [],
             successNum: 0,
             isCancelUpload: false,
+            isSubmit: false,
             xhrList: []
         };
     },
@@ -131,7 +133,6 @@ export default {
             this.classList.remove('over'); // 移除视觉效果
             var items = e.dataTransfer.items; // 获取文件列表
             const arr = []
-
             const fileList = await self.getFilesFromDrops(items)
             console.log('拖放文件数', fileList.length);
             // eslint-disable-next-line require-atomic-updates
@@ -139,7 +140,6 @@ export default {
             // eslint-disable-next-line require-atomic-updates
             self.totalNum = self.uploadTotalFilesList.length
             console.log('拖放文件数', this.totalNum);
-            // self.submitTask(fileList);
         });
     },
     beforeCreate() { }, //生命周期 - 创建之前
@@ -319,40 +319,54 @@ export default {
             this.uploadTotalFilesList = [...this.uploadTotalFilesList, ...tempFilelist];
             console.timeEnd('uploadTotalFiles');
             this.totalNum = this.uploadTotalFilesList.length
-
             // console.log('拖放文件数一般高于15万个文件', this.uploadTotalFilesList);
         },
 
         // 按钮事件点击提交上传  files 就是文件列表 this.uploadTotalFilesList
-        submitTask(files) {
+        async submitTask(files) {
             this.xhrList = [];
-            this.isCancelUpload = false;
-            this.concurRequestfiles(files, this.uploadTotalFilesList, this.reqUrl)
+            this.isCancelUpload = true;
+            this.totalNum = this.uploadTotalFilesList.length
+            const res = await this.beforeUpload(this.uploadTotalFilesList[0], this.totalNum)
+            if (res && res.data.code === 1) {
+                this.isCancelUpload = false;
+                this.successNum = 0
+                this.errorList.length = 0
+                this.isSubmit = true
+                const res = await this.concurRequestfiles(files, this.uploadTotalFilesList, this.reqUrl)
+                console.log(res);
+            }
+        },
+        reSubmitTask() {
+            location.reload();
         },
         // 按钮事件点击取消
         cancelUpload() {
             this.isCancelUpload = true;
-            this.xhrList.forEach(xhr => {
-                if (xhr.readyState !== 4) {
-                    xhr.abort();
-                }
-            });
-            this.xhrList = [];
+            // this.xhrList.forEach(xhr => {
+            //     if (xhr.readyState !== 4) {
+            //         xhr.abort();
+            //     }
+            // });
+            // this.xhrList = [];
         },
         //按钮事件点击恢复
         resumeUpload() {
             this.isCancelUpload = false;
             // 将  uploadTotalFilesList  status 不等于 1  progress 不等于100
             const uploadTotalFilesList = this.uploadTotalFilesList.filter(item => item.status !== 4 || item.progress !== 100);
+            console.log('恢复上传', uploadTotalFilesList.length);
+            this.errorList = []
             this.concurRequestfiles(uploadTotalFilesList, this.uploadTotalFilesList, this.reqUrl)
         },
         concurRequestfiles(files, uploadFilesList, url, maxNum = 2) {
             if (!files || !files.length) {
+                this.$message.warning('剩余文件为空！');
                 return Promise.reject('files is empty');
             }
             const slef = this;
-            const overallMD5 = files.length
-            const fileNum = files.length // 单次提交任务文件数量
+            const overallMD5 = uploadFilesList.length
+            const fileNum = uploadFilesList.length // 单次提交任务文件数量
             return new Promise((resolve) => {
                 let index = 0; // 指向url下标
                 const result = []; // 存放请求结果
@@ -462,6 +476,39 @@ export default {
                 xhr.send(formData);
             });
         },
+        beforeUpload(file, fileNum = 2000) {
+            return new Promise((resolve, reject) => {
+                var formData = new FormData();
+                formData.append('folder', file.folder);
+                formData.append('overallMD5', fileNum)
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = () => {
+                    // 如果请求没有完成, 直接结束
+                    if (xhr.readyState !== 4) {
+                        return;
+                    }
+                    // 如果响应状态码在[200, 300)之间代表成功, 否则失败
+                    const { status, statusText } = xhr;
+                    // 2.1. 如果请求成功了, 调用 resolve()
+                    if (status >= 200 && status <= 299) {
+                        // 准备结果数据对象 response
+                        const response = {
+                            data: JSON.parse(xhr.response),
+                            status,
+                            statusText
+                        };
+                        console.log(response);
+                        resolve(response);
+                    } else {
+                        reject(new Error('request error status is ' + status));
+                    }
+                };
+                // 发送请求
+                xhr.open('POST', 'efapi/pointcloud/media/upload/boforeupload');
+                xhr.setRequestHeader('token', getToken());
+                xhr.send(formData);
+            });
+        },
 
         extractString(str) {
             const lastSlashIndex = str.lastIndexOf('/');
@@ -471,8 +518,6 @@ export default {
             return '/' + str.substring(0, lastSlashIndex);
         },
         toHandleScroll(scrollTop) {
-            console.log('滚动');
-
             this.start = Math.floor(scrollTop / 50)
             this.end = this.start + this.shownumber
         },

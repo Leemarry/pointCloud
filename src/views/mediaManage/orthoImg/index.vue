@@ -391,7 +391,7 @@ export default {
                 const res = await this.$store.dispatch('media/addproxyMap', reqData);
                 const { code } = res
                 if (code === 1) {
-                  this.formInline.endTime = new Date(Date.now() + 3600);
+                    this.formInline.endTime = new Date(Date.now() + 3600);
                     this.queryList1()
                 }
             } catch (err) {

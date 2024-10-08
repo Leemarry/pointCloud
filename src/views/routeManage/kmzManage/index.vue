@@ -24,7 +24,7 @@
           <div slot="header" class="clearfix">
             <span> {{ item.kmzName }}</span>
             <div style="float: right;">
-              <el-button type="text" size="small" style="margin-right: 10px;" @click="openVideoTag(item)">查看.</el-button>
+              <el-button type="text" size="small" style="margin-right: 10px;" @click="openVideoTag(item)">查看</el-button>
               <el-dropdown trigger="click">
                 <span class="el-dropdown-link">
                   <el-button type="text" size="small">更多</el-button>

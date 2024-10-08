@@ -33,7 +33,6 @@
           <el-button style="margin-left: 10px;" size="small" type="success" :disabled="towerPoints.length===0" @click="submitUpload">上传到服务器</el-button>
           <div slot="tip" class="el-upload__tip">只能上传kml文件，且不超过800kb</div>
         </el-upload>
-
       </div>
       <hr>
       <el-table
@@ -138,8 +137,8 @@ export default {
             }
             reader.readAsText(file)
         },
-        addData(data) {
         // 检查是否重复
+        addData(data) {
             let isDuplicate = false;
             for (const existingData of this.towerPoints) {
                 if (existingData.name === data.name && existingData.latStr === data.latStr && existingData.lonStr === data.lonStr && existingData.absaltStr === data.absaltStr) {

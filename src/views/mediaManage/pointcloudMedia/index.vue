@@ -22,8 +22,8 @@
         <el-dropdown split-button type="primary" style="margin-left: 5px;" @click="beforeUpload()">
           {{ title }}
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="operationType('web上传',{ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploadwebcloud' ,title:'web上传'})">web上传</el-dropdown-item>
-            <el-dropdown-item @click.native="operationType('pnts上传',{ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploadpntscloud',title:'pnts上传' })">pnts上传</el-dropdown-item>
+            <el-dropdown-item @click.native="operationType('web格式上传',{ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploadwebcloud' ,title:'web格式上传'})">web格式上传</el-dropdown-item>
+            <el-dropdown-item @click.native="operationType('pnts格式上传',{ fileType: 'cloud' , id : 0, reqUrl:'efapi/pointcloud/media/cloud/uploadpntscloud',title:'pnts上传' })">pnts格式上传</el-dropdown-item>
           </el-dropdown-menu></el-dropdown>
       </div>
     </div>
@@ -268,8 +268,8 @@ export default {
                 webUrl: '',
                 amendCloudUrl: ''
             },
-            title: 'web上传',
-            reqData: { fileType: 'cloud', id: 0, reqUrl: 'efapi/pointcloud/media/cloud/uploadwebcloud', title: 'web上传' },
+            title: 'pnts格式上传',
+            reqData: { fileType: 'cloud', id: 0, reqUrl: 'efapi/pointcloud/media/cloud/uploadpntscloud', title: 'pnts格式上传' },
             reqUrl: '/media/cloud/querylist',
             //分页
             currentPage: 1,

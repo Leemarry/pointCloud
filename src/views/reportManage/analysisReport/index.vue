@@ -80,7 +80,7 @@
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="beforeView(scope.row)">查看</el-button>
             <el-button v-if="!scope.row.downLoadProgress" type="text" size="small" @click="downloadFile(scope.row,scope.$index)">下载</el-button>
-            <el-button v-else type="text" size="small" @click="downloadFile(scope.row,scope.$index)">{{ scope.row.downLoadProgress >= 99 ? '已下载':`${Number(scope.row.downLoadProgress).toFixed(1)}下载中。。` }}</el-button>
+            <el-button v-else type="text" size="small" @click="downloadFile(scope.row,scope.$index)">{{ scope.row.downLoadProgress >= 99 ? '已下载':`${Number(scope.row.downLoadProgress).toFixed(1)}下载中..` }}</el-button>
           </template>
         </el-table-column>
       </el-table>

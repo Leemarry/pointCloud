@@ -169,14 +169,14 @@ export const constantRoutes = [
                 component: () =>
                     import('@/views/mediaManage/orthoImg/index.vue'),
                 meta: { title: '正射影像', icon: 'el-icon-picture' }
-            },
-            {
-                path: '/cs',
-                name: 'cs',
-                component: () =>
-                    import('@/views/mediaManage/orthoImg/csindex.vue'),
-                meta: { title: 'cs', icon: 'el-icon-picture' }
             }
+            // {
+            //     path: '/cs',
+            //     name: 'cs',
+            //     component: () =>
+            //         import('@/views/mediaManage/orthoImg/csindex.vue'),
+            //     meta: { title: 'cs', icon: 'el-icon-picture' }
+            // }
 
         ]
     },

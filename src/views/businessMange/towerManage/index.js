@@ -134,8 +134,12 @@ export default {
                 const res = await this.$store.dispatch('business/getTowerAllList', formData)
                 // const res = await this.$store.dispatch('business/getTowerList', formData)
                 const { code, message, data } = res;
-                if (code > 0) {
-                    this.tableData = this.formatTowerData(data)
+                if (code >= 0) {
+                    if (!data || data.length === 0) {
+                        this.tableData = []
+                    } else {
+                        this.tableData = this.formatTowerData(data)
+                    }
                 } else {
                     this.$message.error(message);
                 }
