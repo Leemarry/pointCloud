@@ -1,7 +1,7 @@
 /*
  * @Date: 2024-07-22 10:39:31
  * @LastEditors: likai 2806699104@qq.com
- * @FilePath: \pointCouldPages\src\api\business.js
+ * @FilePath: \pointCloud\src\api\business.js
  * @Description: Do not edit
  */
 import request from '@/utils/request'
@@ -20,15 +20,41 @@ export function getTowerAllList(formdata) {
     return request({
         url: '/business/tower/queryAlllist',
         method: 'post',
-        data: formdata
+        data: formdata,
+        timeout: 45000 // 设置超时时间为30秒
     })
 }
+
+
+export function queryTowerPhotos(formdata) {
+    return request({
+        url: '/business/tower/queryTowerPhotos',
+        method: 'post',
+        data: formdata,
+        timeout: 45000 // 设置超时时间为30秒
+    })
+}
+
+// queryTowerPhotos
 
 export function getTowerList(formdata) {
     return request({
         url: '/business/tower/querylist',
         method: 'post',
-        data: formdata
+        data: formdata,
+        timeout: 38000 // 设置超时时间为30秒
+        // cancelToken: new CancelToken(cancelFn => {
+        //     cancel && cancel()
+        //     cancel = cancelFn
+        // })
+    })
+}
+export function getTowerList2(formdata) {
+    return request({
+        url: '/business/tower/querylist2',
+        method: 'post',
+        data: formdata,
+        timeout: 38000 // 设置超时时间为30秒
         // cancelToken: new CancelToken(cancelFn => {
         //     cancel && cancel()
         //     cancel = cancelFn
@@ -56,13 +82,29 @@ export function getTowerLineList(formdata) {
     return request({
         url: '/business/line/querylist',
         method: 'post',
-        data: formdata
+        data: formdata,
+        timeout: 45000 // 设置超时时间为30秒
         // cancelToken: new CancelToken(cancelFn => {
         //     cancel && cancel()
         //     cancel = cancelFn
         // })
     })
 }
+
+export function getTowerLineList2(formdata) {
+    return request({
+        url: '/business/line/querylist2',
+        method: 'post',
+        data: formdata,
+        timeout: 45000 // 设置超时时间为30秒
+        // cancelToken: new CancelToken(cancelFn => {
+        //     cancel && cancel()
+        //     cancel = cancelFn
+        // })
+    })
+}
+
+
 
 export function handTower(reqData) {
     const { data, url } = reqData

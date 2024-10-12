@@ -92,7 +92,8 @@ export default {
             mixinsLoading: false,
             kmzData: [],
             clickPhoto: {},
-            points: []
+            points: [],
+            photoList:[]
         };
     },
     //让组件接收外部传来的数据
@@ -257,16 +258,56 @@ export default {
             this.formInline.endTime = this.value1[1]
             this.queryTowerAlllist()
         },
-        clickTowerItem(item) {
+        async clickTowerItem(item) {
             if (item.mark === this.defaultTowerMark) {
                 return;
             }
             const key = 'defaultUav-' + this.userId;
             localStorage.setItem(key, item.mark);
             this.defaultTowerMark = item.mark;
+            await this.queryTowerPhotos(this.defaultTowerMark) 
+            console.log(this.photoList);
+            
             this.defaultTowerInfo = getDefaultObj(this.tableData, 'mark', this.defaultTowerMark)
+            this.defaultTowerInfo.photos = this.photoList
         },
         // 查询
+        async queryTowerPhotos(mark) {
+            try {
+                this.mixinsLoading = true;
+                const formData = new FormData();
+                formData.append('mark', mark)
+                const res = await this.$store.dispatch('business/queryTowerPhotos', formData)
+                const { code, message, data } = res;
+                console.log('queryTowerPhotos',res);
+                
+                if (code > 0) {
+                    this.photoList = data
+                    // this.numberAllUavCount = {
+                    //     number: [code],
+                    //     content: '{nt} 架'
+                    // }
+                    // // 在data 添加 checked
+                    // data.forEach(item => {
+                    //     item.checked = false;
+                    //     item.cloudChecked = false
+                    // })
+                    // this.tableData = data
+                    // this.removeAllImagery()
+                    // if (this.tableData.length > 0) {
+                    //     this.clickTowerItem(this.tableData[0])
+                    //     this.showAllImagery(this.tableData)
+                    // }
+                } else {
+                    this.photoList = []
+                    this.$message.error(message);
+                }
+            } catch (err) {
+                this.showToast(err, 'error');
+            } finally {
+                this.mixinsLoading = false;
+            }
+        },
         // #region ----------------------------------------------------------   查询信息   --------------------------------------------------- ----
         async queryTowerAlllist() {
             try {
@@ -281,7 +322,7 @@ export default {
                 if (code > 0) {
                     this.numberAllUavCount = {
                         number: [code],
-                        content: '{nt} 架'
+                        content: '{nt}  '
                     }
                     // 在data 添加 checked
                     data.forEach(item => {
@@ -373,7 +414,7 @@ export default {
                 this.showMessage('解析kmz文件失败!', 'error')
             });
         },
-        async fetchAndExtractZipContent(url) {
+        async fetchAndExtractZipContent2(url) {
             try {
                 const response = await fetch(url);
 
@@ -384,6 +425,33 @@ export default {
                     const zip = await JSZip.loadAsync(arrayBuffer);
                     // 假设您要获取的文件名是 'file.txt'
                     const file = zip.file('waylines.wpml');
+                    if (file) {
+                        const content = await file.async('text');
+                        return Promise.resolve(content);
+                    } else {
+                        console.error('指定的文件未在压缩包中找到');
+                        return Promise.reject('指定的文件未在压缩包中找到');
+                    }
+                } else {
+                    console.error(`获取压缩包失败，状态码: ${response.status}`);
+                    return Promise.reject(`获取压缩包失败，状态码: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('发生错误:', error);
+                return Promise.reject(error);
+            }
+        },
+
+        async fetchAndExtractZipContent(url) {
+            try {
+                const response = await fetch(url);
+
+                if (response.status === 200) {
+                    const arrayBuffer = await response.arrayBuffer();
+                    // eslint-disable-next-line no-undef
+                    const zip = await JSZip.loadAsync(arrayBuffer);
+                    // 假设您要获取的文件名是 'file.txt'
+                    const file = zip.file('wpmz/waylines.wpml');
                     if (file) {
                         const content = await file.async('text');
                         return Promise.resolve(content);

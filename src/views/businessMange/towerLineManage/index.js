@@ -27,7 +27,8 @@ export default {
             drawerVisible: false,
             towerInfo: {
             },
-            dialogVisible: false
+            dialogVisible: false,
+            nums:0
         };
     },
     //让组件接收外部传来的数据
@@ -103,6 +104,31 @@ export default {
                 formData.append('endTime', this.formInline.endTime.getTime()); //
                 formData.append('mark', this.formInline.mark)
                 const res = await this.$store.dispatch('business/getTowerLineList', formData)
+                const { code, message, data } = res;
+                if (code >= 1) {
+                    this.tableData = this.formatTowerData(data)
+                    this.nums = code
+                } else {
+                    this.nums = 0
+                    this.$message.error(message);
+                }
+            } catch (err) {
+                this.nums = 0
+                this.showToast(err, 'error');
+            } finally {
+                this.mixinsLoading = false;
+            }
+        },
+
+        async queryTowerLinelist2() {
+            try {
+                this.mixinsLoading = true;
+                this.beforeFormMixin()
+                const formData = new FormData();
+                formData.append('startTime', this.formInline.startTime.getTime());
+                formData.append('endTime', this.formInline.endTime.getTime()); //
+                formData.append('mark', this.formInline.mark)
+                const res = await this.$store.dispatch('business/getTowerLineList2', formData)
                 const { code, message, data } = res;
                 if (code === 1) {
                     this.tableData = this.formatTowerData(data)

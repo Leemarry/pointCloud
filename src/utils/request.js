@@ -4,7 +4,7 @@
  * @Author: Eugene
  * @Date: 2023-11-13 10:49:39
  * @LastEditors: likai 2806699104@qq.com
- * @LastEditTime: 2024-07-25 13:16:09
+ * @LastEditTime: 2024-10-10 15:34:06
  */
 // import { MessageBox, Message } from 'element-ui'
 import axios from 'axios'
@@ -26,7 +26,7 @@ const service = axios.create({
     // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
     baseURL: 'efapi/pointcloud', // url = base url + request url
 
-    timeout: 8000 // request timeout
+    timeout: 30000 // request timeout
 })
 // request interceptor
 service.interceptors.request.use(

@@ -38,10 +38,30 @@ const actions = {
             })
         })
     },
+
+    queryTowerPhotos({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            businessApi.queryTowerPhotos(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+
     // #region ta
     getTowerList({ commit, state }, data) {
         return new Promise((resolve, reject) => {
             businessApi.getTowerList(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+    getTowerList2({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            businessApi.getTowerList2(data).then(response => {
                 resolve(response)
             }).catch(error => {
                 reject(error)
@@ -76,6 +96,18 @@ const actions = {
             })
         })
     },
+
+    getTowerLineList2({ commit, state }, data) {
+        return new Promise((resolve, reject) => {
+            businessApi.getTowerLineList2(data).then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+
+    
 
     handTower({ commit, state }, data) {
         return new Promise((resolve, reject) => {

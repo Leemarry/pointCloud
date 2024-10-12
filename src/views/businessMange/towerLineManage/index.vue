@@ -4,7 +4,7 @@
     <div class="media-top">
       <el-form :inline="true" :rules="rules" :model="formInline" class="demo-form-inline">
         <el-form-item label="杆线数目">
-          <el-input v-model="tableData.length" placeholder="杆塔数目" disabled class="custom-input" />
+          <el-input v-model="nums" placeholder="杆塔数目" disabled class="custom-input" />
         </el-form-item>
         <el-form-item label="杆线描述" prop="mark">
           <el-input v-model="formInline.mark" placeholder="塔线编号详情..." />
@@ -20,7 +20,7 @@
         </el-form-item>
       </el-form>
       <div>
-        <el-button type="primary" @click="queryTowerLinelist()">查询</el-button>
+        <el-button type="primary" @click="queryTowerLinelist2()">查询</el-button>
         <el-dropdown split-button type="primary" style="margin-left: 5px;" @click="addTowers(reqData)">
           {{ title }}
           <el-dropdown-menu slot="dropdown">

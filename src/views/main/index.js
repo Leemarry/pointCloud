@@ -409,7 +409,7 @@ export default {
         setUavCount() {
             this.numberAllUavCount = {
                 number: [this.uavs.length],
-                content: '{nt} 架'
+                content: '{nt} '
             }
         },
 

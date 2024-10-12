@@ -38,21 +38,25 @@ export default {
     props: {
     },
     //监听属性 类似于data概念
-    computed: {},
+    computed: {
+        // showCrossingSituation() {
+        //     return this.props.row.crossingSituation && this.props.row.crossingSituation!== '无';
+        //   },
+    },
     //监控data中的数据变化
     watch: {
         // 监听 tableData 变化
-        'tableData': {
-            handler(newVal, oldVal) {
-                console.log('tableData', this.tableData.length);
-                if (this.tableData.length && this.tableData.length > 0) {
-                    this.formInline.total = this.tableData.length;
-                } else {
-                    this.formInline.total = 0;
-                }
-            },
-            deep: true
-        }
+        // 'tableData': {
+        //     handler(newVal, oldVal) {
+        //         console.log('tableData', this.tableData.length);
+        //         if (this.tableData.length && this.tableData.length > 0) {
+        //             this.formInline.total = this.tableData.length;
+        //         } else {
+        //             this.formInline.total = 0;
+        //         }
+        //     },
+        //     deep: true
+        // }
     },
     //方法集合
     methods: {
@@ -131,8 +135,37 @@ export default {
                 formData.append('startTime', this.formInline.startTime.getTime());
                 formData.append('endTime', this.formInline.endTime.getTime()); //
                 formData.append('mark', this.formInline.mark)
-                const res = await this.$store.dispatch('business/getTowerAllList', formData)
-                // const res = await this.$store.dispatch('business/getTowerList', formData)
+                //const res = await this.$store.dispatch('business/getTowerAllList', formData)
+                const res = await this.$store.dispatch('business/getTowerList', formData) // querylist
+                const { code, message, data } = res;
+                if (code >= 0) {
+                    this.formInline.total = code;
+                    if (!data || data.length === 0) {
+                        this.tableData = []
+                    } else {
+                        this.tableData = this.formatTowerData(data)
+                    }
+                } else {
+                    this.formInline.total = 0;
+                    this.$message.error(message);
+                }
+            } catch (err) {
+                this.showToast(err, 'error');
+            } finally {
+                this.mixinsLoading = false;
+            }
+        },
+        async queryTowerlist2() {
+            try {
+                this.mixinsLoading = true;
+                this.beforeFormMixin()
+                const formData = new FormData();
+                this.formInline.endTime = new Date(Date.now() + 5000);
+                formData.append('startTime', this.formInline.startTime.getTime());
+                formData.append('endTime', this.formInline.endTime.getTime()); //
+                formData.append('mark', this.formInline.mark)
+                //const res = await this.$store.dispatch('business/getTowerAllList', formData)
+                const res = await this.$store.dispatch('business/getTowerList2', formData) // querylist
                 const { code, message, data } = res;
                 if (code >= 0) {
                     if (!data || data.length === 0) {
