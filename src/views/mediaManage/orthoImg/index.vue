@@ -311,6 +311,7 @@ export default {
             console.log(replacedPath);
             const startIndex = replacedPath.indexOf('proxy');
             const result = replacedPath.substring(startIndex);
+            console.log('replacedPath', result);
             this.fetchAndRead(result)
             //取出 result 第一个/ 与第二个/ 中间的字符串 有可能不存在第二个/
             const startIndex2 = result.indexOf('/') + 1;
