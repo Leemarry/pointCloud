@@ -2,13 +2,13 @@
   <el-card :body-style=" { padding: '0px',margin: '0px'}" shadow="hover" :class="checked?'cardBgChecked':'cardBg'" @click.native="dblclick">
     <div class="main">
       <div class="mainLeft">
-        <svg-icon :icon-class="uavImage" :style="getOnlineStyle()" class-name="icon" />
+        <svg-icon :icon-class="uavImage" :style="getOnlineStyle()" class-name="icon" @click.stop="sendOpenWeb()" />
       </div>
       <div class="mainMiddle" :style="online?'color:#3de7c9':'color:white'">{{ getSubstring(uavName,13) }}</div>
       <div class="mainRight svg-flex">
-        <svg-icon icon-class="iamg" color="red" class-name="icon" :style="getOnlineStyle()" @click.stop="sendViewerImage()" />
-        <svg-icon icon-class="tower_viewer" :color="!cloudchecked ? '#272636':'red'" class-name="icon" :style="getOnlineStyle()" title="聚焦显示" @click.stop="cloudchecked ?sendHideCloud() : sendShowCloud()" />
-        <svg-icon icon-class="foucs" color="#272636" class-name="icon" :style="getOnlineStyle()" title="聚焦图层" @click.stop="sendFocus()" />
+        <!-- <svg-icon icon-class="iamg" color="red" class-name="icon" :style="getOnlineStyle()" @click.stop="sendViewerImage()" /> -->
+        <!-- <svg-icon icon-class="tower_viewer" :color="!cloudchecked ? '#272636':'red'" class-name="icon" :style="getOnlineStyle()" title="聚焦显示" @click.stop="cloudchecked ?sendHideCloud() : sendShowCloud()" /> -->
+        <!-- <svg-icon icon-class="foucs" color="#272636" class-name="icon" :style="getOnlineStyle()" title="聚焦图层" @click.stop="sendFocus()" /> -->
         <svg-icon icon-class="web2" class-name="icon" color="#272636" :style="getOnlineStyle()" @click.stop="sendOpenWeb()" />
         <!-- <svg-icon :icon-class="uavImage" class-name="icon" :style="getOnlineStyle()" /> -->
       </div>

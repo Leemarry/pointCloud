@@ -2,7 +2,7 @@
 <!--
  * @Date: 2024-07-18 10:33:53
  * @LastEditors: likai 2806699104@qq.com
- * @FilePath: \pointCloud\src\views\routeManage\kmzManage\index.vue
+ * @FilePath: \pointCouldPages\src\views\routeManage\kmzManage\index.vue
  * @Description: Do not edit
 -->
 <!-- kmz管理 -->
@@ -154,55 +154,56 @@ export default {
             }
             )
         },
-        async  fetchAndExtractZipConten(url) {  
-    try {  
-        const response = await fetch(url);  
-  
-        if (response.status === 200) {  
-            const arrayBuffer = await response.arrayBuffer();  
-            const zip = await JSZip.loadAsync(arrayBuffer);  
-  
-            // 定义一个递归函数来查找文件  
-            async function findFileInFolder(folder, fileName) {  
-                for (const name of folder.names()) {  
-                    const entry = folder.file(name);  
-                    if (!entry.dir) {  
-                        // 如果是一个文件，检查文件名  
-                        if (entry.name === fileName) {  
-                            return entry;  
-                        }  
-                    } else {  
-                        // 如果是一个文件夹，递归查找  
-                        const subFolder = await entry.async('folder');  
-                        const foundFile = await findFileInFolder(subFolder, fileName);  
-                        if (foundFile) {  
-                            return foundFile;  
-                        }  
-                    }  
-                }  
-                // 如果没有找到文件  
-                return null;  
-            }  
-  
-            // 从根目录开始查找  
-            const file = await findFileInFolder(zip.root, 'waylines.wpml');   //waylines.wpml
-  
-            if (file) {  
-                const content = await file.async('text');  
-                return Promise.resolve(content);  
-            } else {  
-                console.error('指定的文件未在压缩包中找到');  
-                return Promise.reject('指定的文件未在压缩包中找到');  
-            }  
-        } else {  
-            console.error(`获取压缩包失败，状态码: ${response.status}`);  
-            return Promise.reject(`获取压缩包失败，状态码: ${response.status}`);  
-        }  
-    } catch (error) {  
-        console.error('发生错误:', error);  
-        return Promise.reject(error);  
-    }  
-},
+        async  fetchAndExtractZipConten(url) {
+            try {
+                const response = await fetch(url);
+
+                if (response.status === 200) {
+                    const arrayBuffer = await response.arrayBuffer();
+                    const zip = await JSZip.loadAsync(arrayBuffer);
+
+                    // 定义一个递归函数来查找文件
+                    // eslint-disable-next-line no-inner-declarations
+                    async function findFileInFolder(folder, fileName) {
+                        for (const name of folder.names()) {
+                            const entry = folder.file(name);
+                            if (!entry.dir) {
+                                // 如果是一个文件，检查文件名
+                                if (entry.name === fileName) {
+                                    return entry;
+                                }
+                            } else {
+                                // 如果是一个文件夹，递归查找
+                                const subFolder = await entry.async('folder');
+                                const foundFile = await findFileInFolder(subFolder, fileName);
+                                if (foundFile) {
+                                    return foundFile;
+                                }
+                            }
+                        }
+                        // 如果没有找到文件
+                        return null;
+                    }
+
+                    // 从根目录开始查找
+                    const file = await findFileInFolder(zip.root, 'waylines.wpml'); //waylines.wpml
+
+                    if (file) {
+                        const content = await file.async('text');
+                        return Promise.resolve(content);
+                    } else {
+                        console.error('指定的文件未在压缩包中找到');
+                        return Promise.reject('指定的文件未在压缩包中找到');
+                    }
+                } else {
+                    console.error(`获取压缩包失败，状态码: ${response.status}`);
+                    return Promise.reject(`获取压缩包失败，状态码: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('发生错误:', error);
+                return Promise.reject(error);
+            }
+        },
         async fetchAndExtractZipContent(url) {
             try {
                 const response = await fetch(url);
@@ -230,50 +231,49 @@ export default {
             }
         },
 
-
         async  fetchAndExtractZipContents(url) {
-    try {
-        const response = await fetch(url);
+            try {
+                const response = await fetch(url);
 
-        if (response.status === 200) {
-            const arrayBuffer = await response.arrayBuffer();
-            const zip = await JSZip.loadAsync(arrayBuffer);
+                if (response.status === 200) {
+                    const arrayBuffer = await response.arrayBuffer();
+                    const zip = await JSZip.loadAsync(arrayBuffer);
 
-            function recursiveFind(filePath) {
-                const file = zip.file(filePath);
-                if (file) {
-                    return file.async('text');
-                } else {
-                    // 尝试在子文件夹中查找
-                    for (const folderName in zip.files) {
-                        if (zip.files[folderName].dir && folderName!== ".." && folderName!== ".") {
-                            const subPath = `${folderName}/waylines.wpml`;
-                            const result = recursiveFind(subPath);
-                            if (result) {
-                                return result;
+                    function recursiveFind(filePath) {
+                        const file = zip.file(filePath);
+                        if (file) {
+                            return file.async('text');
+                        } else {
+                            // 尝试在子文件夹中查找
+                            for (const folderName in zip.files) {
+                                if (zip.files[folderName].dir && folderName !== '..' && folderName !== '.') {
+                                    const subPath = `${folderName}/waylines.wpml`;
+                                    const result = recursiveFind(subPath);
+                                    if (result) {
+                                        return result;
+                                    }
+                                }
                             }
+                            return null;
                         }
                     }
-                    return null;
-                }
-            }
 
-            const content = await recursiveFind('waylines.wpml');
-            if (content) {
-                return Promise.resolve(content);
-            } else {
-                console.error('指定的文件未在压缩包中找到');
-                return Promise.reject('指定的文件未在压缩包中找到');
+                    const content = await recursiveFind('waylines.wpml');
+                    if (content) {
+                        return Promise.resolve(content);
+                    } else {
+                        console.error('指定的文件未在压缩包中找到');
+                        return Promise.reject('指定的文件未在压缩包中找到');
+                    }
+                } else {
+                    console.error(`获取压缩包失败，状态码: ${response.status}`);
+                    return Promise.reject(`获取压缩包失败，状态码: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('发生错误:', error);
+                return Promise.reject(error);
             }
-        } else {
-            console.error(`获取压缩包失败，状态码: ${response.status}`);
-            return Promise.reject(`获取压缩包失败，状态码: ${response.status}`);
-        }
-    } catch (error) {
-        console.error('发生错误:', error);
-        return Promise.reject(error);
-    }
-},
+        },
 
         async downloadVideos(row) {
             const url = row.kmzPath;

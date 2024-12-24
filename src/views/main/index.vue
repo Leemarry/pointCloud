@@ -50,7 +50,7 @@
                   </el-col>
                   <el-col :span="14">
                     <div class="uav_iteminfo">
-                      <div v-if="defaultTowerMark === null ||defaultTowerMark == ''" class="no_uav"><i class="el-icon-warning-outline">未选中</i></div>
+                      <div v-if="defaultTowerMark === null || defaultTowerMark == ''" class="no_uav"><i class="el-icon-warning-outline">未选中</i></div>
                       <div class="haveSn">{{ defaultTowerMark }}</div>
                     </div>
                   </el-col>
@@ -60,7 +60,7 @@
             <div class="main_right_parms_title" @click="senddoFlyCommandsEvent(1006)">杆塔列表</div>
             <dv-border-box-7 class="main_left_uav">
               <div class="main_left_uav_body">
-                <el-date-picker
+                <!-- <el-date-picker
                   v-model="value1"
                   type="datetimerange"
                   range-separator="至"
@@ -68,11 +68,30 @@
                   end-placeholder="结束日期"
                   :default-time="['3:00:00', '23:00:00']"
                   @change="handleChange"
-                />
-                <div v-if="tableData.length>0" class="uav-list">
+                /> -->
+                <div v-if="tableData.length > 0" class="uav-list">
                   <el-scrollbar style="width:98%" wrap-style="overflow-x:hidden;flex:1">
-                    <el-row v-for="(item,index) in tableData" :key="index" :gutter="1" justify="flex" align="middle" style="margin:8px">
-                      <TowerItem ref="TowerItem" :uav-name="item.mark" :uav-sn="item.id" :online="item.checked" :cloudchecked="item.cloudChecked" @click.native="clickTowerItem(item)" @sendOpenWeb="OpenWeb" @sendToFocus="toFocus" @sendShowCloud="showCloud" @sendHideCloud="hideCloud" />
+                    <el-row :gutter="1" justify="flex" align="middle" style="margin:8px">
+                      <el-select class='towerlist'v-model="state1" filterable placeholder="请选择" @change="handleSelect">
+                        <el-option v-for="item in tableData" :key="item.value" class="towerlist" :label="item.mark" :value="item.value">
+                          <span style="float: left">{{ item.mark }}</span>
+                          <span style="float: right; color: #8492a6; font-size: 13px">{{ item.type ? item.type :'' }}</span>
+                        </el-option>
+                      </el-select>
+                    </el-row>
+                    <el-row v-for="(item, index) in tableData" :key="index" :gutter="1" justify="flex" align="middle" style="margin:8px">
+                      <TowerItem
+                        ref="TowerItem"
+                        :uav-name="item.mark"
+                        :uav-sn="item.id"
+                        :online="item.checked"
+                        :cloudchecked="item.cloudChecked"
+                        @click.native="clickTowerItem(item)"
+                        @sendOpenWeb="OpenWeb"
+                        @sendToFocus="toFocus"
+                        @sendShowCloud="showCloud"
+                        @sendHideCloud="hideCloud"
+                      />
                     </el-row>
                   </el-scrollbar>
                 </div>
@@ -85,21 +104,32 @@
                 <div class="statistics-top-box">
                   <el-row>
                     <el-col :span="4">
-                      <div style="text-align: center;" :class="{cursorStyle:true, active: isActive == '1' }" @click="SelectTime(1)">半年</div>
+                      <div style="text-align: center;" :class="{ cursorStyle: true, active: isActive == '1' }" @click="SelectTime(1)">半年</div>
                     </el-col>
                     <el-col :span="4">
-                      <div style="text-align: center;" :class="{ cursorStyle:true, active: isActive == '3' }" @click="SelectTime(3)">本月</div>
+                      <div style="text-align: center;" :class="{ cursorStyle: true, active: isActive == '3' }" @click="SelectTime(3)">本月</div>
                     </el-col>
                     <el-col :span="4">
-                      <div style="text-align: center;" :class="'cursorStyle' + (isActive == '2' ? 'active' :'') " @click="SelectTime(2)">本周</div>
+                      <div style="text-align: center;" :class="'cursorStyle' + (isActive == '2' ? 'active' : '')" @click="SelectTime(2)">本周</div>
                     </el-col>
                     <el-col :span="9">
-                      <i style="margin:0px 5px; float: right;" title="解析航线" class="iconfont  icon-hangxianxinxi cursorStyle" :class="{ disabled: maploading }" @click="maploading ? null :openVideoTag()" />
+                      <i
+                        style="margin:0px 5px; float: right;"
+                        title="解析航线"
+                        class="iconfont  icon-hangxianxinxi cursorStyle"
+                        :class="{ disabled: maploading }"
+                        @click="maploading ? null : openVideoTag()"
+                      />
                     </el-col>
                   </el-row>
                 </div>
                 <el-scrollbar v-if="!tasksLoading" class="scrollbar" style="width:98%;" wrap-style="overflow-x:hidden;flex:1;font-size:small;">
-                  <div v-for="(item,index) in kmzData.slice((currentPage-1)*pagesize,currentPage*pagesize)" :key="index" :class="'route_item plusInborder cursorStyle' + (currentIndex === index ? ' showplusInborder' : '')" @click="changeColor(index,item)">
+                  <div
+                    v-for="(item, index) in kmzData.slice((currentPage - 1) * pagesize, currentPage * pagesize)"
+                    :key="index"
+                    :class="'route_item plusInborder cursorStyle' + (currentIndex === index ? ' showplusInborder' : '')"
+                    @click="changeColor(index, item)"
+                  >
                     <span>{{ parseTime(item.createTime) }}</span>
                     <!-- parseTime(item.createTime -->
                     <span>{{ item.kmzName }}</span>
@@ -107,28 +137,52 @@
                 </el-scrollbar>
                 <div v-else v-loading="tasksLoading" class="scrollbar" element-loading-text="正在加载中" element-loading-background="rgba(15, 15, 15, 0.3)" />
                 <div class="pageNaN">
-                  <el-pagination class="pagination" layout="prev, pager, next" :pager-count="5" :current-page.sync="currentPage" :total="tasksRoutes.length" :page-size="pagesize" @current-change="current_change" />
+                  <el-pagination
+                    class="pagination"
+                    layout="prev, pager, next"
+                    :pager-count="5"
+                    :current-page.sync="currentPage"
+                    :total="tasksRoutes.length"
+                    :page-size="pagesize"
+                    @current-change="current_change"
+                  />
                 </div>
               </div>
             </dv-border-box-7>
           </div>
-          <div ref="mainMiddle" v-loading="maploading" element-loading-spinner="el-icon-loading" :element-loading-text="loadingText" :element-loading-background="this.loadingBackground" class="mainMiddle height-calc zindex include_cesium_blocks">
-            <CesiumMap ref="CesiumMap" :visible="CesiumDrawVisible" :maploading="maploading" :tasks-routes="tasksRoutes" :tasks-name="tasksName" :default-uav-sn="defaultUavSn" @senddoFlyCommands="senddoFlyCommandsEvent" @getClickPoint="getClickPoint" />
+          <div
+            ref="mainMiddle"
+            v-loading="maploading"
+            element-loading-spinner="el-icon-loading"
+            :element-loading-text="loadingText"
+            :element-loading-background="this.loadingBackground"
+            class="mainMiddle height-calc zindex include_cesium_blocks"
+          >
+            <CesiumMap
+              ref="CesiumMap"
+              :visible="CesiumDrawVisible"
+              :maploading="maploading"
+              :tasks-routes="tasksRoutes"
+              :tasks-name="tasksName"
+              :default-uav-sn="defaultUavSn"
+              @senddoFlyCommands="senddoFlyCommandsEvent"
+              @getClickPoint="getClickPoint"
+            />
             <div v-show="isMap" class="drawButton">
-              <i class="el-icon-edit clickstyle" :title="'绘制'" @click="CesiumDrawVisible=!CesiumDrawVisible" />
+              <i class="el-icon-edit clickstyle" :title="'绘制'" @click="CesiumDrawVisible = !CesiumDrawVisible" />
             </div>
           </div>
           <div class="mainRight">
             <dv-border-box-7 class="main_right_hud">
-                <el-image :src="clickPhoto&&clickPhoto.path" style="width: 100%; height: 200px;">
-                    <div slot="placeholder" class="image-slot">
-                      加载中<span class="dot">...</span>
-                    </div>
-                  </el-image>
+              <el-image :src="clickPhoto && clickPhoto.path" style="width: 100%; height: 200px;">
+                <div slot="placeholder" class="image-slot">
+                  加载中<span class="dot">...</span>
+                </div>
+              </el-image>
             </dv-border-box-7>
             <div class="main_right_parms_title">杆塔数据</div>
             <dv-border-box-7 class="main_right_parms  hei500">
-              <template v-if="defaultTowerInfo.photos&&defaultTowerInfo.photos.length>0">
+              <template v-if="defaultTowerInfo.photos && defaultTowerInfo.photos.length > 0">
                 <virtual-list
                   class="list virtual-list"
                   style="height:calc(100% - 2px); overflow-y: auto;"

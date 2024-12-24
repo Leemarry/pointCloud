@@ -93,7 +93,8 @@ export default {
             kmzData: [],
             clickPhoto: {},
             points: [],
-            photoList:[]
+            photoList: [],
+            state1: ''
         };
     },
     //让组件接收外部传来的数据
@@ -197,6 +198,18 @@ export default {
                 this.showToast('未查询点云数据')
             }
         },
+        showCloud2(pointCloud) {
+            if (pointCloud && pointCloud.amendCloudUrl) {
+                const url = pointCloud.amendCloudUrl
+                const mtype = 'Tileset'
+                const name = pointCloud.amendCloudUrl // tower.id + 'cloud'; // `${new Date().getTime()}`
+                const latitude = null;//tower.lat
+                const longitude = null;// tower.lon
+                this.$bus.$emit('send:addImagery', { url, longitude, latitude, height: 200, name, mtype });
+            } else {
+                this.showToast('未查询点云数据')
+            }
+        },
 
         hideCloud(id) {
             const tower = this.tableData.find(item => item.id === id);
@@ -238,6 +251,21 @@ export default {
         },
         toFocus(id) {
             const tower = this.tableData.find(item => item.id === id);
+            const latitude = tower.lat
+            const longitude = tower.lon
+            if (isValidLatLng(latitude, longitude)) {
+                console.log('经纬度有效', tower, latitude, longitude);
+                const url = null;// tower.orthoImg.mapPath;
+                const destination = { latitude, longitude, height: 120 }
+                this.$bus.$emit('send:toFocus', url, destination);
+            } else {
+                // console.log('经纬度无效或不存在');
+                this.$message.warning('经纬度无效或不存在')
+            }
+        },
+
+        toFocus2(id) {
+            const tower = this.tableData.find(item => item.id === id);
             if (tower.orthoImg && tower.orthoImg.mapPath) {
                 const latitude = tower.lat
                 const longitude = tower.lon
@@ -259,15 +287,15 @@ export default {
             this.queryTowerAlllist()
         },
         async clickTowerItem(item) {
+            this.toFocus(item.id) // 补加
             if (item.mark === this.defaultTowerMark) {
                 return;
             }
             const key = 'defaultUav-' + this.userId;
             localStorage.setItem(key, item.mark);
             this.defaultTowerMark = item.mark;
-            await this.queryTowerPhotos(this.defaultTowerMark) 
+            await this.queryTowerPhotos(this.defaultTowerMark)
             console.log(this.photoList);
-            
             this.defaultTowerInfo = getDefaultObj(this.tableData, 'mark', this.defaultTowerMark)
             this.defaultTowerInfo.photos = this.photoList
         },
@@ -279,25 +307,9 @@ export default {
                 formData.append('mark', mark)
                 const res = await this.$store.dispatch('business/queryTowerPhotos', formData)
                 const { code, message, data } = res;
-                console.log('queryTowerPhotos',res);
-                
+                console.log('queryTowerPhotos', res);
                 if (code > 0) {
                     this.photoList = data
-                    // this.numberAllUavCount = {
-                    //     number: [code],
-                    //     content: '{nt} 架'
-                    // }
-                    // // 在data 添加 checked
-                    // data.forEach(item => {
-                    //     item.checked = false;
-                    //     item.cloudChecked = false
-                    // })
-                    // this.tableData = data
-                    // this.removeAllImagery()
-                    // if (this.tableData.length > 0) {
-                    //     this.clickTowerItem(this.tableData[0])
-                    //     this.showAllImagery(this.tableData)
-                    // }
                 } else {
                     this.photoList = []
                     this.$message.error(message);
@@ -328,12 +340,13 @@ export default {
                     data.forEach(item => {
                         item.checked = false;
                         item.cloudChecked = false
+                        item.value = item.mark
                     })
                     this.tableData = data
-                    this.removeAllImagery()
+                    // this.removeAllImagery()
                     if (this.tableData.length > 0) {
                         this.clickTowerItem(this.tableData[0])
-                        this.showAllImagery(this.tableData)
+                        // this.showAllImagery(this.tableData)
                     }
                 } else {
                     this.$message.error(message);
@@ -343,6 +356,58 @@ export default {
             } finally {
                 this.mixinsLoading = false;
             }
+        },
+        //重新点云与正射
+        async queryorthoImgList() {
+            try {
+                this.mixinsLoading = true;
+                const res = await this.$store.dispatch('media/queryorthoImgList')
+                const { code, message, data } = res;
+                if (code > 0) {
+                    for (let index = 0; index < data.length; index++) {
+                        const orthoImg = data[index]; // orthoImg
+                        const latitude = orthoImg.lat
+                        const longitude = orthoImg.lon
+                        if (orthoImg.mapPath) {
+                            const url = orthoImg.mapPath
+                            const name = orthoImg.mapPath //tower.id
+                            const mtype = 'TMS'
+                            this.$bus.$emit('send:addImagery', { url, longitude, latitude, height: 1000, name, mtype });
+                        } else {
+                            continue;
+                        }
+                    }
+                } else {
+                    this.$message.error(message);
+                }
+            } catch (err) {
+                this.showToast(err, 'error');
+            } finally {
+                this.mixinsLoading = false;
+            }
+        },
+        async qusrypointCloudList() {
+            try {
+                this.mixinsLoading = true;
+                const res = await this.$store.dispatch('media/qusrypointCloudList')
+                const { code, message, data } = res;
+                if (code > 0) {
+                    for (let index = 0; index < data.length; index++) {
+                        const pointclout = data[index]; // orthoImg
+                        this.showCloud2(pointclout)
+                    }
+                } else {
+                    this.$message.error(message);
+                }
+            } catch (err) {
+                this.showToast(err, 'error');
+            } finally {
+                this.mixinsLoading = false;
+            }
+        },
+        handleSelect(mark) {
+            const tower = this.tableData.find(item => item.value === mark);
+            this.clickTowerItem(tower)
         },
         async ChoiseKmzTimeEvent(choiseTime) {
             try {
@@ -535,7 +600,7 @@ export default {
             } else {
                 if (
                     new Date(this.formInline.startTime).getTime() >=
-                new Date(this.formInline.endTime).getTime()
+                    new Date(this.formInline.endTime).getTime()
                 ) {
                     callback(new Error('结束时间必须大于开始时间！'))
                 } else {
@@ -616,6 +681,9 @@ export default {
     mounted() {
         console.log('mounted生命周期 - 挂载完成（可以访问DOM元素）');
         this.queryTowerAlllist()
+        this.removeAllImagery()
+        this.qusrypointCloudList()
+        this.queryorthoImgList()
     },
     beforeCreate() { }, //生命周期 - 创建之前
     beforeMount() { }, //生命周期 - 挂载之前

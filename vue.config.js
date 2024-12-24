@@ -68,7 +68,7 @@ module.exports = {
             },
             // miniosource/efuav-image/pointcloud/2/mage_202408160833_001_B001/images/survey/1dc0efae7a0a94552857781c2fb53501ff90063c.JPG
             'miniosource': {
-                target: 'http://127.0.0.1:9000', // 'http://localhost:9090',
+                target: 'http://127.0.0.1:9090', // 'http://localhost:9090',
                 changeOrigin: true,
                 logLevel: 'debug',
                 pathRewrite: {
@@ -90,6 +90,15 @@ module.exports = {
                 }
 
             },
+            '/staticResource': {
+                target: 'http://localhost:456',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/staticResource': '/staticResource'
+                }
+
+            },
+
             // http://localhost:456/proxy/image/PDF.jpg
             'proxy': {
                 target: 'http://localhost:456',

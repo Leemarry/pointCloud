@@ -1,7 +1,7 @@
 /*
  * @Date: 2024-07-22 10:39:31
  * @LastEditors: likai 2806699104@qq.com
- * @FilePath: \pointCloud\src\api\business.js
+ * @FilePath: \pointCouldPages\src\api\business.js
  * @Description: Do not edit
  */
 import request from '@/utils/request'
@@ -18,7 +18,7 @@ export function getDangerPointList(formdata) {
 //#regin ta
 export function getTowerAllList(formdata) {
     return request({
-        url: '/business/tower/queryAlllist',
+        url: '/business/tower/queryAlllist2',
         method: 'post',
         data: formdata,
         timeout: 45000 // 设置超时时间为30秒

@@ -963,3 +963,21 @@ canvas {
   color: #909399;
   font-size: 14px;
 }
+
+::v-deep .towerlist{
+  .el-input__inner {
+    background-color: transparent !important;
+    border-color: #555555;
+    box-shadow: 1px 1px 5px 1px RGB(128, 255, 255, 0.1) inset;
+    height: 30px;
+    width: 305px;
+    .el-input__icon ,.el-range__icon , .el-icon-time {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .el-range-input{
+      background-color: #212121;
+    }
+  }
+  }

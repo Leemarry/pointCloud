@@ -1,5 +1,5 @@
 <template>
-  <div id="Mapss" ref="map" class="map-home" />
+    <div id="Mapss" ref="map" class="map-home" />
 </template>
 <script>
 import * as turf from '@turf/turf';
@@ -40,7 +40,7 @@ export default {
     name: 'OlMaps',
     props: {
         centerPosition: {
-            default: function() {
+            default: function () {
                 return [114.27932686576446, 37.540419484036846];
             },
             type: null
@@ -142,7 +142,7 @@ export default {
                 source: new XYZ({
                     visible: true,
                     wrapX: false,
-                    url: 'mapsource/satellite/{z}/{x}/{y}.jpg' //'http://127.0.0.1:9090/efuav-image/hubeijux/Satellite/{z}/{x}/{y}.png'
+                    url: '/mapsource/satellite/{z}/{x}/{y}.png' // 'mapsource/satellite/{z}/{x}/{y}.jpg' //'http://127.0.0.1:9090/efuav-image/hubeijux/Satellite/{z}/{x}/{y}.png'
                 })
             })
 
@@ -165,6 +165,10 @@ export default {
          * 批量根据经纬度坐标打点
          */
         drowRoute(points) {
+            // 如果已经存在图层，先移除它
+            if (this.pointLayer) {
+                this.map.removeLayer(this.pointLayer);
+            }
             // 中心点featureCollection
             const featureCollection = [];
             points.forEach(point => {

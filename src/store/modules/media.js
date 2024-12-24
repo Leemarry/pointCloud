@@ -113,7 +113,28 @@ const actions = {
                 reject(error)
             })
         })
+    },
+
+    queryorthoImgList({ commit, state }) {
+        return new Promise((resolve, reject) => {
+            mediaApi.queryorthoImgList().then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+
+    qusrypointCloudList({ commit, state }) {
+        return new Promise((resolve, reject) => {
+            mediaApi.qusrypointCloudList().then(response => {
+                resolve(response)
+            }).catch(error => {
+                reject(error)
+            })
+        })
     }
+
 
 }
 

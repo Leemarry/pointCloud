@@ -273,8 +273,8 @@ export default {
             if (window.viewer) {
                 window.viewer.destroy();
             }// 初始时，判断视口是否存在
-
-            const serviceURL = 'mapsource/satellite/{z}/{x}/{y}.jpg' //http://127.0.0.1:456/static/satellite/{z}/{x}/{y}.jpg'
+            // http://localhost:456/mapsource/satellite/9/409/209.png
+            const serviceURL = '/mapsource/satellite/{z}/{x}/{y}.png' //http://127.0.0.1:456/static/satellite/{z}/{x}/{y}.jpg'
             // 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=' +
             // '1' +
             // '&style=' +
@@ -283,8 +283,8 @@ export default {
                 url: serviceURL,
                 crs: 'WGS84' // 使用84坐标系
             };
-                //按自己实际路径修改
-                // const tip = require('../transfer/amap/AmapImageryProvider')
+            //按自己实际路径修改
+            // const tip = require('../transfer/amap/AmapImageryProvider')
             const provider = new AMapImageryProvider(options);
             // window.viewer.imageryLayers.addImageryProvider(provider)
             Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjNzRiNzNkYS0zZTRmLTRhOTMtODFlNS0zOWFhN2FmYzZmYjkiLCJpZCI6MTUyMTEwLCJpYXQiOjE2ODg2OTYyMDl9.sWkoSUmLFPfbMTMFgAZeQKjBQERg-TZPBBtIN34sDNQ'; //密钥 否则页面提示
@@ -311,9 +311,13 @@ export default {
                 //     url: "http://data.mars3d.cn/terrain",
                 //     show:false,
                 // })
-                imageryProvider: provider
+                imageryProvider: provider,
+                terrainProvider: new Cesium.CesiumTerrainProvider({
+                    // url: 'http://data.marsgis.cn/terrain'
+                    url: 'staticResource/dixing'
+                })
             });
-
+            // const serviceURL = 'mapsource/dixing'
             window.viewer.cesiumWidget.creditContainer.style.display = 'none'; // 去除logo
             window.viewer.scene.globe.depthTestAgainstTerrain = true; //解决地形遮挡entity问题
             // var imageryProvider = new Cesium.WebMapServiceImageryProvider({
@@ -1650,8 +1654,8 @@ export default {
 //@import url(); 引入公共css类
 .cesiumOutdiv {
     // 引用注意外侧
-    height:calc(100% - 6px) !important;
-    width: calc(100%)!important;
+    height: calc(100% - 6px) !important;
+    width: calc(100%) !important;
     position: relative;
 }
 

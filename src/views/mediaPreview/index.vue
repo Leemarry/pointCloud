@@ -185,7 +185,6 @@ export default {
                     const percentComplete = (event.loaded / event.total) * 100;
                     console.log('下载进度: ' + percentComplete + '%');
                     document.getElementById('progressBar').style.width = `${percentComplete}%`; // 更新进度条宽度
-
                 }
             };
 

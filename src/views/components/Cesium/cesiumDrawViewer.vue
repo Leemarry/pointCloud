@@ -1,47 +1,47 @@
 <template>
-  <div v-show="visible" id="drawtoolPanel">
-    <el-container>
-      <el-header id="drawtoolHead">
-        <span>基础标绘</span>
-        <span class="closebtn cesiumDrawFont icondelete" @click="$emit('closeEvent')">1</span>
-        <!-- <span class="clostbtn" @click="measurePanelShow=false"></span> -->
-      </el-header>
-      <el-main class="graphic-draw-main">
-        <ul>
-          <li>
-            <i class="cesiumDrawFont iconmarker icon-class" title="添加标记" :class="{ 'selected-graphic': menuSelected['MARKER'] }" @click="menuAction('MARKER')" />
-            <span :class="{ 'selected-graphic': menuSelected['MARKER'] }" @click="menuAction('MARKER')">标记</span>
-          </li>
-          <li>
-            <i class="cesiumDrawFont iconpolyline icon-class" title="添加线段" :class="{ 'selected-graphic': menuSelected['POLYLINE'] }" @click="menuAction('POLYLINE')" />
-            <span :class="{ 'selected-graphic': menuSelected['POLYLINE'] }" @click="menuAction('POLYLINE')">折线</span>
-          </li>
-          <li>
-            <i class="cesiumDrawFont iconpolygon icon-class" title="添加多边形" :class="{ 'selected-graphic': menuSelected['POLYGON'] }" @click="menuAction('POLYGON')" />
-            <span :class="{ 'selected-graphic': menuSelected['POLYGON'] }" @click="menuAction('POLYGON')">多边形</span>
-          </li>
-          <li>
-            <i class="cesiumDrawFont iconlabel icon-class" title="添加文字" :class="{ 'selected-graphic': menuSelected['LABEL'] }" @click="menuAction('LABEL')" />
-            <span :class="{ 'selected-graphic': menuSelected['LABEL'] }" @click="menuAction('LABEL')">文字</span>
-          </li>
-          <li v-if="extendMarkerModel.length">
-            <i class="cesiumDrawFont iconmodel icon-class" title="添加模型" :class="{ 'selected-graphic': menuSelected['MODEL'] }" @click="menuAction('MODEL')" />
-            <span :class="{ 'selected-graphic': menuSelected['MODEL'] }" @click="menuAction('MODEL')">模型</span>
-          </li>
-          <li>
-            <i class="cesiumDrawFont iconlayer icon-class" :class="{ 'selected-graphic': layerManagerVisible }" title="图层管理" @click="toggleLayerManager" />
-            <span :class="{ 'selected-graphic': layerManagerVisible }" @click="toggleLayerManager">清单</span>
-          </li>
-          <!-- 上传航线  -->
-          <!-- <li>
+    <div v-show="visible" id="drawtoolPanel">
+        <el-container>
+            <el-header id="drawtoolHead">
+                <span>基础标绘</span>
+                <span class="closebtn cesiumDrawFont icondelete" @click="$emit('closeEvent')">1</span>
+                <!-- <span class="clostbtn" @click="measurePanelShow=false"></span> -->
+            </el-header>
+            <el-main class="graphic-draw-main">
+                <ul>
+                    <li>
+                        <i class="cesiumDrawFont iconmarker icon-class" title="添加标记" :class="{ 'selected-graphic': menuSelected['MARKER'] }" @click="menuAction('MARKER')" />
+                        <span :class="{ 'selected-graphic': menuSelected['MARKER'] }" @click="menuAction('MARKER')">标记</span>
+                    </li>
+                    <li>
+                        <i class="cesiumDrawFont iconpolyline icon-class" title="添加线段" :class="{ 'selected-graphic': menuSelected['POLYLINE'] }" @click="menuAction('POLYLINE')" />
+                        <span :class="{ 'selected-graphic': menuSelected['POLYLINE'] }" @click="menuAction('POLYLINE')">折线</span>
+                    </li>
+                    <li>
+                        <i class="cesiumDrawFont iconpolygon icon-class" title="添加多边形" :class="{ 'selected-graphic': menuSelected['POLYGON'] }" @click="menuAction('POLYGON')" />
+                        <span :class="{ 'selected-graphic': menuSelected['POLYGON'] }" @click="menuAction('POLYGON')">多边形</span>
+                    </li>
+                    <li>
+                        <i class="cesiumDrawFont iconlabel icon-class" title="添加文字" :class="{ 'selected-graphic': menuSelected['LABEL'] }" @click="menuAction('LABEL')" />
+                        <span :class="{ 'selected-graphic': menuSelected['LABEL'] }" @click="menuAction('LABEL')">文字</span>
+                    </li>
+                    <li v-if="extendMarkerModel.length">
+                        <i class="cesiumDrawFont iconmodel icon-class" title="添加模型" :class="{ 'selected-graphic': menuSelected['MODEL'] }" @click="menuAction('MODEL')" />
+                        <span :class="{ 'selected-graphic': menuSelected['MODEL'] }" @click="menuAction('MODEL')">模型</span>
+                    </li>
+                    <li>
+                        <i class="cesiumDrawFont iconlayer icon-class" :class="{ 'selected-graphic': layerManagerVisible }" title="图层管理" @click="toggleLayerManager" />
+                        <span :class="{ 'selected-graphic': layerManagerVisible }" @click="toggleLayerManager">清单</span>
+                    </li>
+                    <!-- 上传航线  -->
+                    <!-- <li>
             <el-badge :hidden="routes.length==0" :value="routes.length" class="routelist">
               <i class="el-icon-s-flag" :class="{ 'selected-graphic': routeManagerVisible }" title="航线列表" @click="toggleRouteManager" />
               <span :class="{ 'selected-graphic': routeManagerVisible }" @click="toggleRouteManager">航表</span>
             </el-badge>
           </li> -->
-          <!-- 上传航线上 -->
-          <!-- routeManagerVisible @click="sendupload()" -->
-          <!-- <li>
+                    <!-- 上传航线上 -->
+                    <!-- routeManagerVisible @click="sendupload()" -->
+                    <!-- <li>
               <i class="cesiumDrawFont iconlayer icon-class"
                 :class="{ 'selected-graphic': layerManagerVisible }" title="图层管理"
                 @click="doFlyCommands()"></i>
@@ -49,91 +49,77 @@
                 @click="doFlyCommands()">执行</span>
             </li> -->
 
-        </ul>
-      </el-main>
-    </el-container>
+                </ul>
+            </el-main>
+        </el-container>
 
-    <div v-show="editMode" class="graphic-edit">
-      <div v-show="menuSelected['MARKER']" class="marker-edit-class edit-class">
-        <el-color-picker id="markerColor" v-model="markerColor" show-alpha size="small" title="文字颜色" />
-        <el-select v-model="fontSize" size="small" allow-create filterable title="字号" default-first-option placeholder="请选择">
-          <el-option v-for="item in fontSizeList" :key="item" :label="item" :value="item" />
-        </el-select>
-      </div>
-      <div v-show="menuSelected['POLYLINE']" class="polyline-edit-class edit-class">
-        <el-color-picker id="lineColor" v-model="lineColor" title="颜色" show-alpha size="small" />
-        <el-select v-model="lineWidth" size="small" title="线宽" class="width-selector" allow-create filterable default-first-option placeholder="请选择">
-          <el-option v-for="item in lineWidthList" :key="item" :label="item" :value="item" />
-        </el-select>
-        <el-select v-model="lineStyle" size="small" class="style-selector" title="直线样式" default-first-option placeholder="请选择">
-          <el-option v-for="item in lineStyleList" :key="item.value" :label="item.name" :value="item.value" />
-        </el-select>
-        <el-select v-model="graphicHeight" size="small" title="直线类型" class="type-selector" default-first-option placeholder="请选择">
-          <el-option v-for="item in heightList" :key="item.value" :label="item.name" :value="item.value" />
-        </el-select>
-      </div>
-      <div v-show="menuSelected['POLYGON']" class="polygon-edit-class edit-class">
-        <el-color-picker id="polygonColor" v-model="polygonColor" title="填充色" show-alpha size="small" />
-        <el-select v-model="graphicHeight" size="small" title="多边形类型" class="type-selector" default-first-option placeholder="请选择">
-          <el-option v-for="item in heightList" :key="item.value" :label="item.name" :value="item.value" />
-        </el-select>
-        <i class="cesiumDrawFont iconoutline border-btn" :class="{ 'outline-selected': outline }" title="边框" @click="outline = !outline" />
-        <div v-show="outline">
-          <el-color-picker id="outlineColor" v-model="outlineColor" title="边框充色" show-alpha size="small" />
+        <div v-show="editMode" class="graphic-edit">
+            <div v-show="menuSelected['MARKER']" class="marker-edit-class edit-class">
+                <el-color-picker id="markerColor" v-model="markerColor" show-alpha size="small" title="文字颜色" />
+                <el-select v-model="fontSize" size="small" allow-create filterable title="字号" default-first-option placeholder="请选择">
+                    <el-option v-for="item in fontSizeList" :key="item" :label="item" :value="item" />
+                </el-select>
+            </div>
+            <div v-show="menuSelected['POLYLINE']" class="polyline-edit-class edit-class">
+                <el-color-picker id="lineColor" v-model="lineColor" title="颜色" show-alpha size="small" />
+                <el-select v-model="lineWidth" size="small" title="线宽" class="width-selector" allow-create filterable default-first-option placeholder="请选择">
+                    <el-option v-for="item in lineWidthList" :key="item" :label="item" :value="item" />
+                </el-select>
+                <el-select v-model="lineStyle" size="small" class="style-selector" title="直线样式" default-first-option placeholder="请选择">
+                    <el-option v-for="item in lineStyleList" :key="item.value" :label="item.name" :value="item.value" />
+                </el-select>
+                <el-select v-model="graphicHeight" size="small" title="直线类型" class="type-selector" default-first-option placeholder="请选择">
+                    <el-option v-for="item in heightList" :key="item.value" :label="item.name" :value="item.value" />
+                </el-select>
+            </div>
+            <div v-show="menuSelected['POLYGON']" class="polygon-edit-class edit-class">
+                <el-color-picker id="polygonColor" v-model="polygonColor" title="填充色" show-alpha size="small" />
+                <el-select v-model="graphicHeight" size="small" title="多边形类型" class="type-selector" default-first-option placeholder="请选择">
+                    <el-option v-for="item in heightList" :key="item.value" :label="item.name" :value="item.value" />
+                </el-select>
+                <i class="cesiumDrawFont iconoutline border-btn" :class="{ 'outline-selected': outline }" title="边框" @click="outline = !outline" />
+                <div v-show="outline">
+                    <el-color-picker id="outlineColor" v-model="outlineColor" title="边框充色" show-alpha size="small" />
+                </div>
+
+                <el-select v-show="outline" v-model="outlineWidth" size="small" title="边框宽度" class="width-selector" allow-create filterable default-first-option placeholder="请选择">
+                    <el-option v-for="item in lineWidthList" :key="item" :label="item" :value="item" />
+                </el-select>
+            </div>
+            <div v-show="menuSelected['LABEL']" class="label-edit-class edit-class">
+                <el-select v-model="fontFamily" class="font-selector" allow-create filterable size="small" title="字体" default-first-option placeholder="请选择">
+                    <el-option v-for="item in fontList" :key="item" :label="item" :value="item" />
+                </el-select>
+                <el-select v-model="fontSize" size="small" class="size-selector" allow-create filterable title="字号" default-first-option placeholder="请选择">
+                    <el-option v-for="item in fontSizeList" :key="item" :label="item" :value="item" />
+                </el-select>
+                <el-color-picker id="labelColor" v-model="markerColor" title="颜色" show-alpha size="small" />
+            </div>
+            <div v-show="menuSelected['MODEL']" class="model-edit-class edit-class">
+                <el-popover id="model-select" v-model="modelSelectPanelvisible" placement="bottom" width="160">
+                    <div class="model-select-panel">
+                        <img v-for="item in extendMarkerModel" :key="item.id" :title="item.name" :src="modelThumb(item)" :onerror="defaultImage" @click="selectModel(item)">
+                    </div>
+                    <template #reference>
+                        <i class="cesiumDrawFont iconmodel model-selector-trigger" title="选择模型" />
+                    </template>
+                </el-popover>
+                <el-select v-model="modelMode" size="small" title="模式" default-first-option placeholder="请选择">
+                    <el-option v-for="item in modelModeList" :key="item.value" :label="item.name" :value="item.value" />
+                </el-select>
+                <el-color-picker id="modelColor" v-model="modelColor" title="颜色" show-alpha size="small" />
+                <el-slider v-show="modelMode === 'Mix'" v-model="modelMixed" title="混合度" :min="0" :max="1" :step="0.1" :show-tooltip="true" />
+            </div>
         </div>
-
-        <el-select v-show="outline" v-model="outlineWidth" size="small" title="边框宽度" class="width-selector" allow-create filterable default-first-option placeholder="请选择">
-          <el-option v-for="item in lineWidthList" :key="item" :label="item" :value="item" />
-        </el-select>
-      </div>
-      <div v-show="menuSelected['LABEL']" class="label-edit-class edit-class">
-        <el-select v-model="fontFamily" class="font-selector" allow-create filterable size="small" title="字体" default-first-option placeholder="请选择">
-          <el-option v-for="item in fontList" :key="item" :label="item" :value="item" />
-        </el-select>
-        <el-select v-model="fontSize" size="small" class="size-selector" allow-create filterable title="字号" default-first-option placeholder="请选择">
-          <el-option v-for="item in fontSizeList" :key="item" :label="item" :value="item" />
-        </el-select>
-        <el-color-picker id="labelColor" v-model="markerColor" title="颜色" show-alpha size="small" />
-      </div>
-      <div v-show="menuSelected['MODEL']" class="model-edit-class edit-class">
-        <el-popover id="model-select" v-model="modelSelectPanelvisible" placement="bottom" width="160">
-          <div class="model-select-panel">
-            <img v-for="item in extendMarkerModel" :key="item.id" :title="item.name" :src="modelThumb(item)" :onerror="defaultImage" @click="selectModel(item)">
-          </div>
-          <template #reference>
-            <i class="cesiumDrawFont iconmodel model-selector-trigger" title="选择模型" />
-          </template>
-        </el-popover>
-        <el-select v-model="modelMode" size="small" title="模式" default-first-option placeholder="请选择">
-          <el-option v-for="item in modelModeList" :key="item.value" :label="item.name" :value="item.value" />
-        </el-select>
-        <el-color-picker id="modelColor" v-model="modelColor" title="颜色" show-alpha size="small" />
-        <el-slider v-show="modelMode === 'Mix'" v-model="modelMixed" title="混合度" :min="0" :max="1" :step="0.1" :show-tooltip="true" />
-      </div>
+        <MarkerViewer ref="markerManager" :attachment="attachment" :extend-image="extendMarkerImage" @deleteEvent="deleteMarker" @editEvent="editMarker" @addEvent="addMarker"
+            @updateEvent="updateMarker" />
+        <layerManager v-show="layerManagerVisible" ref="layerManager" :tools="tools" class="layer-manager-class" :class="{ 'edit-layer-manager-class': editMode }"
+            @changeUnifiedHeight="changeUnifiedHeightEvent" @locate="locateGraphic" @edit="editGraphic" @delete="deleteGraphic" @rename="renameGraphic" @select="selectGraphic" @clear="clearGraphic"
+            @close="closeLayerManager" @import="importGraphic" @export="exportGraphic" @drowroute="drowrouteGraphic" @moniFly="moniflyGraphic" />
+        <routeManager v-show="routeManagerVisible" ref="routeManager" v-bind="$attrs" class="layer-manager-class" :class="{ 'edit-layer-manager-class': editMode }" :routes="routes"
+            @send:toggleRouteManager="toggleRouteManager" @send:edit="doEdit" v-on="$listeners" />
+        <input v-show="false" id="graphicuploadhandler" type="file" accept=".geojson, .shp" @change="importfp">
     </div>
-    <MarkerViewer ref="markerManager" :attachment="attachment" :extend-image="extendMarkerImage" @deleteEvent="deleteMarker" @editEvent="editMarker" @addEvent="addMarker" @updateEvent="updateMarker" />
-    <layerManager
-      v-show="layerManagerVisible"
-      ref="layerManager"
-      :tools="tools"
-      class="layer-manager-class"
-      :class="{ 'edit-layer-manager-class': editMode }"
-      @changeUnifiedHeight="changeUnifiedHeightEvent"
-      @locate="locateGraphic"
-      @edit="editGraphic"
-      @delete="deleteGraphic"
-      @rename="renameGraphic"
-      @select="selectGraphic"
-      @clear="clearGraphic"
-      @close="closeLayerManager"
-      @import="importGraphic"
-      @export="exportGraphic"
-      @drowroute="drowrouteGraphic"
-      @moniFly="moniflyGraphic"
-    />
-    <routeManager v-show="routeManagerVisible" ref="routeManager" v-bind="$attrs" class="layer-manager-class" :class="{ 'edit-layer-manager-class': editMode }" :routes="routes" @send:toggleRouteManager="toggleRouteManager" @send:edit="doEdit" v-on="$listeners" />
-    <input v-show="false" id="graphicuploadhandler" type="file" accept=".geojson, .shp" @change="importfp">
-  </div>
 </template>
 <script>
 import * as turf from '@turf/turf';
@@ -258,7 +244,7 @@ export default {
         attachment: undefined,
         extendMarkerImage: {
             type: Array,
-            default: function() {
+            default: function () {
                 return [
                     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAA6hJREFUWEe1V02M1VQU/k5neosEfxb489rZEMlM+yKY6JhJ2IjB6M4YiCaKMbIAHCMLcFhgNGI0uhDRqBEcTcQQJdEQF65EjbIhJgpjBNsOwQgJvc/BjYrRebeTHtPnDM683t72DXq35zvf+e756y2hh3M9D62wUmsdgI3EcEFodNwZLSZIAO9ndvbFFE3+VJeW6gAbyr/VgrWFwVvq4Ak0niEbb4n4eBW+UkCj7e8ioheqiHR2Zn6y5cQvmnyNAty2vxtEzywm+CUf5melE+8u4ygV4LWb9zHxh5cVfNaZmO5PnPAjHZdWQF5zAn37XwSf42DwsK4ntAI81XzL1HAMnATwOTF/0xkCotsA3EnAqvJU03giwq3d9oIAb9ofZIsmS2/POJL+Rht+uS78Yz7m2gvNZfbVfBiEu0pFZDyULIlPz7frBDzBFu3Rk9AbUoTbTKVxVfN1gB/X1jvjsWRJ/LJRQEMFXxKwVkNwYqmdrjlDZ9omASt5pfNnah8DcEs3joGvWiK6wyjAbQeTIAxqnPe3RDRapzEbKthHwKMFLOO0dKIhswAV/A7gymKz8KZExAfqCPCU/wiD3tVgL0oRXVWVgfMgeEX1/KB04kN1BLht/wEQfVDAEqS0owXcxSZMg8PMWK8pwSstEe2oI6Chgr0EbC8KoE+kHd5jnoJ28BQTntMIODnzK63pHr9uXD6O/dfwMd1OYMbzLSd62lyCmeBeZPhYe1PGEelEdxvHsB18WroLmDdKJ15QmuIm5LX9Xjo1wcBNZbtgqa3Gusfxn/ETe8p2AIBzM3bfyAU6NWXMQG50p5tjsPglw01PMOFHC0hyTAZ4xLhRN/uXOIh2SjssLDjtt8DlweWY6Z8A80CdpquB+V7Yf42cpbPTxfEu8fZUMMrAmzXIKyEEPJyI6KAOaH6QqGAcwObKCAYAAa8mIiqO5KyPUcAAD1zB6bKjjM7ntudDwNFERLrvyr+tUcV6Q+rf3sf0GQN2FbbLfjGDte5n8UPnzVB2Kh+luWNjOthOFvb2IoCAxxIR7avyqSWgI0IF7+XNVEU4a39biqjmE74mIxjkpsF3AFZXuByXIhquS1s7AznhgGqOZOCvDeQZQMNShBP/i4Cc1FX+NoBe0880jSYi3F83eI7rKQNzxJ4KDjLw0MJAdECKcFMvwRctoJOJ+U83plg6YdBr8MsS4KnBmxl9eVPCYl593onzf4Wez6JKMBelofzNAHFLRO/0HHnW4W+ebkAwOMrwKQAAAABJRU5ErkJggg==',
                     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAA6dJREFUWEe9V1+IFVUc/n5zd84kVE/1oLszF/uzM4NlUCsLvlQY9RaRFJQh+aC1kQ/W9lAUGkU9ZBYVaVuQERYo0kNPWWG+RFCatNTcuyp2Z9QI3zTROcOdn8zdNXbvnDlz7hqd1/N93+875/dnzhAGWK3mNcsJ3TWcYx1Ay0BY2qMz/gL4DFnYw2h8H3QunTSVJRNg5Nl3WbA2MXiTCZ5AUznyqTDODtfhaw1EnniRgDfqhFT7DLwUxvJNHVdrIPLENgK2Lib4FQ4Dr4ax3FalUWmg5YlHAOy9muDzuI8Gsdyn0lIaKHJOoF/+o+BzdcpjqppQGmh7zkc1BTfNxN81cvq5UO9avIqY7gNwe/VV05Qfp0/175cMRMPOKDW4rTn9ge5FuXbFWfwzH/P7jbi2sUTsB3B/FZe75Ien05n5+2UDrvM8EW9X5ov5Az/JNutS03bt95noWWVXME2GSfq21kDLtQ+C6B6FwJGGkKtvPY5UZ+DYLXC6UvwI4M4SjvmHIMnurTEg2iCMloPQriBOJ0wKs+U5OwF+umwAM0Eifb0BT5wDcF0/mZk3hEm228RA5NpPEtGnCuz5IJbX1xk4BWC4n2wxHh9N5JcmBmZc8VhO+EKBPRPEcoF2qQjbrtjPhIdLN0D8TtjJnjMxEDXtHcS0RYH9Oojlg/obaIqXwXhNQZ7uXpSr+9uvHzfXjkURlmcC4/Ugka9oDbRd8RATvqo46YEglg/obqHliW+qZgET1oUduSA1pRQcBIaWeuJXALdVzQLLySb727Fovzy1t1fNAAAd0bDHbzp54W/tDRSbUdOZJOa3NCc9AuAEwKdnMVQU1s3K3p8TYaIXwk5aGnDqb8Ey3MBDvVsYMSm6WgzhN4fk+PI/cakfW/05du0JEH1YK24AIPB6P84+V6ZUx488Z4rAGw1iaCD8bhBnqpacTZ5OPBnBkguWOARg1aJMEB0KOqnqu/KvXO2b8NjI0N1dy/oWgD2gifPEvMZPst6boWrVGiiIf7jOFot4x0AGmJ8JkmxnHcfIQK81PfEZAevrBGfzSh/7cWr4hDdR7P17gNpNcRSMlToKA4fDWI4ZyuqLsF9kZsQezy36SSOed4nHVnSyYoYYLeMUXFGLPGczgd9TqjNPBEm2yyjyHGhgAwWv5YliqDwxPxABu/1YbhgkeO0c0Im13AVPt1YQy3DQ4FdloD1s38ENOlqIcI6V4Sk5/b8amG1Ne6NFYL+TfbKY4AXnMk2+OjDIBjLDAAAAAElFTkSuQmCC',
@@ -269,7 +255,7 @@ export default {
         },
         extendMarkerModel: {
             type: Array,
-            default: function() {
+            default: function () {
                 return [];
             }
         },
@@ -279,7 +265,7 @@ export default {
         viewer: {},
         CursorTipDistance: {
             type: Object,
-            default: function() {
+            default: function () {
                 return {
                     distanceX: 0,
                     distanceY: 0
@@ -472,7 +458,7 @@ export default {
             }
             const self = this;
             this._depthTestAgainstTerrain =
-                  viewer.scene.globe.depthTestAgainstTerrain;
+                viewer.scene.globe.depthTestAgainstTerrain;
             this.$refs.markerManager.init(viewer); //传递子组件
             graphicManager = new GraphicManager(viewer);
             imageryManager = new ImageryManager(viewer);
@@ -506,7 +492,7 @@ export default {
             const self = this;
             if (
                 graphicManager.has(e.detail.mid) ||
-                  self.$refs.markerManager.has(e.detail.mid)
+                self.$refs.markerManager.has(e.detail.mid)
             ) {
                 self.$refs.markerManager.createLabelAndaddMarker(
                     e.detail.positions,
@@ -519,7 +505,7 @@ export default {
             const self = this;
             if (
                 graphicManager.has(e.detail.mid) ||
-                  self.$refs.markerManager.has(e.detail.mid)
+                self.$refs.markerManager.has(e.detail.mid)
             ) {
                 var mid = e.detail.mid;
                 var positions = e.detail.positions;
@@ -562,7 +548,7 @@ export default {
             const self = this;
             if (
                 graphicManager.has(e.detail.mid) ||
-                  self.$refs.markerManager.has(e.detail.mid)
+                self.$refs.markerManager.has(e.detail.mid)
             ) {
                 self.$refs.markerManager.droplikeid(
                     e.detail.positions,
@@ -575,7 +561,7 @@ export default {
             const self = this;
             if (
                 graphicManager.has(e.detail.mid) ||
-                  self.$refs.markerManager.has(e.detail.mid)
+                self.$refs.markerManager.has(e.detail.mid)
             ) {
                 self.pushLayerManaer(
                     e.detail.mtype,
@@ -589,7 +575,7 @@ export default {
             // 插入数据
             if (
                 graphicManager.has(e.detail.mid) ||
-                  self.$refs.markerManager.has(e.detail.mid)
+                self.$refs.markerManager.has(e.detail.mid)
             ) {
                 console.log('结束positions', e.detail.positions);
 
@@ -604,7 +590,7 @@ export default {
             self.menuSelected = {};
             self.editMode = false;
             self.cesiumViewer.scene.globe.depthTestAgainstTerrain =
-              self._depthTestAgainstTerrain;
+                self._depthTestAgainstTerrain;
         },
         startEdit(e) {
             const self = this;
@@ -621,11 +607,11 @@ export default {
             const self = this;
             if (
                 self.$refs.layerManager &&
-                  typeof self.$refs.layerManager.drop === 'function'
+                typeof self.$refs.layerManager.drop === 'function'
             ) {
                 self.$refs.layerManager.drop({ id: e.detail?.mid });
                 self.cesiumViewer.scene.globe.depthTestAgainstTerrain =
-                      self._depthTestAgainstTerrain;
+                    self._depthTestAgainstTerrain;
             } else {
                 console.log('没有加载上');
             }
@@ -642,7 +628,7 @@ export default {
             self.editMode = false;
             self.$refs.layerManager.drop({ id: e.detail.mid });
             self.cesiumViewer.scene.globe.depthTestAgainstTerrain =
-                  self._depthTestAgainstTerrain;
+                self._depthTestAgainstTerrain;
         },
         positionsMsg(e) {
             // var area=  graphicManager.calculatePolygonArea(e.detail.positions)
@@ -731,12 +717,12 @@ export default {
                 const outlineColor = e.detail.outlineColor;
                 if (material) {
                     this.polygonColor = `rgba(${material.red * 255},${material.green * 255
-                    },${material.blue * 255},${material.alpha})`;
+                        },${material.blue * 255},${material.alpha})`;
                 }
                 this.outline = e.detail.outline;
                 if (outlineColor) {
                     this.outlineColor = `rgba(${outlineColor.red * 255},${outlineColor.green * 255
-                    },${outlineColor.blue * 255},${outlineColor.alpha})`;
+                        },${outlineColor.blue * 255},${outlineColor.alpha})`;
                 }
                 this.outlineWidth = e.detail.outlineWidth;
                 this.graphicHeight = e.detail.heightReference;
@@ -758,13 +744,13 @@ export default {
                     this.lineStyle = 'solid';
                 }
                 this.lineColor = `rgba(${plmaterial.getValue(viewer.clock.currentTime).color.red *
-                      255
-                },${plmaterial.getValue(viewer.clock.currentTime).color.green *
-                      255
-                },${plmaterial.getValue(viewer.clock.currentTime).color.blue *
-                      255
-                },${plmaterial.getValue(viewer.clock.currentTime).color.alpha
-                })`;
+                    255
+                    },${plmaterial.getValue(viewer.clock.currentTime).color.green *
+                    255
+                    },${plmaterial.getValue(viewer.clock.currentTime).color.blue *
+                    255
+                    },${plmaterial.getValue(viewer.clock.currentTime).color.alpha
+                    })`;
             }
         },
         stopOthers() {
@@ -832,7 +818,7 @@ export default {
             const reader = new FileReader();
             if (ext.toLowerCase() === 'geojson') {
                 reader.readAsText(files[0]);
-                reader.onload = function() {
+                reader.onload = function () {
                     // _this[_this.upload2].import(JSON.parse(this.result));
                     if (!this.result) {
                         return;
@@ -853,7 +839,7 @@ export default {
                 };
             } else if (ext.toLowerCase() === 'shp') {
                 reader.readAsArrayBuffer(files[0]);
-                reader.onload = function() {
+                reader.onload = function () {
                     open(this.result)
                         .then((source) =>
                             source.read().then(function log(result) {
@@ -1136,7 +1122,7 @@ export default {
                     if (this.editMode) {
                         graphicManager.heightReference = this.graphicHeight;
                         graphicManager.material =
-                              Cesium.Color.fromCssColorString(this.lineColor);
+                            Cesium.Color.fromCssColorString(this.lineColor);
                         var entities = viewer.entities.values;
                         console.log(entities);
                         graphicManager.createPolyline(this.CursorTipDistance); //this.CursorTipDistance
@@ -1158,7 +1144,7 @@ export default {
                         option.outlineWidth = parseInt(this.outlineWidth);
                         // option.color = Cesium.Color.fromCssColorString(this.polygonColor);
                         graphicManager.material =
-                              Cesium.Color.fromCssColorString(this.polygonColor);
+                            Cesium.Color.fromCssColorString(this.polygonColor);
                         graphicManager.style = option;
                         var entities = viewer.entities.values;
                         graphicManager.createPolygon(this.CursorTipDistance); //this.CursorTipDistance
@@ -1197,19 +1183,19 @@ export default {
                     break;
                 case 'dash':
                     graphicManager.material =
-                          new Cesium.PolylineDashMaterialProperty({
-                              color: color
-                          });
+                        new Cesium.PolylineDashMaterialProperty({
+                            color: color
+                        });
                     break;
                 case 'glow':
                     graphicManager.material =
-                          new Cesium.PolylineGlowMaterialProperty({
-                              color: color
-                          });
+                        new Cesium.PolylineGlowMaterialProperty({
+                            color: color
+                        });
                     break;
                 case 'arrow':
                     graphicManager.material =
-                          new Cesium.PolylineArrowMaterialProperty(color);
+                        new Cesium.PolylineArrowMaterialProperty(color);
                     break;
             }
         },
@@ -1234,6 +1220,17 @@ export default {
             this.viewer.camera.flyTo({
                 destination: destination
             });
+            // this.viewer.scene.camera.setView({
+            //     destination: Cesium.Cartesian3.fromDegrees(
+            //         98.089161, 36.298553,
+            //         6000
+            //     ),
+            //     orientation: {
+            //         heading: Cesium.Math.toRadians(0),
+            //         pitch: Cesium.Math.toRadians(-40),
+            //         roll: Cesium.Math.toRadians(0), //heading、pitch和roll就是镜头相对于xyz轴的角度，比如pitch为-90°而另外两个为0时，就是90°向下俯视地球。
+            //     },
+            // });
             // const mid = id
             // if (imageryManager.has(mid)) {
             //     imageryManager.focus(mid)
@@ -1250,362 +1247,368 @@ export default {
 };
 </script>
 
-  <style lang="scss" scoped>
-  @import "../../../styles/default.scss";
-  // @import url(.././assets/css/theme/${theme}.scss); 引入公共css类
-  #drawtoolPanel {
-      position: fixed;
-      width: 400px;
-      top: 10px;
-      right: 10px;
-      height: 85px;
-      right: 7px;
-      border-radius: $b-radius;
-      /* border: 1px solid #01c5fd;
+<style lang="scss" scoped>
+@import "../../../styles/default.scss";
+
+// @import url(.././assets/css/theme/${theme}.scss); 引入公共css类
+#drawtoolPanel {
+    position: fixed;
+    width: 400px;
+    top: 10px;
+    right: 10px;
+    height: 85px;
+    right: 7px;
+    border-radius: $b-radius;
+    /* border: 1px solid #01c5fd;
     box-shadow: 0 0 5px rgba(1, 197, 253, 0.75); */
-      z-index: 10;
-      border-radius: $b-radius;
-      -moz-user-select: none;
-      -khtml-user-select: none;
-      user-select: none;
-      font-size: $font-size;
-  }
+    z-index: 10;
+    border-radius: $b-radius;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    user-select: none;
+    font-size: $font-size;
+}
 
-  .layer-manager-class {
-      width: 400px;
-      position: absolute;
-      top: 90px;
-  }
+.layer-manager-class {
+    width: 400px;
+    position: absolute;
+    top: 90px;
+}
 
-  .edit-layer-manager-class {
-      top: 140px;
-  }
+.edit-layer-manager-class {
+    top: 140px;
+}
 
-  .graphic-edit {
-      width: 100%;
-      height: 52px;
-      line-height: 52px;
-      position: absolute;
-      background: $bg-color;
-      color: $color;
-  }
+.graphic-edit {
+    width: 100%;
+    height: 52px;
+    line-height: 52px;
+    position: absolute;
+    background: $bg-color;
+    color: $color;
+}
 
-  #clostbtn:after {
-      content: "\E6DB";
-  }
+#clostbtn:after {
+    content: "\E6DB";
+}
 
-  .el-container {
-      width: 400px;
-      height: 85px;
-      color: $color;
-      background: $bg-color;
-      /* border: 1px solid #01c5fd;
+.el-container {
+    width: 400px;
+    height: 85px;
+    color: $color;
+    background: $bg-color;
+    /* border: 1px solid #01c5fd;
     box-shadow: 0 0 5px rgba(1, 197, 253, 0.75); */
-      z-index: 10;
-  }
+    z-index: 10;
+}
 
-  .el-header {
-      height: $title-height !important;
-      line-height: $title-height !important;
-      border-bottom: 1px solid $devision-color;
-      padding: $padding;
-      border-radius: $b-radius;
+.el-header {
+    height: $title-height !important;
+    line-height: $title-height !important;
+    border-bottom: 1px solid $devision-color;
+    padding: $padding;
+    border-radius: $b-radius;
 
-      span {
-          margin: $item-margin;
-          color: $color;
-      }
-  }
+    span {
+        margin: $item-margin;
+        color: $color;
+    }
+}
 
-  .icon-class {
-      color: $color;
-  }
+.icon-class {
+    color: $color;
+}
 
-  .selected-graphic {
-      color: $selected-color !important;
-  }
+.selected-graphic {
+    color: $selected-color !important;
+}
 
-  .graphic-draw-main {
-      height: 52px;
-      padding: $padding;
-      // line-height: 60%;
-      vertical-align: top;
-      color: $color;
-      border-radius: $b-radius;
+.graphic-draw-main {
+    height: 52px;
+    padding: $padding;
+    // line-height: 60%;
+    vertical-align: top;
+    color: $color;
+    border-radius: $b-radius;
 
-      ul {
-          cursor: default;
-          border-radius: $b-radius;
-          padding: 0;
-          overflow: hidden;
-          // border-bottom: 1px solid $devision-color;
-          height: 43px;
-          margin: 0;
+    ul {
+        cursor: default;
+        border-radius: $b-radius;
+        padding: 0;
+        overflow: hidden;
+        // border-bottom: 1px solid $devision-color;
+        height: 43px;
+        margin: 0;
 
-          // margin-top: 0 0 5px 0;
-          li {
-              cursor: pointer;
-              float: left;
-              padding: 0 0 0;
-              width: 62px;
-              height: 100%;
-              box-sizing: border-box;
-              list-style: none;
+        // margin-top: 0 0 5px 0;
+        li {
+            cursor: pointer;
+            float: left;
+            padding: 0 0 0;
+            width: 62px;
+            height: 100%;
+            box-sizing: border-box;
+            list-style: none;
 
-              &:hover {
-                  i {
-                      color: $hover-color;
-                  }
+            &:hover {
+                i {
+                    color: $hover-color;
+                }
 
-                  span {
-                      color: $hover-color;
-                  }
-              }
+                span {
+                    color: $hover-color;
+                }
+            }
 
-              i {
-                  display: block;
-                  height: 16px;
-                  width: 16px;
-                  background-size: contain;
-                  // vertical-align: middle;
-                  margin: 0 auto;
-                  margin-top: 8px;
-              }
+            i {
+                display: block;
+                height: 16px;
+                width: 16px;
+                background-size: contain;
+                // vertical-align: middle;
+                margin: 0 auto;
+                margin-top: 8px;
+            }
 
-              span {
-                  -webkit-user-select: none;
-                  -moz-user-select: none;
-                  -ms-user-select: none;
-                  user-select: none;
-                  display: block;
-                  text-align: center;
-                  color: $color;
-                  line-height: 22px;
-              }
-          }
-      }
-  }
+            span {
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                display: block;
+                text-align: center;
+                color: $color;
+                line-height: 22px;
+            }
+        }
+    }
+}
 
-  .el-main img {
-      display: inline-block;
-  }
-  :deep(.el-input) {
-      height: 28px;
-  }
-  .edit-class {
-      height: 52px;
-      line-height: 52px;
-      vertical-align: top;
-      padding: 0 5px;
-      border-top: 1px solid $devision-color;
-      display: flex;
-      align-items: center;
+.el-main img {
+    display: inline-block;
+}
 
-      :deep(.el-color-picker--small) {
-          height: 28px;
-          width: 28px;
-      }
+:deep(.el-input) {
+    height: 28px;
+}
 
-      :deep(.el-color-picker__color) {
-          border: none;
-          border-radius: $b-radius;
-          display: inline;
-      }
+.edit-class {
+    height: 52px;
+    line-height: 52px;
+    vertical-align: top;
+    padding: 0 5px;
+    border-top: 1px solid $devision-color;
+    display: flex;
+    align-items: center;
 
-      :deep(.el-color-picker__trigger) {
-          height: 28px;
-          width: 28px;
-          padding: 0px;
-          border: 1px solid $color;
-          display: block;
-      }
+    :deep(.el-color-picker--small) {
+        height: 28px;
+        width: 28px;
+    }
 
-      :deep(.el-color-picker__color-inner) {
-          background-color: $bg-color !important;
-          border-radius: $b-radius;
-      }
-      :deep(.el-input__wrapper) {
-          background-color: $bg-color;
-          border: 1px solid $color;
-          color: $color;
-      }
+    :deep(.el-color-picker__color) {
+        border: none;
+        border-radius: $b-radius;
+        display: inline;
+    }
 
-      :deep(.el-color-picker__icon) {
-          line-height: 28px;
-      }
+    :deep(.el-color-picker__trigger) {
+        height: 28px;
+        width: 28px;
+        padding: 0px;
+        border: 1px solid $color;
+        display: block;
+    }
 
-      span {
-          margin: $item-margin;
-      }
+    :deep(.el-color-picker__color-inner) {
+        background-color: $bg-color !important;
+        border-radius: $b-radius;
+    }
 
-      .el-select {
-          vertical-align: top;
-      }
+    :deep(.el-input__wrapper) {
+        background-color: $bg-color;
+        border: 1px solid $color;
+        color: $color;
+    }
 
-      .el-color-picker {
-          vertical-align: top;
-          margin: 12px 5px;
-      }
-  }
+    :deep(.el-color-picker__icon) {
+        line-height: 28px;
+    }
 
-  .marker-edit-class {
-      .el-select {
-          width: 80px;
-          margin: $item-margin;
-      }
+    span {
+        margin: $item-margin;
+    }
 
-      img {
-          width: 24px;
-          height: 24px;
-          // margin-left: 10px;
-      }
-  }
+    .el-select {
+        vertical-align: top;
+    }
 
-  .polyline-edit-class {
-      .width-selector {
-          width: 70px;
-          margin: $item-margin;
-      }
+    .el-color-picker {
+        vertical-align: top;
+        margin: 12px 5px;
+    }
+}
 
-      .style-selector {
-          width: 80px;
-          // left:60px;
-          margin: $item-margin;
-      }
+.marker-edit-class {
+    .el-select {
+        width: 80px;
+        margin: $item-margin;
+    }
 
-      .type-selector {
-          width: 140px;
-          // left:120px;
-          margin: $item-margin;
-      }
-  }
+    img {
+        width: 24px;
+        height: 24px;
+        // margin-left: 10px;
+    }
+}
 
-  .polygon-edit-class {
-      .width-selector {
-          width: 70px;
-          margin: $item-margin;
-      }
+.polyline-edit-class {
+    .width-selector {
+        width: 70px;
+        margin: $item-margin;
+    }
 
-      .type-selector {
-          width: 140px;
-          // left:60px;
-          margin: $item-margin;
-      }
+    .style-selector {
+        width: 80px;
+        // left:60px;
+        margin: $item-margin;
+    }
 
-      .outline-selected {
-          color: #ffffff;
-      }
+    .type-selector {
+        width: 140px;
+        // left:120px;
+        margin: $item-margin;
+    }
+}
 
-      .border-btn {
-          border: 1px solid $color;
-          width: 28px;
-          height: 28px;
-          display: inline-block;
-          vertical-align: top;
-          line-height: 28px;
-          text-align: center;
-          border-radius: $b-radius;
-          box-sizing: border-box;
-          -webkit-box-sizing: border-box;
-          margin: 12px 5px;
-      }
-  }
+.polygon-edit-class {
+    .width-selector {
+        width: 70px;
+        margin: $item-margin;
+    }
 
-  .label-edit-class {
-      span {
-          margin: $item-margin;
-      }
+    .type-selector {
+        width: 140px;
+        // left:60px;
+        margin: $item-margin;
+    }
 
-      .font-selector {
-          width: 120px;
-          margin: $item-margin;
-      }
+    .outline-selected {
+        color: #ffffff;
+    }
 
-      .size-selector {
-          width: 80px;
-          margin: $item-margin;
-      }
+    .border-btn {
+        border: 1px solid $color;
+        width: 28px;
+        height: 28px;
+        display: inline-block;
+        vertical-align: top;
+        line-height: 28px;
+        text-align: center;
+        border-radius: $b-radius;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        margin: 12px 5px;
+    }
+}
 
-      img {
-          width: 24px;
-          height: 24px;
-          margin: $item-margin;
-      }
-  }
+.label-edit-class {
+    span {
+        margin: $item-margin;
+    }
 
-  .model-edit-class {
-      span {
-          margin: $item-margin;
-      }
+    .font-selector {
+        width: 120px;
+        margin: $item-margin;
+    }
 
-      .model-selector-trigger {
-          border: 1px solid $color;
-          width: 28px;
-          height: 28px;
-          display: inline-block;
-          vertical-align: top;
-          line-height: 28px;
-          text-align: center;
-          border-radius: $b-radius;
-          box-sizing: border-box;
-          -webkit-box-sizing: border-box;
-          margin: 12px 5px;
-      }
+    .size-selector {
+        width: 80px;
+        margin: $item-margin;
+    }
 
-      .el-select {
-          width: 100px;
-          margin: $item-margin;
-      }
+    img {
+        width: 24px;
+        height: 24px;
+        margin: $item-margin;
+    }
+}
 
-      .el-button {
-          height: 28px;
-          line-height: 28px;
-      }
+.model-edit-class {
+    span {
+        margin: $item-margin;
+    }
 
-      .el-slider {
-          display: inline-block;
-          margin: 0 15px;
-          width: 100px;
+    .model-selector-trigger {
+        border: 1px solid $color;
+        width: 28px;
+        height: 28px;
+        display: inline-block;
+        vertical-align: top;
+        line-height: 28px;
+        text-align: center;
+        border-radius: $b-radius;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        margin: 12px 5px;
+    }
 
-          :deep(.el-slider__runway) {
-              margin-bottom: 0px;
-          }
-      }
-  }
+    .el-select {
+        width: 100px;
+        margin: $item-margin;
+    }
 
-  .el-main .el-radio {
-      display: inline-block;
-      margin: 5px;
-  }
-  </style>
-  <style lang='scss'>
-  .model-select-panel {
-      display: block;
-      width: 340px;
-      height: 210px;
+    .el-button {
+        height: 28px;
+        line-height: 28px;
+    }
 
-      img {
-          width: 32px;
-          height: 32px;
-          margin: 5px;
-      }
-  }
+    .el-slider {
+        display: inline-block;
+        margin: 0 15px;
+        width: 100px;
 
-  .el-popover {
-      display: inline-table;
-  }
+        :deep(.el-slider__runway) {
+            margin-bottom: 0px;
+        }
+    }
+}
 
-  //new
-  ::v-deep .routelist {
-      width: 100%;
-      .el-badge__content.is-fixed {
-          top: 10px;
-          font-size: 10px;
-      }
-      .el-badge__content {
-          line-height: 13px;
-          height: 15px;
-          font-size: 10px;
-      }
-  }
-  </style>
+.el-main .el-radio {
+    display: inline-block;
+    margin: 5px;
+}
+</style>
+<style lang='scss'>
+.model-select-panel {
+    display: block;
+    width: 340px;
+    height: 210px;
+
+    img {
+        width: 32px;
+        height: 32px;
+        margin: 5px;
+    }
+}
+
+.el-popover {
+    display: inline-table;
+}
+
+//new
+::v-deep .routelist {
+    width: 100%;
+
+    .el-badge__content.is-fixed {
+        top: 10px;
+        font-size: 10px;
+    }
+
+    .el-badge__content {
+        line-height: 13px;
+        height: 15px;
+        font-size: 10px;
+    }
+}
+</style>
